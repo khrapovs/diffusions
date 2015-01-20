@@ -15,7 +15,7 @@ __all__ = ['SDE']
 
 class SDE(object):
 
-    """Generic Model.
+    r"""Generic Model.
 
     Given the generic continuous-time diffusion model
 
@@ -60,14 +60,8 @@ class SDE(object):
             return z + self.euler_loc(z, theta) / M \
                 + self.euler_scale(z, theta) / M ** .5 * e
 
-        def reduce(sim, eps, x):
-            for e in eps:
-                x = sim(x, e)
-            return x
-
         for n in range(N-1):
             x[n+1] = reduce(sim, self.eps[n], x[n])
-
 
         if S > 1:
             self.paths = x
@@ -93,6 +87,12 @@ class SDE(object):
             plt.xlabel('x')
             plt.ylabel('f')
             plt.show()
+
+
+def reduce(sim, eps, x):
+    for e in eps:
+        x = sim(x, e)
+    return x
 
 
 if __name__ == '__main__':

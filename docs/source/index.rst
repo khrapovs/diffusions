@@ -6,15 +6,15 @@
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: diffusions.gbm
+.. automodule:: diffusions.generic_model
 
 .. automodule:: diffusions.gbm
 
 Class documentation
 -------------------
 
-.. autoclass:: diffusions.gbm.GBM
+.. autoclass:: diffusions.generic_model.SDE
 	:members:
 
-.. autoclass:: diffusions.generic_model.SDE
+.. autoclass:: diffusions.gbm.GBM
 	:members:
