@@ -10,10 +10,10 @@ import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 
-__all__ = ['Model']
+__all__ = ['SDE']
 
 
-class Model(object):
+class SDE(object):
 
     """Generic Model.
 

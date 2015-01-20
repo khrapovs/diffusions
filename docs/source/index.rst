@@ -8,8 +8,13 @@
 
 .. automodule:: diffusions.gbm
 
+.. automodule:: diffusions.gbm
+
 Class documentation
 -------------------
 
 .. autoclass:: diffusions.gbm.GBM
+	:members:
+
+.. autoclass:: diffusions.generic_model.SDE
 	:members:

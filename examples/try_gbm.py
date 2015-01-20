@@ -21,3 +21,5 @@ if __name__ == '__main__':
     gbm.simulate(x0, theta_true, h, M, N, S)
 
     gbm.plot_trajectories(3)
+
+    gbm.plot_final_distr()

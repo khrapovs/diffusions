@@ -6,12 +6,12 @@ Geometric Brownian Motion
 """
 from __future__ import print_function, division
 
-from .generic_model import Model
+from .generic_model import SDE
 
 __all__ = ['GBM']
 
 
-class GBM(Model):
+class GBM(SDE):
 
     r"""Geometric Brownian Motion.
 
