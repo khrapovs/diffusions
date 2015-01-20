@@ -40,11 +40,11 @@ class GBM(SDE):
 
     """
 
-    def __init__(self):
+    def __init__(self, theta_true=None):
         """Initialize the class.
 
         """
-        super().__init__()
+        super().__init__(theta_true)
         # Parameter names
         self.names = ['mu', 'sigma']
 

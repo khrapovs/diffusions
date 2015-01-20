@@ -37,9 +37,10 @@ class SDE(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, theta_true=None):
         self.paths = None
         self.eps = None
+        self.theta_true = theta_true
 
     def euler_loc(self, x, theta):
         return self.drift(x, theta) * self.h
@@ -47,18 +48,34 @@ class SDE(object):
     def euler_scale(self, x, theta):
         return self.diff(x, theta) * self.h ** .5
 
-    def simulate(self, x0, theta, h, M, N, S):
+    def simulate(self, x0, h, M, N, S):
+        """Simulate observations from the model.
+
+        Parameters
+        ----------
+        x0 : array_like
+            Starting value for simulation
+        h : float
+            Interval length
+        M : int
+            Number of discretization points inside unit interval
+        N : int
+            Number of points to simulate in one series
+        S : int
+            Number of time series to simulate
+
+        """
         # Interval length
         self.h = h
         # Number of points
         self.N = N
         size = (N, M, S)
-        self.eps = np.random.normal(size = size, scale = h ** .5)
+        self.eps = np.random.normal(size=size, scale=h**.5)
         x = np.ones((N, S)) * x0
 
-        def sim(z, e):
-            return z + self.euler_loc(z, theta) / M \
-                + self.euler_scale(z, theta) / M ** .5 * e
+        def sim(z, error):
+            return z + self.euler_loc(z, self.theta_true) / M \
+                + self.euler_scale(z, self.theta_true) / M**.5 * error
 
         for n in range(N-1):
             x[n+1] = reduce(sim, self.eps[n], x[n])
@@ -73,7 +90,7 @@ class SDE(object):
             print('Simulate data first!')
         else:
             x = np.arange(0, self.h * self.N, self.h)
-            plt.plot(x, self.paths[:,:num])
+            plt.plot(x, self.paths[:, :num])
             plt.xlabel('$t$')
             plt.ylabel('$x_t$')
             plt.show()

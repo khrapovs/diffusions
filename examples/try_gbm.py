@@ -14,11 +14,12 @@ from diffusions.gbm import GBM
 if __name__ == '__main__':
     mu, sigma = .05, .1
     theta_true = np.array([mu, sigma])
-    gbm = GBM()
+    gbm = GBM(theta_true)
 
     x0, T, h, M, S = mu, 200, 1., 100, 3
-    N = int(float(T) / h)
-    gbm.simulate(x0, theta_true, h, M, N, S)
+    x0, nperiods, interval, ndiscr, nsim = mu, 200, 1., 100, 3
+    npoints = int(nperiods / interval)
+    gbm.simulate(x0, interval, ndiscr, npoints, nsim)
 
     gbm.plot_trajectories(3)
 
