@@ -1,3 +1,7 @@
+.. image:: https://readthedocs.org/projects/diffusions/badge/?version=latest
+	:target: https://readthedocs.org/projects/diffusions/?badge=latest
+	:alt: Documentation Status
+
 Stochastic Diffusions
 =====================
 
