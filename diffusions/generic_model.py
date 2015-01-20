@@ -26,8 +26,44 @@ class SDE(object):
     we can discretize it as
 
     .. math::
-        Y_{t}\approx Y_{t}+\mu\left(Y_{t-h},\theta_{0}\right)h
-            +\sigma\left(Y_{t-h},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
+        Y_{t+h}\approx Y_{t}+\mu\left(Y_{t},\theta_{0}\right)h
+            +\sigma\left(Y_{t},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
+
+    To be more precise, we can integrate the diffusion on the interval
+    :math:`\left[t,t+h\right]`:
+
+    .. math::
+
+        y_{t,t+h}=Y_{t+h}-Y_{t}=\int_{t}^{t+h}dY_{s}
+            =\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds
+            +\int_{t}^{t+h}\sigma\left(Y_{s},\theta_{0}\right)dW_{s}.
+
+    Conditional mean and variance are thus
+
+    .. math::
+
+        E_{t}\left[y_{t,t+h}\right] &=
+        E_{t}\left[\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right],\\
+        V_{t}\left[y_{t,t+h}\right] &=
+        E_{t}\left[\int_{t}^{t+h}\sigma^{2}
+        \left(Y_{s},\theta_{0}\right)ds\right].
+
+    Hence, the moment function is
+
+    .. math::
+
+        g\left(y_{t,t+h};\theta\right)=\left[\begin{array}{c}
+        y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
+        y_{t,t+h}^{2}-\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
+        -\left(\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right)^{2}
+        \end{array}\right],
+
+    with
+
+    .. math::
+
+        E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
+
 
     Attributes
     ----------
@@ -89,6 +125,17 @@ class SDE(object):
             self.paths = x
         else:
             self.paths = x.flatten()
+
+    def moment(self, theta, x):
+        loc = self.exact_loc(x[:-1], theta)
+        scale = self.exact_scale(x[:-1], theta)
+        X1 = x[1:] - loc
+        X2 = x[1:]**2 - loc**2 - scale**2
+        X = np.vstack([X1, X2])
+        Z = np.vstack([np.ones_like(x[:-1]), x[:-1]])
+        new_shape = (X.shape[0] * Z.shape[0], X.shape[1])
+        g = np.reshape(X[:, np.newaxis, :] * Z[np.newaxis, :, :], new_shape)
+        return np.mat(g)
 
     def plot_trajectories(self, num):
         if self.paths is None:

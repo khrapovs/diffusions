@@ -101,14 +101,50 @@ dY_{t}=\mu\left(Y_{t},\theta_{0}\right)dt+\sigma\left(Y_{t},\theta_{0}\right)dW_
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 we can discretize it as
 \begin_inset Formula 
 \[
-Y_{t}\approx Y_{t}+\mu\left(Y_{t-h},\theta_{0}\right)h+\sigma\left(Y_{t-h},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
+Y_{t}\approx Y_{t-h}+\mu\left(Y_{t-h},\theta_{0}\right)h+\sigma\left(Y_{t-h},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
+\]
+
+\end_inset
+
+To be more precise, we can integrate the diffusion on the interval 
+\begin_inset Formula $\left[t,t+h\right]$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+y_{t,t+h}=Y_{t+h}-Y_{t}=\int_{t}^{t+h}dY_{s}=\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds+\int_{t}^{t+h}\sigma\left(Y_{s},\theta_{0}\right)dW_{s}.
+\]
+
+\end_inset
+
+Conditional mean and variance are thus
+\begin_inset Formula 
+\begin{eqnarray*}
+E_{t}\left[y_{t,t+h}\right] & = & E_{t}\left[\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right],\\
+V_{t}\left[y_{t,t+h}\right] & = & E_{t}\left[\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds\right].
+\end{eqnarray*}
+
+\end_inset
+
+Hence, the moment function is
+\begin_inset Formula 
+\[
+g\left(y_{t,t+h};\theta\right)=\left[\begin{array}{c}
+y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
+y_{t,t+h}^{2}-\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds-\left(\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right)^{2}
+\end{array}\right],
+\]
+
+\end_inset
+
+with
+\begin_inset Formula 
+\[
+E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
 \]
 
 \end_inset

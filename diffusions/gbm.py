@@ -27,6 +27,7 @@ class GBMparam(object):
         """
         self.mean = mean
         self.sigma = sigma
+        self.theta = [mean, sigma]
 
 
 class GBM(SDE):
