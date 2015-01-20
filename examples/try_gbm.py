@@ -6,14 +6,14 @@ Generic Model
 """
 from __future__ import print_function, division
 
-import numpy as np
+#import numpy as np
 
-from diffusions.gbm import GBM
+from diffusions.gbm import GBM, GBMparam
 
 
 if __name__ == '__main__':
-    mu, sigma = .05, .1
-    theta_true = np.array([mu, sigma])
+    mean, sigma = .05, .1
+    theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
     x0, T, h, M, S = 0, 200, 1., 100, 3

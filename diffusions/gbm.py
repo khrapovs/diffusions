@@ -11,6 +11,24 @@ from .generic_model import SDE
 __all__ = ['GBM']
 
 
+class GBMparam(object):
+
+    """Parameter storage for GBM model.
+
+    """
+
+    def __init__(self, mean=0, sigma=.2):
+        """Initialize class.
+
+        Parameters
+        ----------
+        sigma : float
+
+        """
+        self.mean = mean
+        self.sigma = sigma
+
+
 class GBM(SDE):
 
     r"""Geometric Brownian Motion.
@@ -45,16 +63,12 @@ class GBM(SDE):
 
         """
         super().__init__(theta_true)
-        # Parameter names
-        self.names = ['mu', 'sigma']
 
     def drift(self, x, theta):
-        mu, sigma = theta
-        return mu - .5 * sigma**2
+        return theta.mean - .5 * theta.sigma**2
 
     def diff(self, x, theta):
-        mu, sigma = theta
-        return sigma
+        return theta.sigma
 
     def exact_loc(self, x, theta):
         return self.euler_loc(x, theta)
