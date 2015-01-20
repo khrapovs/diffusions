@@ -40,60 +40,61 @@ class SDE(object):
     def __init__(self, theta_true=None):
         self.paths = None
         self.eps = None
+        self.interval = None
+        self.nperiods = None
         self.theta_true = theta_true
 
     def euler_loc(self, x, theta):
-        return self.drift(x, theta) * self.h
+        return self.drift(x, theta) * self.interval
 
     def euler_scale(self, x, theta):
-        return self.diff(x, theta) * self.h**.5
+        return self.diff(x, theta) * self.interval**.5
 
-    def sim(self, z, error):
+    def sim(self, state, error):
         """Euler update function for return equation.
 
         """
-        M = error.shape[0]
-        return self.euler_loc(z, self.theta_true) / M \
-            + self.euler_scale(z, self.theta_true) / M**.5 * error
+        # Number of discretization intervals
+        ndiscr = error.shape[0]
+        return self.euler_loc(state, self.theta_true) / ndiscr \
+            + self.euler_scale(state, self.theta_true) / ndiscr**.5 * error
 
-    def simulate(self, x0, h, M, N, S):
+    def simulate(self, start, interval, ndiscr, nperiods, nsim):
         """Simulate observations from the model.
 
         Parameters
         ----------
-        x0 : array_like
+        start : array_like
             Starting value for simulation
-        h : float
+        interval : float
             Interval length
-        M : int
+        ndiscr : int
             Number of discretization points inside unit interval
-        N : int
+        nperiods : int
             Number of points to simulate in one series
-        S : int
+        nsim : int
             Number of time series to simulate
 
         """
-        # Interval length
-        self.h = h
-        # Number of points
-        self.N = N
-        size = (N, M, S)
-        self.eps = np.random.normal(size=size, scale=h**.5)
-        x = np.ones((N, S)) * x0
+        self.interval = interval
+        self.nperiods = nperiods
+        size = (nperiods, ndiscr, nsim)
+        self.eps = np.random.normal(size=size, scale=interval**.5)
+        x = np.ones((nperiods, nsim)) * start
 
-        for n in range(N-1):
+        for n in range(nperiods-1):
             x[n+1] = reduce(self.sim, self.eps[n], x[n])
 
-        if S > 1:
+        if nsim > 1:
             self.paths = x
         else:
             self.paths = x.flatten()
 
     def plot_trajectories(self, num):
         if self.paths is None:
-            print('Simulate data first!')
+            ValueError('Simulate data first!')
         else:
-            x = np.arange(0, self.h * self.N, self.h)
+            x = np.arange(0, self.interval * self.nperiods, self.interval)
             plt.plot(x, self.paths[:, :num])
             plt.xlabel('$t$')
             plt.ylabel('$x_t$')
@@ -101,7 +102,7 @@ class SDE(object):
 
     def plot_final_distr(self):
         if self.paths is None:
-            print('Simulate data first!')
+            ValueError('Simulate data first!')
         else:
             data = self.paths[-1]
             sns.kdeplot(data)
