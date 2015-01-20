@@ -127,6 +127,9 @@ class SDE(object):
             self.paths = x.flatten()
 
     def moment(self, theta, x):
+        """Moment function.
+
+        """
         loc = self.exact_loc(x[:-1], theta)
         scale = self.exact_scale(x[:-1], theta)
         X1 = x[1:] - loc
