@@ -50,7 +50,7 @@ class GBM(SDE):
 
     def drift(self, x, theta):
         mu, sigma = theta
-        return mu - .5 * sigma ** 2
+        return mu - .5 * sigma**2
 
     def diff(self, x, theta):
         mu, sigma = theta

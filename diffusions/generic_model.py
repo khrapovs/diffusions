@@ -46,7 +46,15 @@ class SDE(object):
         return self.drift(x, theta) * self.h
 
     def euler_scale(self, x, theta):
-        return self.diff(x, theta) * self.h ** .5
+        return self.diff(x, theta) * self.h**.5
+
+    def sim(self, z, error):
+        """Euler update function for return equation.
+
+        """
+        M = error.shape[0]
+        return self.euler_loc(z, self.theta_true) / M \
+            + self.euler_scale(z, self.theta_true) / M**.5 * error
 
     def simulate(self, x0, h, M, N, S):
         """Simulate observations from the model.
@@ -73,12 +81,8 @@ class SDE(object):
         self.eps = np.random.normal(size=size, scale=h**.5)
         x = np.ones((N, S)) * x0
 
-        def sim(z, error):
-            return z + self.euler_loc(z, self.theta_true) / M \
-                + self.euler_scale(z, self.theta_true) / M**.5 * error
-
         for n in range(N-1):
-            x[n+1] = reduce(sim, self.eps[n], x[n])
+            x[n+1] = reduce(self.sim, self.eps[n], x[n])
 
         if S > 1:
             self.paths = x

@@ -16,8 +16,7 @@ if __name__ == '__main__':
     theta_true = np.array([mu, sigma])
     gbm = GBM(theta_true)
 
-    x0, T, h, M, S = mu, 200, 1., 100, 3
-    x0, nperiods, interval, ndiscr, nsim = mu, 200, 1., 100, 3
+    x0, nperiods, interval, ndiscr, nsim = 0, 200, .5, 100, 300
     npoints = int(nperiods / interval)
     gbm.simulate(x0, interval, ndiscr, npoints, nsim)
 
