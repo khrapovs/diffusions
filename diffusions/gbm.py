@@ -6,10 +6,12 @@ Geometric Brownian Motion
 """
 from __future__ import print_function, division
 
+from .generic_model import Model
+
 __all__ = ['GBM']
 
 
-class GBM(object):
+class GBM(Model):
 
     r"""Geometric Brownian Motion.
 
@@ -39,6 +41,10 @@ class GBM(object):
     """
 
     def __init__(self):
+        """Initialize the class.
+
+        """
+        super().__init__()
         # Parameter names
         self.names = ['mu', 'sigma']
 
@@ -51,10 +57,10 @@ class GBM(object):
         return sigma
 
     def exact_loc(self, x, theta):
-        return self.drift(x, theta) * self.h
+        return self.euler_loc(x, theta)
 
     def exact_scale(self, x, theta):
-        return self.diff(x, theta) * self.h ** .5
+        return self.euler_scale(x, theta)
 
 
 if __name__ == '__main__':

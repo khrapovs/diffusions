@@ -89,6 +89,34 @@ Stochastic diffusion models
 \end_layout
 
 \begin_layout Subsection
+Generic model
+\end_layout
+
+\begin_layout Standard
+Given the generic continuous-time diffusion model
+\begin_inset Formula 
+\[
+dY_{t}=\mu\left(Y_{t},\theta_{0}\right)dt+\sigma\left(Y_{t},\theta_{0}\right)dW_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we can discretize it as
+\begin_inset Formula 
+\[
+Y_{t}\approx Y_{t}+\mu\left(Y_{t-h},\theta_{0}\right)h+\sigma\left(Y_{t-h},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Geometric Brownian Motion
 \end_layout
 
