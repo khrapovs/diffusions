@@ -227,6 +227,21 @@ E_{t}\left[g\left(r_{t,h};\theta\right)\right]=0.
 
 \end_inset
 
+the derivative of the moment function with respect to model parameters 
+\begin_inset Formula $\theta=\left[\mu,\sigma\right]$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+\frac{\partial g}{\partial\theta}\left(r_{t,h};\theta\right)=\left[\begin{array}{cc}
+-h & \sigma h\\
+-2\left(\mu-\frac{1}{2}\sigma^{2}\right)h^{2} & -2\sigma h+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma h^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
 
 \end_layout
 

@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 
+from mygmm import GMM
+
 __all__ = ['SDE']
 
 
@@ -126,26 +128,23 @@ class SDE(object):
         else:
             self.paths = x.flatten()
 
-    def moment(self, theta, x):
-        """Moment function.
+    def gmmest(self, theta_start, **kwargs):
+        """Estimate model parameters using GMM.
 
         """
-        loc = self.exact_loc(x[:-1], theta)
-        scale = self.exact_scale(x[:-1], theta)
-        X1 = x[1:] - loc
-        X2 = x[1:]**2 - loc**2 - scale**2
-        X = np.vstack([X1, X2])
-        Z = np.vstack([np.ones_like(x[:-1]), x[:-1]])
-        new_shape = (X.shape[0] * Z.shape[0], X.shape[1])
-        g = np.reshape(X[:, np.newaxis, :] * Z[np.newaxis, :, :], new_shape)
-        return np.mat(g)
+        estimator = GMM(self.momcond)
+        return estimator.gmmest(theta_start.theta, **kwargs)
 
-    def plot_trajectories(self, num):
+    def plot_trajectories(self, num=None):
         if self.paths is None:
             ValueError('Simulate data first!')
         else:
             x = np.arange(0, self.interval * self.nperiods, self.interval)
-            plt.plot(x, self.paths[:, :num])
+            if num is None or self.paths.ndim == 1:
+                data = self.paths
+            else:
+                data = self.paths[:, :num]
+            plt.plot(x, data)
             plt.xlabel('$t$')
             plt.ylabel('$x_t$')
             plt.show()

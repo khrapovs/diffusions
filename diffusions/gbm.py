@@ -6,6 +6,8 @@ Geometric Brownian Motion
 """
 from __future__ import print_function, division
 
+import numpy as np
+
 from .generic_model import SDE
 
 __all__ = ['GBM']
@@ -76,6 +78,50 @@ class GBM(SDE):
 
     def exact_scale(self, x, theta):
         return self.euler_scale(x, theta)
+
+    def momcond(self, theta, data=None):
+        """Moment function.
+
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+
+        Returns
+        -------
+        moments : array, nobs x nmoms
+            Moment restrictions
+        dmoments : array, nmoms x nparams
+            Average derivative of the moment restrictions
+
+        """
+        mean, sigma = theta
+        theta = GBMparam(mean=mean, sigma=sigma)
+
+        loc = self.exact_loc(data[:-1], theta)
+        scale = self.exact_scale(data[:-1], theta)
+
+        errors = np.vstack([data[1:] - loc,
+                            data[1:]**2 - loc**2 - scale**2])
+        instruments = np.vstack([np.ones_like(data[:-1]), data[:-1]])
+
+        dmean = np.array([-self.interval,
+                          -2 * self.interval**2 * (mean - sigma**2/2)])
+        dsigma = np.array([sigma * self.interval,
+                           -2 * sigma * self.interval
+                           + 2 * sigma * self.interval**2
+                           * (mean - sigma**2/2)])
+        # nmoms x nparam
+        dtheta = np.vstack([dmean, dsigma]).T
+
+        mom, dmom = [], []
+        for instr in instruments:
+            mom.append(errors * instr)
+            dmom.append(instr.mean() * dtheta)
+        mom = np.vstack(mom)
+        dmom = np.vstack(dmom)
+
+        return mom.T, dmom
 
 
 if __name__ == '__main__':
