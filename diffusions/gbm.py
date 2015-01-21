@@ -7,6 +7,7 @@ Geometric Brownian Motion
 from __future__ import print_function, division
 
 import numpy as np
+import numdifftools as nd
 
 from .generic_model import SDE
 
@@ -105,6 +106,45 @@ class GBM(SDE):
         """
         return theta.sigma
 
+    def betamat(self, theta):
+        """Coefficients in linear representation of the first moment.
+
+        Parameters
+        ----------
+        theta : GBMparam instance
+            Parameter object
+
+        Returns
+        -------
+        list
+            List of coefficients
+
+        """
+        loc = self.exact_loc(0, theta)
+        if not isinstance(loc, float):
+            raise ValueError('Location and scale should be scalars!')
+        return [loc, 0]
+
+    def gammamat(self, theta):
+        """Coefficients in linear representation of the second moment.
+
+        Parameters
+        ----------
+        theta : GBMparam instance
+            Parameter object
+
+        Returns
+        -------
+        list
+            List of coefficients
+
+        """
+        loc = self.exact_loc(0, theta)
+        scale = self.exact_scale(0, theta)
+        if not isinstance(scale, float):
+            raise ValueError('Location and scale should be scalars!')
+        return [loc**2 + scale**2, 0]
+
     def momcond(self, theta, data=None):
         """Moment function.
 
@@ -126,16 +166,10 @@ class GBM(SDE):
         mean, sigma = theta
         theta = GBMparam(mean=mean, sigma=sigma)
 
-        # For GBM these are scalars
-        loc = self.exact_loc(data[:-1], theta)
-        scale = self.exact_scale(data[:-1], theta)
-
         mat_data = np.vstack([np.ones_like(data[1:]), data[1:]]).T
-        beta = [loc, 0]
-        gamma = [loc**2 + scale**2, 0]
 
-        errors = np.vstack([data[1:] - mat_data.dot(beta),
-                            data[1:]**2 - mat_data.dot(gamma)])
+        errors = np.vstack([data[1:] - mat_data.dot(self.betamat(theta)),
+                            data[1:]**2 - mat_data.dot(self.gammamat(theta))])
         instruments = np.vstack([np.ones_like(data[:-1]), data[:-1]])
 
         dmean = np.array([-self.interval,
