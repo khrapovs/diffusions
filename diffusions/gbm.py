@@ -236,13 +236,18 @@ class GBM(SDE):
             Average derivative of the moment restrictions
 
         """
-        lagdata = lagmat(data, maxlag=1)[1:]
-        datamat = np.hstack([np.ones_like(lagdata), lagdata])
+        datalag = 1
+        instrlag = 2
+        lagdata = lagmat(data, maxlag=datalag)[datalag:]
+        nobs = lagdata.shape[0]
+        datamat = np.hstack([np.ones((nobs, 1)), lagdata])
 
-        errors = np.vstack([data[1:] - datamat.dot(self.betamat(theta)),
-                            data[1:]**2 - datamat.dot(self.gammamat(theta))])
+        errors = np.vstack([data[datalag:] - datamat.dot(self.betamat(theta)),
+                            data[datalag:]**2
+                            - datamat.dot(self.gammamat(theta))])
 
-        instruments = np.vstack([np.ones_like(data[:-1]), data[:-1]])
+        instruments = np.hstack([np.ones((nobs, 1)),
+                                 lagmat(data[:-datalag], maxlag=instrlag)]).T
 
         mom, dmom = [], []
         for instr in instruments:
