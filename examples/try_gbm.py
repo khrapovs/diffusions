@@ -12,11 +12,11 @@ from diffusions.gbm import GBM, GBMparam
 
 
 if __name__ == '__main__':
-    mean, sigma = .5, .2
+    mean, sigma = 1.5, .2
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 0, 200, .1, 100, 1
+    x0, nperiods, interval, ndiscr, nsim = 1, 500, .1, 50, 1
     npoints = int(nperiods / interval)
     gbm.simulate(x0, interval, ndiscr, npoints, nsim)
     data = gbm.paths

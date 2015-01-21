@@ -51,7 +51,9 @@ class GBM(SDE):
     .. math::
         r_{t,h}=\log\frac{S_{t+h}}{S_{t}}
             =\left(\mu-\frac{1}{2}\sigma^{2}\right)h
-            +\sigma\sqrt{h}\varepsilon_{t+h}.
+            +\sigma\sqrt{h}\varepsilon_{t+h},
+
+    where :math:`\varepsilon_{t}\sim N\left(0,1\right)`.
 
     Attributes
     ----------
@@ -68,16 +70,10 @@ class GBM(SDE):
         super().__init__(theta_true)
 
     def drift(self, x, theta):
-        return theta.mean - .5 * theta.sigma**2
+        return theta.mean - theta.sigma**2/2
 
     def diff(self, x, theta):
         return theta.sigma
-
-    def exact_loc(self, x, theta):
-        return self.euler_loc(x, theta)
-
-    def exact_scale(self, x, theta):
-        return self.euler_scale(x, theta)
 
     def momcond(self, theta, data=None):
         """Moment function.

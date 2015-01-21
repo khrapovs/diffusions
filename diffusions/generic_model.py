@@ -79,7 +79,7 @@ class SDE(object):
         self.paths = None
         self.eps = None
         self.interval = None
-        self.nperiods = None
+        self.nobs = None
         self.theta_true = theta_true
 
     def euler_loc(self, x, theta):
@@ -88,16 +88,20 @@ class SDE(object):
     def euler_scale(self, x, theta):
         return self.diff(x, theta) * self.interval**.5
 
-    def sim(self, state, error):
-        """Euler update function for return equation.
+    def exact_loc(self, x, theta):
+        return self.euler_loc(x, theta)
+
+    def exact_scale(self, x, theta):
+        return self.euler_scale(x, theta)
+
+    def update(self, state, error):
+        """Euler update function.
 
         """
-        # Number of discretization intervals
-        ndiscr = error.shape[0]
-        return self.euler_loc(state, self.theta_true) / ndiscr \
-            + self.euler_scale(state, self.theta_true) / ndiscr**.5 * error
+        return self.euler_loc(state, self.theta_true) / self.ndiscr \
+            + self.euler_scale(state, self.theta_true) / self.ndiscr**.5 * error
 
-    def simulate(self, start, interval, ndiscr, nperiods, nsim):
+    def simulate(self, start, interval, ndiscr, nobs, nsim):
         """Simulate observations from the model.
 
         Parameters
@@ -108,25 +112,32 @@ class SDE(object):
             Interval length
         ndiscr : int
             Number of discretization points inside unit interval
-        nperiods : int
+        nobs : int
             Number of points to simulate in one series
         nsim : int
             Number of time series to simulate
 
         """
         self.interval = interval
-        self.nperiods = nperiods
-        size = (nperiods, ndiscr, nsim)
-        self.eps = np.random.normal(size=size, scale=interval**.5)
-        x = np.ones((nperiods, nsim)) * start
+        self.nobs = nobs
+        self.ndiscr = ndiscr
 
-        for n in range(nperiods-1):
-            x[n+1] = reduce(self.sim, self.eps[n], x[n])
+        npoints = nobs * ndiscr
+        self.errors = np.random.normal(size=(npoints, nsim))
+        self.errors -= self.errors.mean(0)
+        self.errors /= self.errors.std(0)
 
+        paths = np.ones((npoints + 1, nsim)) * start
+
+        for i in range(npoints):
+            paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
+
+        paths = paths[::ndiscr]
+        paths = paths[1:] - paths[:-1]
         if nsim > 1:
-            self.paths = x
+            self.paths = paths
         else:
-            self.paths = x.flatten()
+            self.paths = paths.flatten()
 
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.
@@ -139,7 +150,7 @@ class SDE(object):
         if self.paths is None:
             ValueError('Simulate data first!')
         else:
-            x = np.arange(0, self.interval * self.nperiods, self.interval)
+            x = np.arange(0, self.interval * self.nobs, self.interval)
             if num is None or self.paths.ndim == 1:
                 data = self.paths
             else:
@@ -158,12 +169,6 @@ class SDE(object):
             plt.xlabel('x')
             plt.ylabel('f')
             plt.show()
-
-
-def reduce(sim, eps, x):
-    for e in eps:
-        x = sim(x, e)
-    return x
 
 
 if __name__ == '__main__':
