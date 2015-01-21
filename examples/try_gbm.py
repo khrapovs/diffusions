@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     #plot_final_distr(data/interval)
 
-    mean, sigma = 2.5, .2
+    mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
     res = gbm.gmmest(theta_start, data=data)
     res.print_results()
