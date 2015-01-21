@@ -28,5 +28,5 @@ if __name__ == '__main__':
 
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
-    res = gbm.gmmest(theta_start, data=data)
+    res = gbm.gmmest(theta_start, data=data, instrlag=2)
     res.print_results()

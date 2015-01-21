@@ -218,7 +218,7 @@ class GBM(SDE):
                          - 2 * sigma * self.interval**2
                          * (mean - sigma**2/2)], [0, 0]])
 
-    def momcond(self, theta, data=None):
+    def momcond(self, theta, data=None, instrlag=1):
         """Moment function.
 
         Parameters
@@ -237,7 +237,6 @@ class GBM(SDE):
 
         """
         datalag = 1
-        instrlag = 2
         lagdata = lagmat(data, maxlag=datalag)[datalag:]
         nobs = lagdata.shape[0]
         datamat = np.hstack([np.ones((nobs, 1)), lagdata])
