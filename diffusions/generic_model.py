@@ -12,7 +12,7 @@ import seaborn as sns
 
 from mygmm import GMM
 
-__all__ = ['SDE']
+__all__ = ['SDE', 'plot_trajectories', 'plot_final_distr']
 
 
 class SDE(object):
@@ -97,9 +97,21 @@ class SDE(object):
     def update(self, state, error):
         """Euler update function.
 
+        Parameters
+        ----------
+        state : array
+            Current value of the process
+        error : array
+            Random shocks
+
+        Returns
+        -------
+        array
+            Update of the process value. Same shape as the input.
+
         """
-        return self.euler_loc(state, self.theta_true) / self.ndiscr \
-            + self.euler_scale(state, self.theta_true) / self.ndiscr**.5 * error
+        return self.euler_loc(state, self.theta_true)/self.ndiscr \
+            + self.euler_scale(state, self.theta_true)/self.ndiscr**.5 * error
 
     def simulate(self, start, interval, ndiscr, nobs, nsim):
         """Simulate observations from the model.
@@ -124,6 +136,7 @@ class SDE(object):
 
         npoints = nobs * ndiscr
         self.errors = np.random.normal(size=(npoints, nsim))
+        # Normalize the errors
         self.errors -= self.errors.mean(0)
         self.errors /= self.errors.std(0)
 
@@ -133,6 +146,7 @@ class SDE(object):
             paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
 
         paths = paths[::ndiscr]
+        # Assuming that paths are log prices, then covert to log returns
         paths = paths[1:] - paths[:-1]
         if nsim > 1:
             self.paths = paths
@@ -146,29 +160,28 @@ class SDE(object):
         estimator = GMM(self.momcond)
         return estimator.gmmest(theta_start.theta, **kwargs)
 
-    def plot_trajectories(self, num=None):
-        if self.paths is None:
-            ValueError('Simulate data first!')
-        else:
-            x = np.arange(0, self.interval * self.nobs, self.interval)
-            if num is None or self.paths.ndim == 1:
-                data = self.paths
-            else:
-                data = self.paths[:, :num]
-            plt.plot(x, data)
-            plt.xlabel('$t$')
-            plt.ylabel('$x_t$')
-            plt.show()
 
-    def plot_final_distr(self):
-        if self.paths is None:
-            ValueError('Simulate data first!')
-        else:
-            data = self.paths[-1]
-            sns.kdeplot(data)
-            plt.xlabel('x')
-            plt.ylabel('f')
-            plt.show()
+def plot_trajectories(paths, interval):
+    """Plot process realizations.
+
+    Parameters
+    ----------
+    paths : array
+
+
+    """
+    x = np.arange(0, interval * paths.shape[0], interval)
+    plt.plot(x, paths)
+    plt.xlabel('$t$')
+    plt.ylabel('$x_t$')
+    plt.show()
+
+
+def plot_final_distr(paths):
+    sns.kdeplot(paths[-1])
+    plt.xlabel('x')
+    plt.ylabel('f')
+    plt.show()
 
 
 if __name__ == '__main__':
