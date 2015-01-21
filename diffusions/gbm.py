@@ -227,6 +227,8 @@ class GBM(SDE):
             Model parameters
         data : array
             Whatever data is necessary to compute moment function
+        instrlag : int
+            Number of lags for the instruments
 
         Returns
         -------
@@ -241,9 +243,11 @@ class GBM(SDE):
         nobs = lagdata.shape[0]
         datamat = np.hstack([np.ones((nobs, 1)), lagdata])
 
-        errors = np.vstack([data[datalag:] - datamat.dot(self.betamat(theta)),
-                            data[datalag:]**2
-                            - datamat.dot(self.gammamat(theta))])
+        linearcoef = [self.betamat(theta), self.gammamat(theta)]
+        errors = []
+        for i in range(2):
+            errors.append(data[datalag:]**(i+1) - datamat.dot(linearcoef[i]))
+        errors = np.vstack(errors)
 
         instruments = np.hstack([np.ones((nobs, 1)),
                                  lagmat(data[:-datalag], maxlag=instrlag)]).T
@@ -256,10 +260,10 @@ class GBM(SDE):
                                  meandata.dot(self.dgammamat(theta))])
             dmom.append(dtheta)
 
-        mom = np.vstack(mom)
+        mom = np.vstack(mom).T
         dmom = np.vstack(dmom)
 
-        return mom.T, dmom
+        return mom, dmom
 
 
 if __name__ == '__main__':
