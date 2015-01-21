@@ -111,39 +111,110 @@ class GBM(SDE):
 
         Parameters
         ----------
-        theta : GBMparam instance
-            Parameter object
+        theta : array
+            Parameters
 
         Returns
         -------
-        list
-            List of coefficients
+        float
+            Constant coefficient
 
         """
+        theta = GBMparam(mean=theta[0], sigma=theta[1])
         loc = self.exact_loc(0, theta)
         if not isinstance(loc, float):
             raise ValueError('Location and scale should be scalars!')
-        return [loc, 0]
+        return loc
 
     def gammamat(self, theta):
         """Coefficients in linear representation of the second moment.
 
         Parameters
         ----------
-        theta : GBMparam instance
-            Parameter object
+        theta : array
+            Parameters
 
         Returns
         -------
-        list
-            List of coefficients
+        float
+            Constant coefficient
 
         """
+        theta = GBMparam(mean=theta[0], sigma=theta[1])
         loc = self.exact_loc(0, theta)
         scale = self.exact_scale(0, theta)
         if not isinstance(scale, float):
             raise ValueError('Location and scale should be scalars!')
-        return [loc**2 + scale**2, 0]
+        return loc**2 + scale**2
+
+    def dbetamat(self, theta):
+        """Derivative of the first moment coefficients (numerical).
+
+        Parameters
+        ----------
+        theta : array
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        return nd.Gradient(self.betamat)(theta)
+
+    def dgammamat(self, theta):
+        """Derivative of the second moment coefficients (numerical).
+
+        Parameters
+        ----------
+        theta : array
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        return nd.Gradient(self.gammamat)(theta)
+
+    def dbetamat_exact(self, theta):
+        """Derivative of the first moment coefficients (exact).
+
+        Parameters
+        ----------
+        theta : array
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        mean, sigma = theta
+        return np.array([self.interval, - sigma * self.interval])
+
+    def dgammamat_exact(self, theta):
+        """Derivative of the second moment coefficients (exact).
+
+        Parameters
+        ----------
+        theta : array
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        mean, sigma = theta
+        return np.array([2 * self.interval**2 * (mean - sigma**2/2),
+                         2 * sigma * self.interval
+                         - 2 * sigma * self.interval**2
+                         * (mean - sigma**2/2)])
 
     def momcond(self, theta, data=None):
         """Moment function.
@@ -166,21 +237,20 @@ class GBM(SDE):
         mean, sigma = theta
         theta = GBMparam(mean=mean, sigma=sigma)
 
-        mat_data = np.vstack([np.ones_like(data[1:]), data[1:]]).T
+        # Data matrix in case conditional moments are not constant
+        # mat_data = np.vstack([np.ones_like(data[1:]), data[1:]]).T
+        # beta = np.array([self.betamat(theta.theta), 0])
+        # gamma = np.array([self.gammamat(theta.theta), 0])
 
-        errors = np.vstack([data[1:] - mat_data.dot(self.betamat(theta)),
-                            data[1:]**2 - mat_data.dot(self.gammamat(theta))])
+        errors = np.vstack([data[1:] - self.betamat(theta.theta),
+                            data[1:]**2 - self.gammamat(theta.theta)])
         instruments = np.vstack([np.ones_like(data[:-1]), data[:-1]])
 
-        dmean = np.array([-self.interval,
-                          -2 * self.interval**2 * (mean - sigma**2/2)])
-        dsigma = np.array([sigma * self.interval,
-                           -2 * sigma * self.interval
-                           + 2 * sigma * self.interval**2
-                           * (mean - sigma**2/2)])
         # nmoms x nparam
-        dtheta = np.vstack([dmean, dsigma]).T
-
+        dtheta = - np.vstack([self.dbetamat(theta.theta),
+                            self.dgammamat(theta.theta)])
+        # dtheta = - np.vstack([self.dbetamat_exact(theta.theta),
+        #                     self.dgammamat_exact(theta.theta)])
         mom, dmom = [], []
         for instr in instruments:
             mom.append(errors * instr)
