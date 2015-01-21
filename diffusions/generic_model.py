@@ -167,7 +167,9 @@ def plot_trajectories(paths, interval):
     Parameters
     ----------
     paths : array
-
+        Process realizations. Shape is either (nobs,) or (nobs, nsim)
+    interval : float
+        Length of unit interval
 
     """
     x = np.arange(0, interval * paths.shape[0], interval)
@@ -178,6 +180,16 @@ def plot_trajectories(paths, interval):
 
 
 def plot_final_distr(paths):
+    """Plot marginal distribution of the process.
+
+    Parameters
+    ----------
+    paths : array
+        Process realizations. Shape is (nobs, nsim)
+
+    """
+    if paths.ndim != 2:
+        raise ValueError('Simulate more paths!')
     sns.kdeplot(paths[-1])
     plt.xlabel('x')
     plt.ylabel('f')
