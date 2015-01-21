@@ -149,6 +149,15 @@ E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
 
 \end_inset
 
+Suppose that the moment function can be represented as a distributed lag
+ function
+\begin_inset Formula 
+\[
+g\left(y_{t,t+h};\theta\right)=A\left(L\right)y_{t,t+h}=\sum_{j=0}^{L}a_{l}y_{t-hj,t+h-hj}.
+\]
+
+\end_inset
+
 
 \end_layout
 
@@ -187,12 +196,17 @@ After integration on the interval
 :
 \begin_inset Formula 
 \[
-r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma\sqrt{h}\varepsilon_{t+h}.
+r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma\sqrt{h}\varepsilon_{t+h},
 \]
 
 \end_inset
 
-The first conditional moment is
+where 
+\begin_inset Formula $\varepsilon_{t}\sim N\left(0,1\right)$
+\end_inset
+
+.
+ The first conditional moment is
 \begin_inset Formula 
 \[
 E_{t}\left[r_{t,h}\right]=\left(\mu-\frac{1}{2}\sigma^{2}\right)h.

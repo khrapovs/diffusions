@@ -17,14 +17,14 @@ if __name__ == '__main__':
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .1, 50, 100
+    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
     npoints = int(nperiods / interval)
     gbm.simulate(x0, interval, ndiscr, npoints, nsim)
-    data = gbm.paths
+    data = gbm.paths[:, 0]
 
-    plot_trajectories(data[:, 3], interval)
+    plot_trajectories(data, interval)
 
-    plot_final_distr(data/interval)
+    #plot_final_distr(data/interval)
 
-    res = gbm.gmmest(theta_true, data=data[:, 0])
+    res = gbm.gmmest(theta_true, data=data)
     res.print_results()

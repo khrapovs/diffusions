@@ -70,9 +70,39 @@ class GBM(SDE):
         super().__init__(theta_true)
 
     def drift(self, x, theta):
+        """Drift function.
+
+        Parameters
+        ----------
+        state : array
+            Current state of the process
+        theta : GBMparam instance
+            Parameter object
+
+        Returns
+        -------
+        scalar
+            Drift value
+
+        """
         return theta.mean - theta.sigma**2/2
 
     def diff(self, x, theta):
+        """Diffusion (instantaneous volatility) function.
+
+        Parameters
+        ----------
+        state : array
+            Current state of the process
+        theta : GBMparam instance
+            Parameter object
+
+        Returns
+        -------
+        scalar
+            Diffusion value
+
+        """
         return theta.sigma
 
     def momcond(self, theta, data=None):
@@ -82,6 +112,8 @@ class GBM(SDE):
         ----------
         theta : array
             Model parameters
+        data : array
+            Whatever data is necessary to compute moment function
 
         Returns
         -------
@@ -94,11 +126,16 @@ class GBM(SDE):
         mean, sigma = theta
         theta = GBMparam(mean=mean, sigma=sigma)
 
+        # For GBM these are scalars
         loc = self.exact_loc(data[:-1], theta)
         scale = self.exact_scale(data[:-1], theta)
 
-        errors = np.vstack([data[1:] - loc,
-                            data[1:]**2 - loc**2 - scale**2])
+        mat_data = np.vstack([np.ones_like(data[1:]), data[1:]]).T
+        beta = [loc, 0]
+        gamma = [loc**2 + scale**2, 0]
+
+        errors = np.vstack([data[1:] - mat_data.dot(beta),
+                            data[1:]**2 - mat_data.dot(gamma)])
         instruments = np.vstack([np.ones_like(data[:-1]), data[:-1]])
 
         dmean = np.array([-self.interval,
