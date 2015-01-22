@@ -243,21 +243,29 @@ class GBM(SDE):
         nobs = lagdata.shape[0]
         datamat = np.hstack([np.ones((nobs, 1)), lagdata])
 
+        # Coefficients in the first moment (mean)
         linearcoef = [self.betamat(theta), self.gammamat(theta)]
-        errors = []
-        for i in range(2):
-            errors.append(data[datalag:]**(i+1) - datamat.dot(linearcoef[i]))
-        errors = np.vstack(errors)
+        # Coefficients in the second moment (variance)
+        dlinearcoef = [self.dbetamat(theta), self.dgammamat(theta)]
+
+        modelerror = []
+        for i in range(len(linearcoef)):
+            # Difference between data and model prediction
+            error = data[datalag:]**(i+1) - datamat.dot(linearcoef[i])
+            modelerror.append(error)
+        modelerror = np.vstack(modelerror)
 
         instruments = np.hstack([np.ones((nobs, 1)),
                                  lagmat(data[:-datalag], maxlag=instrlag)]).T
 
         mom, dmom = [], []
         for instr in instruments:
-            mom.append(errors * instr)
+            mom.append(modelerror * instr)
             meandata = (datamat.T * instr).mean(1)
-            dtheta = -np.vstack([meandata.dot(self.dbetamat(theta)),
-                                 meandata.dot(self.dgammamat(theta))])
+            dtheta = []
+            for coef in dlinearcoef:
+                dtheta.append(meandata.dot(coef))
+            dtheta = -np.vstack(dtheta)
             dmom.append(dtheta)
 
         mom = np.vstack(mom).T
