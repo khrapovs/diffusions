@@ -162,6 +162,99 @@ g\left(y_{t,t+h};\theta\right)=A\left(L\right)y_{t,t+h}=\sum_{j=0}^{L}a_{l}y_{t-
 \end_layout
 
 \begin_layout Subsection
+Affine Diffusion
+\end_layout
+
+\begin_layout Definition
+A jump-diffusion process is a Markov process solving the stochastic differential
+ equation
+\begin_inset Formula 
+\[
+dY_{t}=\mu\left(Y_{t},\theta_{0}\right)dt+\sigma\left(Y_{t},\theta_{0}\right)dW_{t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Discounting is an integral part of pricing so we first introduce a discount-rate
+ function 
+\begin_inset Formula $R:D\to\mathbb{R}$
+\end_inset
+
+ that is an affine function of the state
+\begin_inset Formula 
+\[
+R\left(Y\right)=\rho_{0}+\rho_{1}\cdot Y,
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $\rho=\left(\rho_{0},\rho_{1}\right)\in\mathbb{R}\times\mathbb{R}^{N}$
+\end_inset
+
+.
+ The affine dependence of the drift and diffusion coefficients of 
+\begin_inset Formula $Y$
+\end_inset
+
+ are determined by coefficients 
+\begin_inset Formula $\left(K,H\right)$
+\end_inset
+
+ defined by:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mu\left(Y\right)=K_{0}+K_{1}Y$
+\end_inset
+
+, for 
+\begin_inset Formula $K=\left(K_{0},K_{1}\right)\in\mathbb{R}^{N}\times\mathbb{R}^{N\times N}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left[\sigma\left(Y\right)\sigma\left(Y\right)^{\prime}\right]_{ij}=\left[H_{0}\right]_{ij}+\left[H_{1}\right]_{ij}\cdot Y$
+\end_inset
+
+, for 
+\begin_inset Formula $H=\left(H_{0},H_{1}\right)\in\mathbb{R}^{N\times N}\times\mathbb{R}^{N\times N\times N}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Here
+\begin_inset Formula 
+\[
+\left[H_{1}\right]_{ij}\cdot Y=\sum_{k=1}^{N}\left[H_{1}\right]_{ijk}Y_{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A characteristic 
+\begin_inset Formula $\chi=\left(K,H,\rho\right)$
+\end_inset
+
+ captures both the distribution of 
+\begin_inset Formula $Y$
+\end_inset
+
+ as well as the effects of any discounting.
+\end_layout
+
+\begin_layout Subsection
 Geometric Brownian Motion
 \end_layout
 
@@ -189,6 +282,18 @@ d\log S_{t}=\left(\mu-\frac{1}{2}\sigma^{2}\right)dt+\sigma dW_{t}.
 
 \end_inset
 
+Since the model belongs to affine class, we have
+\begin_inset Formula 
+\[
+K_{0}=\mu-\frac{1}{2}\sigma^{2},\quad K_{1}=0,\quad H_{0}=\sigma^{2},\quad H_{1}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 After integration on the interval 
 \begin_inset Formula $\left[t,t+h\right]$
 \end_inset
@@ -251,6 +356,138 @@ the derivative of the moment function with respect to model parameters
 \frac{\partial g}{\partial\theta}\left(r_{t,h};\theta\right)=\left[\begin{array}{cc}
 -h & \sigma h\\
 -2\left(\mu-\frac{1}{2}\sigma^{2}\right)h^{2} & -2\sigma h+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma h^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Vasicek model
+\end_layout
+
+\begin_layout Example
+Consider
+\begin_inset Formula 
+\[
+dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma dW_{t}.
+\]
+
+\end_inset
+
+Since the model belongs to affine class, we have
+\begin_inset Formula 
+\[
+K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=\sigma^{2},\quad H_{1}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Heston model
+\end_layout
+
+\begin_layout Example
+Consider
+\begin_inset Formula 
+\begin{align*}
+dp_{t} & =\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+d\sigma_{t}^{2} & =\kappa\left(\mu-\sigma_{t}^{2}\right)dt+\eta\sigma_{t}dW_{t}^{\sigma},
+\end{align*}
+
+\end_inset
+
+with 
+\begin_inset Formula $p_{t}=\log S_{t}$
+\end_inset
+
+, and 
+\begin_inset Formula $Corr\left[dW_{s}^{r},dW_{s}^{\sigma}\right]=\rho$
+\end_inset
+
+, or in other words 
+\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$
+\end_inset
+
+.
+ Also let 
+\begin_inset Formula $R\left(Y_{t}\right)=r$
+\end_inset
+
+.
+ The drift and diffusion functions are
+\begin_inset Formula 
+\[
+\mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
+r\\
+\kappa\mu
+\end{array}\right]+\left[\begin{array}{cc}
+0 & -\frac{1}{2}\\
+0 & -\kappa
+\end{array}\right]\left[\begin{array}{c}
+p_{t}\\
+\sigma_{t}^{2}
+\end{array}\right],\quad\sigma\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{cc}
+\sigma_{t} & 0\\
+\eta\rho\sigma_{t} & \eta\sqrt{1-\rho^{2}}\sigma_{t}
+\end{array}\right].
+\]
+
+\end_inset
+
+It follows that
+\begin_inset Formula 
+\[
+\sigma\left(Y_{t},\theta_{0}\right)\sigma\left(Y_{t},\theta_{0}\right)^{\prime}=\left[\begin{array}{cc}
+\sigma_{t}^{2} & \eta\rho\sigma_{t}^{2}\\
+\eta\rho\sigma_{t}^{2} & \eta^{2}\sigma_{t}^{2}
+\end{array}\right]=\left[\begin{array}{cc}
+1 & \eta\rho\\
+\eta\rho & \eta^{2}
+\end{array}\right]\sigma_{t}^{2}.
+\]
+
+\end_inset
+
+So we have
+\begin_inset Formula 
+\[
+\rho_{0}=r,\quad\rho_{1}=\left[0,0\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+K_{0}=\left[\begin{array}{c}
+r\\
+\kappa\mu
+\end{array}\right],\quad K_{1}=\left[\begin{array}{cc}
+0 & -\frac{1}{2}\\
+0 & -\kappa
+\end{array}\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+H_{0}=\left[\begin{array}{cc}
+0 & 0\\
+0 & 0
+\end{array}\right],\quad H_{1,1}=\left[\begin{array}{cc}
+0 & 0\\
+0 & 0
+\end{array}\right],\quad H_{1,2}=\left[\begin{array}{cc}
+1 & \eta\rho\\
+\eta\rho & \eta^{2}
 \end{array}\right].
 \]
 
