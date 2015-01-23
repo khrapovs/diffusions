@@ -86,16 +86,43 @@ class SDE(object):
     def ajd_drift(self, state, theta):
         """Instantaneous mean.
 
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
+
+        Returns
+        -------
+        (nvars, nsim) array_like
+            Value of the drift
+
         """
-        return theta.mat_k0 + np.sum(theta.mat_k1 * state, -1)
+        state = np.atleast_2d(state)
+        return theta.mat_k0 + theta.mat_k1.dot(state)
 
     def ajd_diff(self, state, theta):
         """Instantaneous volatility.
 
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
+
+        Returns
+        -------
+        (nvars, nsim) array_like
+            Value of the diffusion
+
         """
-        var = theta.mat_h0 + np.sum(theta.mat_h1 * state, -1)
+        state = np.atleast_2d(state)
+        # (nvars, nvars, nsim)
+        var = theta.mat_h0 + theta.mat_h1.dot(state)
         try:
-            return np.linalg.cholesky(var)
+            return np.linalg.cholesky(var.T).T
         except(np.linalg.LinAlgError):
             return np.atleast_2d(1e10)
 
