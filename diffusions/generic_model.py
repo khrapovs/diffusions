@@ -59,6 +59,7 @@ import matplotlib.pylab as plt
 import seaborn as sns
 
 from mygmm import GMM
+from .helper_functions import nice_errors
 
 __all__ = ['SDE', 'plot_trajectories', 'plot_final_distr']
 
@@ -136,9 +137,8 @@ class SDE(object):
 
         npoints = nobs * ndiscr
         self.errors = np.random.normal(size=(npoints, nsim))
-        # Normalize the errors
-        self.errors -= self.errors.mean(0)
-        self.errors /= self.errors.std(0)
+        # Standardize the errors
+        self.errors = nice_errors(self.errors, 0)
 
         paths = np.ones((npoints + 1, nsim)) * start
 
