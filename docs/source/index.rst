@@ -3,18 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+===========================
+Stochastic Diffusion Models
+===========================
+
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: diffusions.generic_model
-
-.. automodule:: diffusions.gbm
-
-Class documentation
--------------------
-
-.. autoclass:: diffusions.generic_model.SDE
-	:members:
-
-.. autoclass:: diffusions.gbm.GBM
-	:members:
+   generic_model
+   gbm
