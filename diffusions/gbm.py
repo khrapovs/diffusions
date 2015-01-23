@@ -52,7 +52,18 @@ class GBMparam(object):
         """
         self.mean = mean
         self.sigma = sigma
+        # Vector of parameters
         self.theta = [mean, sigma]
+        # AJD parameters
+        mat_k0 = mean - sigma**2/2
+        mat_k1 = 0
+        mat_h0 = sigma**2
+        mat_h1 = 0
+        self.mat_k0 = np.atleast_1d(mat_k0)
+        self.mat_k1 = np.atleast_2d(mat_k1)
+        self.mat_h0 = np.atleast_2d(mat_h0)
+        self.mat_h1 = np.atleast_3d(mat_h1)
+
 
 
 class GBM(SDE):
@@ -124,9 +135,7 @@ class GBM(SDE):
 
         """
         theta = GBMparam(mean=theta[0], sigma=theta[1])
-        loc = self.exact_loc(0, theta)
-        if not isinstance(loc, float):
-            raise ValueError('Location and scale should be scalars!')
+        loc = float(self.exact_loc(0, theta))
         return np.array([loc, 0], dtype=float)
 
     def gammamat(self, theta):
@@ -144,10 +153,8 @@ class GBM(SDE):
 
         """
         theta = GBMparam(mean=theta[0], sigma=theta[1])
-        loc = self.exact_loc(0, theta)
-        scale = self.exact_scale(0, theta)
-        if not isinstance(scale, float):
-            raise ValueError('Location and scale should be scalars!')
+        loc = float(self.exact_loc(0, theta))
+        scale = float(self.exact_scale(0, theta))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
     def dbetamat(self, theta):

@@ -83,17 +83,33 @@ class SDE(object):
         self.nobs = None
         self.theta_true = theta_true
 
-    def euler_loc(self, x, theta):
-        return self.drift(x, theta) * self.interval
+    def ajd_drift(self, state, theta):
+        """Instantaneous mean.
 
-    def euler_scale(self, x, theta):
-        return self.diff(x, theta) * self.interval**.5
+        """
+        return theta.mat_k0 + np.sum(theta.mat_k1 * state, -1)
 
-    def exact_loc(self, x, theta):
-        return self.euler_loc(x, theta)
+    def ajd_diff(self, state, theta):
+        """Instantaneous volatility.
 
-    def exact_scale(self, x, theta):
-        return self.euler_scale(x, theta)
+        """
+        var = theta.mat_h0 + np.sum(theta.mat_h1 * state, -1)
+        try:
+            return np.linalg.cholesky(var)
+        except(np.linalg.LinAlgError):
+            return np.atleast_2d(1e10)
+
+    def euler_loc(self, state, theta):
+        return self.ajd_drift(state, theta) * self.interval
+
+    def euler_scale(self, state, theta):
+        return self.ajd_diff(state, theta) * self.interval**.5
+
+    def exact_loc(self, state, theta):
+        return self.euler_loc(state, theta)
+
+    def exact_scale(self, state, theta):
+        return self.euler_scale(state, theta)
 
     def update(self, state, error):
         """Euler update function.
