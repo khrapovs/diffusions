@@ -87,15 +87,15 @@ class GBM(SDE):
         """
         super().__init__(theta_true)
 
-    def drift(self, x, theta):
+    def drift(self, state, theta):
         """Drift function.
 
         Parameters
         ----------
-        state : array
-            Current state of the process
-        theta : GBMparam instance
-            Parameter object
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
 
         Returns
         -------
@@ -105,15 +105,15 @@ class GBM(SDE):
         """
         return theta.mean - theta.sigma**2/2
 
-    def diff(self, x, theta):
+    def diff(self, state, theta):
         """Diffusion (instantaneous volatility) function.
 
         Parameters
         ----------
-        state : array
-            Current state of the process
-        theta : GBMparam instance
-            Parameter object
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
 
         Returns
         -------

@@ -93,6 +93,13 @@ class SDE(object):
     def euler_loc(self, state, theta):
         """Euler location.
 
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
+
         Returns
         -------
         (nvars, nsim) array_like
@@ -102,6 +109,13 @@ class SDE(object):
 
     def euler_scale(self, state, theta):
         """Euler scale.
+
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
 
         Returns
         -------
@@ -113,6 +127,13 @@ class SDE(object):
     def exact_loc(self, state, theta):
         """Eaxct location.
 
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
+
         Returns
         -------
         (nvars, nsim) array_like
@@ -122,6 +143,13 @@ class SDE(object):
 
     def exact_scale(self, state, theta):
         """Exact scale.
+
+        Parameters
+        ----------
+        state : (nvars, nsim) array_like
+            Current value of the process
+        theta : parameter instance
+            Model parameter
 
         Returns
         -------
