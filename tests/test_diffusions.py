@@ -10,10 +10,9 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions.gbm import GBM, GBMparam
-from diffusions.generic_model import SDE
-#from diffusions.helper_functions import nice_errors
-from diffusions import nice_errors
+from diffusions import GBM, GBMparam
+from diffusions import SDE
+from diffusions import nice_errors, ajd_drift, ajd_diff
 
 
 class DiffusionsTestCase(ut.TestCase):
@@ -45,6 +44,32 @@ class HelperFunctionsTestCase(ut.TestCase):
         treated_errors = nice_errors(errors, -1)
         np.testing.assert_array_equal(treated_errors.mean(-1), 0)
         np.testing.assert_almost_equal(treated_errors.std(-1), np.ones((2, 3)))
+
+    def test_ajd_drift(self):
+        """Test AJD drift function."""
+
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        nvars, nsim = 1, 2
+        size = (nvars, nsim)
+        state = np.ones(size)
+        drift = state * (mean - sigma**2/2)
+
+        self.assertEqual(ajd_drift(state, param).shape, size)
+        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+
+    def test_ajd_diff(self):
+        """Test AJD diffusion function."""
+
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        nvars, nsim = 1, 2
+        size = (nvars, nsim)
+        state = np.ones(size)
+        diff = np.ones((nvars, nvars, nsim)) * sigma
+
+        self.assertEqual(ajd_diff(state, param).shape, (nvars, nvars, nsim))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
 
 if __name__ == '__main__':

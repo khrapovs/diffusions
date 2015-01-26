@@ -33,12 +33,15 @@ from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
 
-__all__ = ['GBM']
+__all__ = ['GBM', 'GBMparam']
 
 
 class GBMparam(object):
 
     """Parameter storage for GBM model.
+
+    Attributes
+    ----------
 
     """
 

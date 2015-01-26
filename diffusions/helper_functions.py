@@ -46,7 +46,7 @@ def ajd_diff(state, theta):
 
     Returns
     -------
-    (nvars, nsim) array_like
+    (nvars, nvars, nsim) array_like
         Value of the diffusion
 
     """
