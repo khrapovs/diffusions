@@ -68,7 +68,6 @@ class GBMparam(object):
         self.mat_h1 = np.atleast_3d(mat_h1)
 
 
-
 class GBM(SDE):
 
     """Geometric Brownian Motion.
@@ -85,7 +84,7 @@ class GBM(SDE):
         """Initialize the class.
 
         """
-        super().__init__(theta_true)
+        super(GBM, self).__init__(theta_true)
 
     def drift(self, state, theta):
         """Drift function.
