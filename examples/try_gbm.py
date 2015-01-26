@@ -40,7 +40,7 @@ def try_simulation():
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
     nobs = int(nperiods / interval)
     gbm.simulate(x0, interval, ndiscr, nobs, nsim)
-    data = gbm.paths[:, 0]
+    data = gbm.paths[:, 0, 0]
 
     plot_trajectories(data, interval)
 

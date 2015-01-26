@@ -105,14 +105,15 @@ class SimulationTestCase(ut.TestCase):
     def test_gbm_simulation(self):
         """Test simulation of the GBM model."""
 
+        nvars = 1
         mean, sigma = 1.5, .2
         param = GBMparam(mean, sigma)
         gbm = GBM(param)
-        x0, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
+        start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        gbm.simulate(x0, interval, ndiscr, nobs, nsim)
+        gbm.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(gbm.paths.shape, (nobs, 2*nsim))
+        self.assertEqual(gbm.paths.shape, (nobs, nvars, 2*nsim))
 
 
 if __name__ == '__main__':

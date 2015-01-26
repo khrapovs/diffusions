@@ -209,7 +209,7 @@ class SDE(object):
         self.errors = nice_errors(self.errors, -1)
         nsim *= 2
 
-        paths = np.ones((npoints + 1, nsim)) * start
+        paths = np.ones((npoints + 1, nvars, nsim)) * start
 
         for i in range(npoints):
             paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
