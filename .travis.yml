@@ -23,7 +23,7 @@ install:
   #- unzip ~/master.zip -d ~/
   #- export PYTHONPATH=$PYTHONPATH:~/mygmm-master/
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose seaborn
-  - conda install -c https://conda.binstar.org/omnia numdifftools
+  - conda install --yes -c https://conda.binstar.org/omnia numdifftools
 
 # Run test
 script:
