@@ -67,7 +67,7 @@ def nice_errors(errors, sdim):
     errors : array
         Innovations to be standardized
     sdim : int
-        Which dimention corresponds to simulation instances?
+        Which dimension corresponds to simulation instances?
 
     Returns
     -------

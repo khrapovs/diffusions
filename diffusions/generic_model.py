@@ -68,6 +68,8 @@ class SDE(object):
 
     Attributes
     ----------
+    paths : (nvars, nobs, nsim) array
+        Simulated observations
 
     Methods
     -------
@@ -89,15 +91,43 @@ class SDE(object):
         self.theta_true = theta_true
 
     def euler_loc(self, state, theta):
+        """Euler location.
+
+        Returns
+        -------
+        (nvars, nsim) array_like
+
+        """
         return ajd_drift(state, theta) * self.interval
 
     def euler_scale(self, state, theta):
+        """Euler scale.
+
+        Returns
+        -------
+        (nvars, nvars, nsim) array_like
+
+        """
         return ajd_diff(state, theta) * self.interval**.5
 
     def exact_loc(self, state, theta):
+        """Eaxct location.
+
+        Returns
+        -------
+        (nvars, nsim) array_like
+
+        """
         return self.euler_loc(state, theta)
 
     def exact_scale(self, state, theta):
+        """Exact scale.
+
+        Returns
+        -------
+        (nvars, nvars, nsim) array_like
+
+        """
         return self.euler_scale(state, theta)
 
     def update(self, state, error):
@@ -105,19 +135,23 @@ class SDE(object):
 
         Parameters
         ----------
-        state : array
+        state : (nvars, nsim) array_like
             Current value of the process
-        error : array
+        error : (nvars, nsim) array_like
             Random shocks
 
         Returns
         -------
-        array
+        (nvars, nsim) array
             Update of the process value. Same shape as the input.
 
         """
-        return self.euler_loc(state, self.theta_true)/self.ndiscr \
-            + self.euler_scale(state, self.theta_true)/self.ndiscr**.5 * error
+        # (nvars, nsim) array_like
+        loc = self.euler_loc(state, self.theta_true)
+        # (nvars, nvars, nsim) array_like
+        scale = self.euler_scale(state, self.theta_true)
+
+        return loc / self.ndiscr + (scale * error).sum(1) / self.ndiscr**.5
 
     def simulate(self, start, interval, ndiscr, nobs, nsim):
         """Simulate observations from the model.
@@ -129,7 +163,7 @@ class SDE(object):
         interval : float
             Interval length
         ndiscr : int
-            Number of discretization points inside unit interval
+            Number of Euler discretization points inside unit interval
         nobs : int
             Number of points to simulate in one series
         nsim : int
@@ -139,11 +173,13 @@ class SDE(object):
         self.interval = interval
         self.nobs = nobs
         self.ndiscr = ndiscr
-
+        nvars = np.size(start)
         npoints = nobs * ndiscr
-        self.errors = np.random.normal(size=(npoints, nsim))
+
+        self.errors = np.random.normal(size=(npoints, nvars, nsim))
         # Standardize the errors
-        self.errors = nice_errors(self.errors, 0)
+        self.errors = nice_errors(self.errors, -1)
+        nsim *= 2
 
         paths = np.ones((npoints + 1, nsim)) * start
 

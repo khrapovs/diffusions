@@ -38,8 +38,8 @@ def try_simulation():
     gbm = GBM(theta_true)
 
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
-    npoints = int(nperiods / interval)
-    gbm.simulate(x0, interval, ndiscr, npoints, nsim)
+    nobs = int(nperiods / interval)
+    gbm.simulate(x0, interval, ndiscr, nobs, nsim)
     data = gbm.paths[:, 0]
 
     plot_trajectories(data, interval)

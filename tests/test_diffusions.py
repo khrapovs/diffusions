@@ -15,7 +15,7 @@ from diffusions import SDE
 from diffusions import nice_errors, ajd_drift, ajd_diff
 
 
-class DiffusionsTestCase(ut.TestCase):
+class SDEParameterTestCase(ut.TestCase):
     """Test SDE, GBM classes."""
 
     def test_gbmparam_class(self):
@@ -40,10 +40,16 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_nice_errors(self):
         """Test nice errors function."""
 
-        errors = np.random.normal(size=(2, 3, 4))
-        treated_errors = nice_errors(errors, -1)
-        np.testing.assert_array_equal(treated_errors.mean(-1), 0)
-        np.testing.assert_almost_equal(treated_errors.std(-1), np.ones((2, 3)))
+        nvars, nobs, nsim = 2, 3, 4
+        size = (nvars, nobs, nsim)
+        sim = 2
+        new_size = (nvars, nobs, 2*nsim)
+        errors = np.random.normal(size=size)
+        treated_errors = nice_errors(errors, sim)
+        self.assertEqual(treated_errors.shape, tuple(new_size))
+        np.testing.assert_array_equal(treated_errors.mean(sim), 0)
+        np.testing.assert_almost_equal(treated_errors.std(sim),
+                                       np.ones((nvars, nobs)))
 
     def test_ajd_drift(self):
         """Test AJD drift function."""
@@ -70,6 +76,31 @@ class HelperFunctionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, (nvars, nvars, nsim))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+class SimulationTestCase(ut.TestCase):
+    """Test simulation capabilities."""
+
+    def test_gbm_simupdate(self):
+        """Test simulation update of the GBM model."""
+
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        gbm = GBM(param)
+        gbm.ndiscr, gbm.interval = 2, .5
+        nvars, nsim = 1, 2
+        size = (nvars, nsim)
+        state = np.ones(size)
+        error = np.zeros(size)
+
+        new_state = gbm.update(state, error)
+        loc = state * (mean - sigma**2/2)
+        scale = np.ones((nvars, nvars, nsim)) * sigma
+        delta = gbm.interval / gbm.ndiscr
+        new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
+
+        self.assertEqual(new_state.shape, size)
+        np.testing.assert_array_equal(new_state, new_state_compute)
 
 
 if __name__ == '__main__':
