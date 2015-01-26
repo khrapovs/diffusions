@@ -21,6 +21,7 @@ install:
   #- unzip ~/master.zip -d ~/
   #- export PYTHONPATH=$PYTHONPATH:~/mygmm-master/
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose seaborn
+  - pip install numdifftools
 
 # Run test
 script:
