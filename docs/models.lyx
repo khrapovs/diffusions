@@ -165,7 +165,7 @@ g\left(y_{t,t+h};\theta\right)=A\left(L\right)y_{t,t+h}=\sum_{j=0}^{L}a_{l}y_{t-
 Affine Diffusion
 \end_layout
 
-\begin_layout Definition
+\begin_layout Standard
 A jump-diffusion process is a Markov process solving the stochastic differential
  equation
 \begin_inset Formula 
@@ -368,7 +368,7 @@ the derivative of the moment function with respect to model parameters
 Vasicek model
 \end_layout
 
-\begin_layout Example
+\begin_layout Standard
 Consider
 \begin_inset Formula 
 \[
@@ -392,7 +392,7 @@ K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=\sigma^{2},\quad H_{1}=0.
 Heston model
 \end_layout
 
-\begin_layout Example
+\begin_layout Standard
 Consider
 \begin_inset Formula 
 \begin{align*}
