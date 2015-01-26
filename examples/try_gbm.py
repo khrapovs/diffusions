@@ -9,7 +9,7 @@ from __future__ import print_function, division
 #import numpy as np
 
 from diffusions.gbm import GBM, GBMparam
-from diffusions.generic_model import plot_trajectories, plot_final_distr
+from diffusions.helper_functions import plot_trajectories, plot_final_distr
 
 
 def try_gmm():
@@ -47,4 +47,4 @@ def try_simulation():
 
 if __name__ == '__main__':
     try_simulation()
-    try_gmm()
+    #try_gmm()
