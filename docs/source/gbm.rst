@@ -1,4 +1,7 @@
 .. automodule:: diffusions.gbm
 
-.. autoclass:: diffusions.gbm.GBM
+.. autoclass:: diffusions.gbm.GBMparam
 	:members:
+
+.. autoclass:: diffusions.gbm.GBM
+	:members: momcond, simulate

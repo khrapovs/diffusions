@@ -12,3 +12,4 @@ Stochastic Diffusion Models
 
    generic_model
    gbm
+   vasicek

@@ -28,6 +28,12 @@ class VasicekParam(object):
 
     Attributes
     ----------
+    mean : float
+        Mean of the process
+    kappa : float
+        Mean reversion speed
+    sigma : float
+        Instantaneous standard deviation
 
     """
 
@@ -36,7 +42,12 @@ class VasicekParam(object):
 
         Parameters
         ----------
+        mean : float
+            Mean of the process
+        kappa : float
+            Mean reversion speed
         sigma : float
+            Instantaneous standard deviation
 
         """
         self.mean = mean

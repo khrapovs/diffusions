@@ -42,6 +42,10 @@ class GBMparam(object):
 
     Attributes
     ----------
+    mean : float
+        Mean of the process
+    sigma : float
+        Instantaneous standard deviation
 
     """
 
@@ -50,7 +54,10 @@ class GBMparam(object):
 
         Parameters
         ----------
+        mean : float
+            Mean of the process
         sigma : float
+            Instantaneous standard deviation
 
         """
         self.mean = mean
@@ -242,9 +249,9 @@ class GBM(SDE):
 
         Returns
         -------
-        moments : array, nobs x nmoms
+        moments : (nobs, nmoms) array
             Moment restrictions
-        dmoments : array, nmoms x nparams
+        dmoments : (nmoms, nparams) array
             Average derivative of the moment restrictions
 
         """
