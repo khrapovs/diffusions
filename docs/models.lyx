@@ -258,6 +258,10 @@ A characteristic
 Geometric Brownian Motion
 \end_layout
 
+\begin_layout Subsubsection
+The model
+\end_layout
+
 \begin_layout Standard
 Suppose that 
 \begin_inset Formula $S_{t}$
@@ -282,6 +286,14 @@ d\log S_{t}=\left(\mu-\frac{1}{2}\sigma^{2}\right)dt+\sigma dW_{t}.
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
 Since the model belongs to affine class, we have
 \begin_inset Formula 
 \[
@@ -291,6 +303,34 @@ K_{0}=\mu-\frac{1}{2}\sigma^{2},\quad K_{1}=0,\quad H_{0}=\sigma^{2},\quad H_{1}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Exact solution
+\end_layout
+
+\begin_layout Example
+The solution is
+\begin_inset Formula 
+\[
+r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma\left(W_{t+h}-W_{t}\right).
+\]
+
+\end_inset
+
+In other words,
+\begin_inset Formula 
+\[
+r_{t,h}\sim N\left(\left(\mu-\frac{1}{2}\sigma^{2}\right)h,\sigma^{2}h\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Integrated moments
 \end_layout
 
 \begin_layout Standard
@@ -368,6 +408,10 @@ the derivative of the moment function with respect to model parameters
 Vasicek model
 \end_layout
 
+\begin_layout Subsubsection
+The model
+\end_layout
+
 \begin_layout Standard
 Consider
 \begin_inset Formula 
@@ -377,6 +421,14 @@ dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma dW_{t}.
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
 Since the model belongs to affine class, we have
 \begin_inset Formula 
 \[
@@ -388,8 +440,66 @@ K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=\sigma^{2},\quad H_{1}=0.
 
 \end_layout
 
+\begin_layout Subsubsection
+Exact solution
+\end_layout
+
+\begin_layout Standard
+Using Ito's lemma for 
+\begin_inset Formula $r_{t}e^{\kappa t}$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+d\left(r_{t}e^{\kappa t}\right)=\left(\kappa r_{t}e^{\kappa t}+\kappa\left(\mu-r_{t}\right)e^{\kappa t}\right)dt+\sigma e^{\kappa t}dW_{t},
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+d\left(r_{t}e^{\kappa t}\right)=\kappa\mu e^{\kappa t}dt+\sigma e^{\kappa t}dW_{t}.
+\]
+
+\end_inset
+
+After integration we have
+\begin_inset Formula 
+\[
+r_{t+h}e^{\kappa\left(t+h\right)}=r_{t}e^{\kappa t}+\kappa\mu\int_{t}^{t+h}e^{\kappa u}du+\sigma\int_{t}^{t+h}e^{\kappa u}dW_{u},
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+\begin{aligned}r_{t+h}= & r_{t}e^{-\kappa h}+\kappa\mu\int_{t}^{t+h}e^{-\kappa\left(t+h-u\right)}du+\sigma\int_{t}^{t+h}e^{-\kappa\left(t+h-u\right)}dW_{u}\\
+= & r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right)+\sigma\int_{t}^{t+h}e^{-\kappa\left(t+h-u\right)}dW_{u}.
+\end{aligned}
+\]
+
+\end_inset
+
+This implies that
+\begin_inset Formula 
+\[
+r_{t+h}|r_{t}\sim N\left(r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}du=\frac{\sigma^{2}}{2\kappa}\left(1-e^{-2\kappa h}\right)\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Heston model
+\end_layout
+
+\begin_layout Subsubsection
+The model
 \end_layout
 
 \begin_layout Standard
@@ -420,7 +530,14 @@ with
 \end_inset
 
 .
- The drift and diffusion functions are
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
+The drift and diffusion functions are
 \begin_inset Formula 
 \[
 \mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}

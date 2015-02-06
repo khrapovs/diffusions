@@ -216,7 +216,7 @@ class SDE(object):
 
         paths = paths[::ndiscr]
         # Assuming that paths are log prices, then covert to log returns
-        paths = paths[1:] - paths[:-1]
+        #paths = paths[1:] - paths[:-1]
         if nsim > 1:
             self.paths = paths
         else:
