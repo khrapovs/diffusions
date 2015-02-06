@@ -18,9 +18,10 @@ def try_gmm():
     gbm = GBM(theta_true)
 
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
-    npoints = int(nperiods / interval)
-    gbm.simulate(x0, interval, ndiscr, npoints, nsim)
-    data = gbm.paths[:, 0]
+    nobs = int(nperiods / interval)
+    paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim)
+    data = paths[:, 0, 0]
+    data = data[1:] - data[:-1]
 
     #plot_trajectories(data, interval)
 
@@ -33,18 +34,19 @@ def try_gmm():
 
 
 def try_simulation():
-    mean, sigma = 1.5, .2
+    mean, sigma = .05, .2
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
     nobs = int(nperiods / interval)
-    gbm.simulate(x0, interval, ndiscr, nobs, nsim)
-    data = gbm.paths[:, 0, 0]
+    paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim)
+    data = paths[:, 0, 0]
+    data = data[1:] - data[:-1]
 
     plot_trajectories(data, interval)
 
 
 if __name__ == '__main__':
     try_simulation()
-    #try_gmm()
+    try_gmm()

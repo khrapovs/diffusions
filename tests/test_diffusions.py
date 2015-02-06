@@ -111,9 +111,9 @@ class SimulationTestCase(ut.TestCase):
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        gbm.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(gbm.paths.shape, (nobs, nvars, 2*nsim))
+        self.assertEqual(paths.shape, (nobs+1, nvars, 2*nsim))
 
 
 if __name__ == '__main__':

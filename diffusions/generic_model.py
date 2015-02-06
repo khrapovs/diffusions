@@ -197,6 +197,11 @@ class SDE(object):
         nsim : int
             Number of time series to simulate
 
+        Returns
+        -------
+        paths : (npoints+1, nvars, nsim*2) array
+            Simulated data
+
         """
         self.interval = interval
         self.nobs = nobs
@@ -218,9 +223,9 @@ class SDE(object):
         # Assuming that paths are log prices, then covert to log returns
         #paths = paths[1:] - paths[:-1]
         if nsim > 1:
-            self.paths = paths
+            return paths
         else:
-            self.paths = paths.flatten()
+            return paths.flatten()
 
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.
