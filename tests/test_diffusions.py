@@ -10,7 +10,7 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import GBM, GBMparam
+from diffusions import GBM, GBMparam, Vasicek, VasicekParam
 from diffusions import SDE
 from diffusions import nice_errors, ajd_drift, ajd_diff
 
@@ -102,6 +102,27 @@ class SimulationTestCase(ut.TestCase):
         self.assertEqual(new_state.shape, size)
         np.testing.assert_array_equal(new_state, new_state_compute)
 
+    def test_vasicek_simupdate(self):
+        """Test simulation update of the GBM model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, sigma)
+        vasicek = Vasicek(param)
+        vasicek.ndiscr, vasicek.interval = 2, .5
+        nvars, nsim = 1, 2
+        size = (nvars, nsim)
+        state = np.ones(size)
+        error = np.zeros(size)
+
+        new_state = vasicek.update(state, error)
+        loc = kappa * (mean - state)
+        scale = np.ones((nvars, nvars, nsim)) * sigma
+        delta = vasicek.interval / vasicek.ndiscr
+        new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
+
+        self.assertEqual(new_state.shape, size)
+        np.testing.assert_array_equal(new_state, new_state_compute)
+
     def test_gbm_simulation(self):
         """Test simulation of the GBM model."""
 
@@ -112,6 +133,19 @@ class SimulationTestCase(ut.TestCase):
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
         paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
+
+        self.assertEqual(paths.shape, (nobs+1, nvars, 2*nsim))
+
+    def test_vassicek_simulation(self):
+        """Test simulation of the Vasicek model."""
+
+        nvars = 1
+        mean, kappa, sigma = 1.5, .1, .2
+        param = VasicekParam(mean, kappa, sigma)
+        vasicek = Vasicek(param)
+        start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
+        nobs = int(nperiods / interval)
+        paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs+1, nvars, 2*nsim))
 

@@ -19,10 +19,8 @@ def try_simulation():
 
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
     npoints = int(nperiods / interval)
-    vasicek.simulate(x0, interval, ndiscr, npoints, nsim)
-    data = vasicek.paths[:, 0]
-
-    data = vasicek.paths[:, 0, 0]
+    paths = vasicek.simulate(x0, interval, ndiscr, npoints, nsim)
+    data = paths[:, 0, 0]
 
     plot_trajectories(data, interval)
 
