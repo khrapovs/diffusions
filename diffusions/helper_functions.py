@@ -19,19 +19,19 @@ def ajd_drift(state, theta):
 
     Parameters
     ----------
-    state : (nvars, nsim) array_like
+    state : (nsim, nvars) array_like
         Current value of the process
     theta : parameter instance
         Model parameter
 
     Returns
     -------
-    (nvars, nsim) array_like
+    (nsim, nvars) array_like
         Value of the drift
 
     """
     state = np.atleast_2d(state)
-    return theta.mat_k0 + theta.mat_k1.dot(state)
+    return theta.mat_k0 + state.dot(theta.mat_k1.T)
 
 
 def ajd_diff(state, theta):
@@ -39,24 +39,24 @@ def ajd_diff(state, theta):
 
     Parameters
     ----------
-    state : (nvars, nsim) array_like
+    state : (nsim, nvars) array_like
         Current value of the process
     theta : parameter instance
         Model parameter
 
     Returns
     -------
-    (nvars, nvars, nsim) array_like
+    (nsim, nvars, nvars) array_like
         Value of the diffusion
 
     """
     state = np.atleast_2d(state)
-    # (nvars, nvars, nsim)
-    var = theta.mat_h0 + theta.mat_h1.dot(state)
+    # (nsim, nvars, nvars)
+    var = theta.mat_h0 + np.tensordot(state, theta.mat_h1, axes=(1, 0))
     try:
-        return np.linalg.cholesky(var.T).T
+        return np.linalg.cholesky(var)
     except(np.linalg.LinAlgError):
-        return np.atleast_2d(1e10)
+        return np.ones_like(var) * 1e10
 
 
 def nice_errors(errors, sdim):

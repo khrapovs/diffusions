@@ -10,7 +10,9 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import GBM, GBMparam, Vasicek, VasicekParam
+from diffusions import GBM, GBMparam
+from diffusions import Vasicek, VasicekParam
+from diffusions import Heston, HestonParam
 from diffusions import SDE
 from diffusions import nice_errors, ajd_drift, ajd_diff
 
@@ -51,30 +53,90 @@ class HelperFunctionsTestCase(ut.TestCase):
         np.testing.assert_almost_equal(treated_errors.std(sim),
                                        np.ones((nvars, nobs)))
 
-    def test_ajd_drift(self):
-        """Test AJD drift function."""
+    def test_ajd_drift_gbm(self):
+        """Test AJD drift function for GBM model."""
 
         mean, sigma = 1.5, .2
         param = GBMparam(mean, sigma)
         nvars, nsim = 1, 2
-        size = (nvars, nsim)
+        size = (nsim, nvars)
         state = np.ones(size)
         drift = state * (mean - sigma**2/2)
 
         self.assertEqual(ajd_drift(state, param).shape, size)
         np.testing.assert_array_equal(ajd_drift(state, param), drift)
 
-    def test_ajd_diff(self):
-        """Test AJD diffusion function."""
+    def test_ajd_diff_gbm(self):
+        """Test AJD diffusion function for GBM model."""
 
         mean, sigma = 1.5, .2
         param = GBMparam(mean, sigma)
         nvars, nsim = 1, 2
-        size = (nvars, nsim)
+        size = (nsim, nvars)
         state = np.ones(size)
-        diff = np.ones((nvars, nvars, nsim)) * sigma
+        diff = np.ones((nsim, nvars, nvars)) * sigma
 
-        self.assertEqual(ajd_diff(state, param).shape, (nvars, nvars, nsim))
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+    def test_ajd_drift_vasicek(self):
+        """Test AJD drift function for Vasicek model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, sigma)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state = np.ones(size)
+        drift = kappa * (mean - state)
+
+        self.assertEqual(ajd_drift(state, param).shape, size)
+        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+
+    def test_ajd_diff_vasicek(self):
+        """Test AJD diffusion function for Vasicek model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, sigma)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars)) * sigma
+
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+    def test_ajd_drift_heston(self):
+        """Test AJD drift function for Heston model."""
+
+        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.5
+        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+                            sigma=sigma, rho=rho)
+        nvars, nsim = 2, 3
+        size = (nsim, nvars)
+        state = np.ones(size)
+        drift = np.ones(size)
+        drift_r = mean_r - state[:, 1]**2/2
+        drift_v = kappa * (mean_v - state[:, 1])
+        drift = np.vstack([drift_r, drift_v]).T
+
+        self.assertEqual(ajd_drift(state, param).shape, drift.shape)
+        np.testing.assert_almost_equal(ajd_drift(state, param), drift)
+
+    def test_ajd_diff_heston(self):
+        """Test AJD diffusion function for Heston model."""
+
+        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.0
+        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+                            sigma=sigma, rho=rho)
+        nvars, nsim = 2, 3
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars))
+        var = np.array([[1, sigma*rho], [sigma*rho, sigma**2]])
+        var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
+        diff = np.linalg.cholesky(var)
+
+        self.assertEqual(ajd_diff(state, param).shape, diff.shape)
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
 
@@ -89,13 +151,13 @@ class SimulationTestCase(ut.TestCase):
         gbm = GBM(param)
         gbm.ndiscr, gbm.interval = 2, .5
         nvars, nsim = 1, 2
-        size = (nvars, nsim)
+        size = (nsim, nvars)
         state = np.ones(size)
         error = np.zeros(size)
 
         new_state = gbm.update(state, error)
         loc = state * (mean - sigma**2/2)
-        scale = np.ones((nvars, nvars, nsim)) * sigma
+        scale = np.ones((nsim, nvars, nvars)) * sigma
         delta = gbm.interval / gbm.ndiscr
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
@@ -110,18 +172,47 @@ class SimulationTestCase(ut.TestCase):
         vasicek = Vasicek(param)
         vasicek.ndiscr, vasicek.interval = 2, .5
         nvars, nsim = 1, 2
-        size = (nvars, nsim)
+        size = (nsim, nvars)
         state = np.ones(size)
         error = np.zeros(size)
 
         new_state = vasicek.update(state, error)
         loc = kappa * (mean - state)
-        scale = np.ones((nvars, nvars, nsim)) * sigma
+        scale = np.ones((nsim, nvars, nvars)) * sigma
         delta = vasicek.interval / vasicek.ndiscr
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
         np.testing.assert_array_equal(new_state, new_state_compute)
+
+    def test_heston_simupdate(self):
+        """Test simulation update of the Heston model."""
+
+        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.5
+        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+                            sigma=sigma, rho=rho)
+        heston = Heston(param)
+        heston.ndiscr, heston.interval = 2, .5
+        nvars, nsim = 2, 3
+        size = (nsim, nvars)
+        state = np.ones(size)
+        error = np.zeros(size)
+
+        new_state = heston.update(state, error)
+        drift_r = mean_r - state[:, 1]**2/2
+        drift_v = kappa * (mean_v - state[:, 1])
+        loc = np.vstack([drift_r, drift_v]).T
+
+        var = np.array([[1, sigma*rho], [sigma*rho, sigma**2]])
+        var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
+        scale = np.linalg.cholesky(var)
+
+        delta = heston.interval / heston.ndiscr
+        new_state_compute = loc * delta \
+            + (scale.T * error.T).sum(0).T * delta**.5
+
+        self.assertEqual(new_state.shape, size)
+        np.testing.assert_almost_equal(new_state, new_state_compute)
 
     def test_gbm_simulation(self):
         """Test simulation of the GBM model."""
@@ -134,7 +225,7 @@ class SimulationTestCase(ut.TestCase):
         nobs = int(nperiods / interval)
         paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, nvars, 2*nsim))
+        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 
     def test_vassicek_simulation(self):
         """Test simulation of the Vasicek model."""
@@ -147,7 +238,7 @@ class SimulationTestCase(ut.TestCase):
         nobs = int(nperiods / interval)
         paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, nvars, 2*nsim))
+        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 
 
 if __name__ == '__main__':

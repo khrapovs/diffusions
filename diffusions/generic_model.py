@@ -207,9 +207,9 @@ class SDE(object):
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
+        state : (nsim, nvars) array_like
             Current value of the process
-        error : (nvars, nsim) array_like
+        error : (nsim, nvars) array_like
             Random shocks
 
         Returns
@@ -218,12 +218,12 @@ class SDE(object):
             Update of the process value. Same shape as the input.
 
         """
-        # (nvars, nsim) array_like
+        # (nsim, nvars) array_like
         loc = self.euler_loc(state, self.theta_true)
-        # (nvars, nvars, nsim) array_like
+        # (nsim, nvars, nvars) array_like
         scale = self.euler_scale(state, self.theta_true)
 
-        return loc / self.ndiscr + (scale * error).sum(1) / self.ndiscr**.5
+        return loc / self.ndiscr + (error.T * scale.T).sum(0).T / self.ndiscr**.5
 
     def simulate(self, start, interval, ndiscr, nobs, nsim):
         """Simulate observations from the model.
@@ -253,12 +253,12 @@ class SDE(object):
         nvars = np.size(start)
         npoints = nobs * ndiscr
 
-        self.errors = np.random.normal(size=(npoints, nvars, nsim))
+        self.errors = np.random.normal(size=(npoints, nsim, nvars))
         # Standardize the errors
-        self.errors = nice_errors(self.errors, -1)
-        nsim *= 2
+        self.errors = nice_errors(self.errors, 1)
+        nsim = self.errors.shape[1]
 
-        paths = np.ones((npoints + 1, nvars, nsim)) * start
+        paths = start * np.ones((npoints + 1, nsim, nvars))
 
         for i in range(npoints):
             paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])

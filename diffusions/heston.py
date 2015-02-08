@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
-Vasicek model for interest rates
-================================
+Heston model for stochastic volatility
+======================================
 
-Suppose that :math:`r_{t}` evolves according to
+The model is
 
 .. math::
-    dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma dW_{t}.
+    dp_{t}&=\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},
+    d\sigma_{t}^{2}&=\kappa\left(\mu-\sigma_{t}^{2}\right)dt
+    +\eta\sigma_{t}dW_{t}^{\sigma},
+
+with :math:`p_{t}=\log S_{t}`,
+and :math:`Corr\left[dW_{s}^{r},dW_{s}^{\sigma}\right]=\rho`,
+or in other words
+:math:`W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}`.
+Also let :math:`R\left(Y_{t}\right)=r`.
 
 """
 from __future__ import print_function, division
@@ -16,12 +24,12 @@ import numpy as np
 
 from .generic_model import SDE
 
-__all__ = ['Vasicek', 'VasicekParam']
+__all__ = ['Heston', 'HestonParam']
 
 
-class VasicekParam(object):
+class HestonParam(object):
 
-    """Parameter storage for Vasicek model.
+    """Parameter storage for Heston model.
 
     Attributes
     ----------
@@ -34,38 +42,47 @@ class VasicekParam(object):
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, sigma=.1):
+    def __init__(self, mean_r=.01, mean_v=.5, kappa=1.5, sigma=.1, rho=-.5):
         """Initialize class.
 
         Parameters
         ----------
+        riskfree : float
+            Instantaneous rate of return
         mean : float
-            Mean of the process
+            Mean of the volatility process
         kappa : float
             Mean reversion speed
         sigma : float
-            Instantaneous standard deviation
+            Instantaneous standard deviation of volatility
+        rho : float
+            Correlation
 
         """
-        self.mean = mean
+        self.mean_r = mean_r
+        self.mean_v = mean_v
         self.kappa = kappa
         self.sigma = sigma
         # Vector of parameters
-        self.theta = [mean, kappa, sigma]
+        self.theta = [mean_r, mean_v, kappa, sigma, rho]
         # AJD parameters
-        mat_k0 = kappa * mean
-        mat_k1 = -kappa
-        mat_h0 = sigma**2
-        mat_h1 = 0
+        mat_k0 = [mean_r, kappa * mean_v]
+        mat_k1 = [[0, -.5], [0, -kappa]]
+        mat_h0 = np.zeros((2, 2))
+        mat_h1 = [np.zeros((2, 2)), [[1, sigma*rho], [sigma*rho, sigma**2]]]
         self.mat_k0 = np.atleast_1d(mat_k0)
         self.mat_k1 = np.atleast_2d(mat_k1)
         self.mat_h0 = np.atleast_2d(mat_h0)
         self.mat_h1 = np.atleast_3d(mat_h1)
 
+    def is_valid(self):
+        """Check Feller condition."""
+        return 2 * self.kappa * self.mean_v - self.sigma**2 > 0
 
-class Vasicek(SDE):
 
-    """Vasicek model.
+class Heston(SDE):
+
+    """Heston model.
 
     Attributes
     ----------
@@ -79,7 +96,7 @@ class Vasicek(SDE):
         """Initialize the class.
 
         """
-        super(Vasicek, self).__init__(theta_true)
+        super(Heston, self).__init__(theta_true)
 
     def drift(self, state, theta):
         """Drift function.
