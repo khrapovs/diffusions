@@ -103,7 +103,7 @@ class SimulationTestCase(ut.TestCase):
         np.testing.assert_array_equal(new_state, new_state_compute)
 
     def test_vasicek_simupdate(self):
-        """Test simulation update of the GBM model."""
+        """Test simulation update of the Vasicek model."""
 
         mean, kappa, sigma = 1.5, 1, .2
         param = VasicekParam(mean, kappa, sigma)
