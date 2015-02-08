@@ -223,7 +223,8 @@ class SDE(object):
         # (nsim, nvars, nvars) array_like
         scale = self.euler_scale(state, self.theta_true)
 
-        new_state = loc / self.ndiscr + (error.T * scale.T).sum(0).T / self.ndiscr**.5
+        #new_state = loc / self.ndiscr
+        #+ (error.T * scale.T).sum(0).T / self.ndiscr**.5
 
         new_state = loc / self.ndiscr
         for i in range(error.shape[0]):
