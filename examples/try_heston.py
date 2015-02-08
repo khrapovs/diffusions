@@ -15,12 +15,13 @@ from diffusions.helper_functions import plot_trajectories, plot_final_distr
 def try_simulation():
     mean_r=.5
     mean_v=.5
-    kappa=.05
-    sigma=.1
-    rho=-.5
+    kappa=.2
+    sigma=.01**.5
+    rho=-.0
     theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
                              sigma=sigma, rho=rho)
     heston = Heston(theta_true)
+    print(theta_true.is_valid())
 
     x0, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .5, 10, 3
     npoints = int(nperiods / interval)

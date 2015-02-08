@@ -188,7 +188,7 @@ class SimulationTestCase(ut.TestCase):
     def test_heston_simupdate(self):
         """Test simulation update of the Heston model."""
 
-        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.5
+        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2**.5, -.5
         param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
                             sigma=sigma, rho=rho)
         heston = Heston(param)
@@ -196,7 +196,7 @@ class SimulationTestCase(ut.TestCase):
         nvars, nsim = 2, 3
         size = (nsim, nvars)
         state = np.ones(size)
-        error = np.zeros(size)
+        error = np.vstack([np.zeros(nsim), np.ones(nsim)]).T
 
         new_state = heston.update(state, error)
         drift_r = mean_r - state[:, 1]**2/2
@@ -208,8 +208,9 @@ class SimulationTestCase(ut.TestCase):
         scale = np.linalg.cholesky(var)
 
         delta = heston.interval / heston.ndiscr
-        new_state_compute = loc * delta \
-            + (scale.T * error.T).sum(0).T * delta**.5
+        new_state_compute = loc * delta
+        for i in range(nsim):
+            new_state_compute[i] += (scale[i] * error[i]).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
         np.testing.assert_almost_equal(new_state, new_state_compute)
@@ -227,7 +228,7 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 
-    def test_vassicek_simulation(self):
+    def test_vasicek_simulation(self):
         """Test simulation of the Vasicek model."""
 
         nvars = 1

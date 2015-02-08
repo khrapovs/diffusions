@@ -223,7 +223,13 @@ class SDE(object):
         # (nsim, nvars, nvars) array_like
         scale = self.euler_scale(state, self.theta_true)
 
-        return loc / self.ndiscr + (error.T * scale.T).sum(0).T / self.ndiscr**.5
+        new_state = loc / self.ndiscr + (error.T * scale.T).sum(0).T / self.ndiscr**.5
+
+        new_state = loc / self.ndiscr
+        for i in range(error.shape[0]):
+            new_state[i] += (scale[i] * error[i]).sum(1) / self.ndiscr**.5
+
+        return new_state
 
     def simulate(self, start, interval, ndiscr, nobs, nsim):
         """Simulate observations from the model.
