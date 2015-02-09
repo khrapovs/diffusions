@@ -7,7 +7,7 @@ Heston model for stochastic volatility
 The model is
 
 .. math::
-    dp_{t}&=\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},
+    dp_{t}&=\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
     d\sigma_{t}^{2}&=\kappa\left(\mu-\sigma_{t}^{2}\right)dt
     +\eta\sigma_{t}dW_{t}^{\sigma},
 
@@ -33,12 +33,16 @@ class HestonParam(object):
 
     Attributes
     ----------
-    mean : float
-        Mean of the process
+    mean_r : float
+        Instantaneous rate of return
+    mean_v : float
+        Mean of the volatility process
     kappa : float
         Mean reversion speed
     sigma : float
-        Instantaneous standard deviation
+        Instantaneous standard deviation of volatility
+    rho : float
+        Correlation
 
     """
 
@@ -47,9 +51,9 @@ class HestonParam(object):
 
         Parameters
         ----------
-        riskfree : float
+        mean_r : float
             Instantaneous rate of return
-        mean : float
+        mean_v : float
             Mean of the volatility process
         kappa : float
             Mean reversion speed
@@ -76,7 +80,14 @@ class HestonParam(object):
         self.mat_h1 = np.atleast_3d(mat_h1)
 
     def is_valid(self):
-        """Check Feller condition."""
+        """Check Feller condition.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
         return 2 * self.kappa * self.mean_v - self.sigma**2 > 0
 
 

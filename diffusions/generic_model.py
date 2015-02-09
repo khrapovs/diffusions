@@ -214,7 +214,7 @@ class SDE(object):
 
         Returns
         -------
-        (nvars, nsim) array
+        (nsim, nvars) array
             Update of the process value. Same shape as the input.
 
         """
@@ -223,12 +223,14 @@ class SDE(object):
         # (nsim, nvars, nvars) array_like
         scale = self.euler_scale(state, self.theta_true)
 
-        #new_state = loc / self.ndiscr
-        #+ (error.T * scale.T).sum(0).T / self.ndiscr**.5
+        new_state = loc / self.ndiscr \
+            + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T \
+            / self.ndiscr**.5
 
-        new_state = loc / self.ndiscr
-        for i in range(error.shape[0]):
-            new_state[i] += (scale[i] * error[i]).sum(1) / self.ndiscr**.5
+        # Equivalent operation through the loop:
+#        new_state = loc / self.ndiscr
+#        for i in range(error.shape[0]):
+#            new_state[i] += (scale[i] * error[i]).sum(1) / self.ndiscr**.5
 
         return new_state
 
@@ -250,7 +252,7 @@ class SDE(object):
 
         Returns
         -------
-        paths : (npoints+1, nvars, nsim*2) array
+        paths : (nobs+1, nvars, nsim*2) array
             Simulated data
 
         """
@@ -268,14 +270,16 @@ class SDE(object):
         paths = start * np.ones((npoints + 1, nsim, nvars))
 
         for i in range(npoints):
+            # (nsim, nvars)
             paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
 
+        # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]
-        # Assuming that paths are log prices, then covert to log returns
-        #paths = paths[1:] - paths[:-1]
         if nsim > 1:
+            # (nobs, nsim, nvars)
             return paths
         else:
+            # (nobs, nvars)
             return paths.flatten()
 
     def gmmest(self, theta_start, **kwargs):

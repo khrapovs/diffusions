@@ -17,20 +17,20 @@ def try_simulation():
     mean_v=.5
     kappa=.1
     sigma=.02**.5
-    rho=-.95
+    rho=-.9
     # 2 * self.kappa * self.mean_v - self.sigma**2 > 0
     theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
                              sigma=sigma, rho=rho)
     heston = Heston(theta_true)
     print(theta_true.is_valid())
 
-    x0, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 3
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 3
     npoints = int(nperiods / interval)
-    paths = heston.simulate(x0, interval, ndiscr, npoints, nsim)
+    paths = heston.simulate(start, interval, ndiscr, npoints, nsim)
 
     price = paths[:, 0, 0]
     returns = price[1:] - price[:-1]
-    volatility = paths[:, 0, 1]
+    volatility = paths[1:, 0, 1]
     plot_trajectories(returns, interval)
     plot_trajectories(volatility, interval)
 
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     paths = try_simulation()
     price = paths[:, 0, 0]
     returns = price[1:] - price[:-1]
-    volatility = paths[:, 0, 1]
+    volatility = paths[1:, 0, 1]
