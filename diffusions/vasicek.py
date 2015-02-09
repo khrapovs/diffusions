@@ -53,14 +53,10 @@ class VasicekParam(object):
         # Vector of parameters
         self.theta = [mean, kappa, sigma]
         # AJD parameters
-        mat_k0 = kappa * mean
-        mat_k1 = -kappa
-        mat_h0 = sigma**2
-        mat_h1 = 0
-        self.mat_k0 = np.atleast_1d(mat_k0)
-        self.mat_k1 = np.atleast_2d(mat_k1)
-        self.mat_h0 = np.atleast_2d(mat_h0)
-        self.mat_h1 = np.atleast_3d(mat_h1)
+        self.mat_k0 = kappa * mean
+        self.mat_k1 = -kappa
+        self.mat_h0 = sigma**2
+        self.mat_h1 = 0
 
 
 class Vasicek(SDE):

@@ -31,7 +31,7 @@ def ajd_drift(state, theta):
 
     """
     state = np.atleast_2d(state)
-    return theta.mat_k0 + state.dot(theta.mat_k1.T)
+    return theta.mat_k0 + state.dot(np.transpose(theta.mat_k1))
 
 
 def ajd_diff(state, theta):
@@ -51,8 +51,9 @@ def ajd_diff(state, theta):
 
     """
     state = np.atleast_2d(state)
+    mat_h1 = np.atleast_3d(theta.mat_h1)
     # (nsim, nvars, nvars)
-    var = theta.mat_h0 + np.tensordot(state, theta.mat_h1, axes=(1, 0))
+    var = theta.mat_h0 + np.tensordot(state, mat_h1, axes=(1, 0))
     try:
         return np.linalg.cholesky(var)
     except(np.linalg.LinAlgError):
@@ -75,10 +76,10 @@ def nice_errors(errors, sdim):
         Standardized innovations
 
     """
-    errors -= errors.mean(sdim, keepdims=True)
-    errors /= errors.std(sdim, keepdims=True)
-    errors = np.concatenate((errors, -errors), axis=sdim)
-    return errors
+    if errors.shape[sdim] > 10:
+        errors -= errors.mean(sdim, keepdims=True)
+        errors /= errors.std(sdim, keepdims=True)
+    return np.concatenate((errors, -errors), axis=sdim)
 
 
 def plot_trajectories(paths, interval):

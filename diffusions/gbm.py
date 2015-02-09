@@ -65,14 +65,10 @@ class GBMparam(object):
         # Vector of parameters
         self.theta = [mean, sigma]
         # AJD parameters
-        mat_k0 = mean - sigma**2/2
-        mat_k1 = 0
-        mat_h0 = sigma**2
-        mat_h1 = 0
-        self.mat_k0 = np.atleast_1d(mat_k0)
-        self.mat_k1 = np.atleast_2d(mat_k1)
-        self.mat_h0 = np.atleast_2d(mat_h0)
-        self.mat_h1 = np.atleast_3d(mat_h1)
+        self.mat_k0 = mean - sigma**2/2
+        self.mat_k1 = 0
+        self.mat_h0 = sigma**2
+        self.mat_h1 = 0
 
 
 class GBM(SDE):

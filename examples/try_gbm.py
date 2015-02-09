@@ -17,7 +17,7 @@ def try_gmm():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
+    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 30
     nobs = int(nperiods / interval)
     paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim)
     data = paths[:, 0, 0]
@@ -38,7 +38,7 @@ def try_simulation():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
+    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
     nobs = int(nperiods / interval)
     paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim)
     data = paths[:, 0, 0]

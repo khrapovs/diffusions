@@ -132,7 +132,12 @@ class SDE(object):
         self.paths = None
         self.interval = None
         self.nobs = None
+#        theta_true.mat_k0 = np.atleast_1d(theta_true.mat_k0)
+#        theta_true.mat_k1 = np.atleast_2d(theta_true.mat_k1)
+#        theta_true.mat_h0 = np.atleast_2d(theta_true.mat_h0)
+#        theta_true.mat_h1 = np.atleast_3d(theta_true.mat_h1)
         self.theta_true = theta_true
+
 
     def euler_loc(self, state, theta):
         """Euler location.
@@ -252,7 +257,7 @@ class SDE(object):
 
         Returns
         -------
-        paths : (nobs+1, nvars, nsim*2) array
+        paths : (nobs+1, 2*nsim, nvars) array
             Simulated data
 
         """
@@ -263,6 +268,7 @@ class SDE(object):
         npoints = nobs * ndiscr
 
         self.errors = np.random.normal(size=(npoints, nsim, nvars))
+
         # Standardize the errors
         self.errors = nice_errors(self.errors, 1)
         nsim = self.errors.shape[1]
@@ -276,14 +282,20 @@ class SDE(object):
         # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]
         if nsim > 1:
-            # (nobs, nsim, nvars)
+            # (nobs+1, 2*nsim, nvars)
             return paths
         else:
-            # (nobs, nvars)
+            # (nobs+1, nvars)
             return paths.flatten()
 
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.
+
+        Parameters
+        ----------
+        theta_start : parameter instance
+            Initial parameter values for estimation.
+            Object with mandatory attribute 'theta'.
 
         """
         estimator = GMM(self.momcond)

@@ -70,14 +70,11 @@ class HestonParam(object):
         # Vector of parameters
         self.theta = [mean_r, mean_v, kappa, sigma, rho]
         # AJD parameters
-        mat_k0 = [mean_r, kappa * mean_v]
-        mat_k1 = [[0, -.5], [0, -kappa]]
-        mat_h0 = np.zeros((2, 2))
-        mat_h1 = [np.zeros((2, 2)), [[1, sigma*rho], [sigma*rho, sigma**2]]]
-        self.mat_k0 = np.atleast_1d(mat_k0)
-        self.mat_k1 = np.atleast_2d(mat_k1)
-        self.mat_h0 = np.atleast_2d(mat_h0)
-        self.mat_h1 = np.atleast_3d(mat_h1)
+        self.mat_k0 = [mean_r, kappa * mean_v]
+        self.mat_k1 = [[0, -.5], [0, -kappa]]
+        self.mat_h0 = np.zeros((2, 2))
+        self.mat_h1 = [np.zeros((2, 2)),
+                       [[1, sigma*rho], [sigma*rho, sigma**2]]]
 
     def is_valid(self):
         """Check Feller condition.

@@ -42,16 +42,17 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_nice_errors(self):
         """Test nice errors function."""
 
-        nvars, nobs, nsim = 2, 3, 4
-        size = (nvars, nobs, nsim)
-        sim = 2
-        new_size = (nvars, nobs, 2*nsim)
+        nvars, nobs, nsim = 2, 3, 11
+        sim = 1
+        size = (nobs, nsim, nvars)
+        new_size = (nobs, nsim*2, nvars)
         errors = np.random.normal(size=size)
         treated_errors = nice_errors(errors, sim)
-        self.assertEqual(treated_errors.shape, tuple(new_size))
-        np.testing.assert_array_equal(treated_errors.mean(sim), 0)
+
+        self.assertEqual(treated_errors.shape, new_size)
+        np.testing.assert_almost_equal(treated_errors.mean(sim), 0)
         np.testing.assert_almost_equal(treated_errors.std(sim),
-                                       np.ones((nvars, nobs)))
+                                       np.ones((nobs, nvars)))
 
     def test_ajd_drift_gbm(self):
         """Test AJD drift function for GBM model."""
@@ -228,6 +229,11 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 
+        nsim = 1
+        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
+
+        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+
     def test_vasicek_simulation(self):
         """Test simulation of the Vasicek model."""
 
@@ -238,6 +244,20 @@ class SimulationTestCase(ut.TestCase):
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
         paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
+
+        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+
+    def test_heston_simulation(self):
+        """Test simulation of the Heston model."""
+
+        nvars = 2
+        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+                            sigma=sigma, rho=rho)
+        heston = Heston(param)
+        start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
+        nobs = int(nperiods / interval)
+        paths = heston.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 
