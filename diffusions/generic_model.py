@@ -132,12 +132,7 @@ class SDE(object):
         self.paths = None
         self.interval = None
         self.nobs = None
-#        theta_true.mat_k0 = np.atleast_1d(theta_true.mat_k0)
-#        theta_true.mat_k1 = np.atleast_2d(theta_true.mat_k1)
-#        theta_true.mat_h0 = np.atleast_2d(theta_true.mat_h0)
-#        theta_true.mat_h1 = np.atleast_3d(theta_true.mat_h1)
         self.theta_true = theta_true
-
 
     def euler_loc(self, state, theta):
         """Euler location.

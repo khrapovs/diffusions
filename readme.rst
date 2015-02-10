@@ -5,9 +5,9 @@
 	:target: https://readthedocs.org/projects/diffusions/?badge=latest
 	:alt: Documentation Status
 
-Stochastic Diffusions
-=====================
+Affine Diffusions
+=================
 
-Simulation and estimation of Stochastic Diffusion models.
+Simulation and estimation of Affine Diffusion models.
 
 `Documentation <http://diffusions.readthedocs.org/en/latest/>`_

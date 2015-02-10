@@ -14,7 +14,6 @@ from diffusions import GBM, GBMparam
 from diffusions import Vasicek, VasicekParam
 from diffusions import CIR, CIRparam
 from diffusions import Heston, HestonParam
-from diffusions import SDE
 from diffusions import nice_errors, ajd_drift, ajd_diff
 
 
