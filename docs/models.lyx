@@ -322,7 +322,7 @@ r_{t,h}\sim N\left(\left(\mu-\frac{1}{2}\sigma^{2}\right)h,\sigma^{2}h\right).
 \end_layout
 
 \begin_layout Subsubsection
-Integrated moments
+Moments
 \end_layout
 
 \begin_layout Standard
@@ -484,6 +484,153 @@ r_{t+h}|r_{t}\sim N\left(r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\sig
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Cox-Ingersoll-Ross model
+\end_layout
+
+\begin_layout Subsubsection
+The model
+\end_layout
+
+\begin_layout Example
+Cox, Ingersoll, and Ross (1985; Ecta) developed a theory of the term structure
+ of interest rates in which the instantaneous short-term rate of interest,
+ 
+\begin_inset Formula $r$
+\end_inset
+
+, follows the mean reverting diffusion
+\begin_inset Formula 
+\[
+dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma\sqrt{r_{t}}dW_{t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
+Since the model belongs to affine class, we have
+\begin_inset Formula 
+\[
+K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=0,\quad H_{1}=\sigma^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+The solution
+\end_layout
+
+\begin_layout Standard
+Using Ito's lemma for 
+\begin_inset Formula $r_{t}e^{\kappa t}$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+r_{t+h}=r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right)+\sigma\int_{t}^{t+h}e^{-\kappa\left(t+h-u\right)}\sqrt{r_{u}}dW_{u}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Moments
+\end_layout
+
+\begin_layout Standard
+This implies that
+\begin_inset Formula 
+\begin{eqnarray*}
+E_{t}\left[r_{t+h}\right] & = & r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\\
+V_{t}\left[r_{t+h}\right] & = & \frac{\sigma^{2}}{\kappa}r_{t}e^{-\kappa h}\left(1-e^{-\kappa h}\right)+\frac{\sigma^{2}}{2\kappa}\left(1-e^{-\kappa h}\right)^{2},
+\end{eqnarray*}
+
+\end_inset
+
+since
+\begin_inset Formula 
+\[
+\begin{aligned}V_{t}\left[r_{t+h}\right]= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}E_{t}\left[r_{u}\right]du\\
+= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}\left(r_{t}e^{-\kappa\left(u-t\right)}+\mu\left(1-e^{-\kappa\left(u-t\right)}\right)\right)du.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It can be shown that the transition density is known in closed form:
+\begin_inset Formula 
+\[
+f\left(\left.r_{t+h}\right|r_{t};\theta\right)=ce^{-u-v}\left(\frac{u}{v}\right)^{q/2}I_{q}\left(2\sqrt{uv}\right),
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+c=\frac{2\kappa}{\sigma^{2}\left(1-e^{-\kappa h}\right)},\quad u=cr_{t}e^{-\kappa h},\quad v=cr_{t+h},\quad q=\frac{2\kappa\mu}{\sigma^{2}}-1,
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $I_{q}$
+\end_inset
+
+ is the modified Bessel function of the first kind of order 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ Sometimes, it is useful to work with a transformation 
+\begin_inset Formula $x_{t+h}=2cr_{t+h}$
+\end_inset
+
+.
+ We can derive that the transition density of 
+\begin_inset Formula $x_{t+h}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+f\left(\left.x_{t+h}\right|x_{t};\theta\right)=f\left(\left.2cr_{t+h}\right|2cr_{t};\theta\right)=\frac{1}{2c}f\left(\left.r_{t+h}\right|r_{t};\theta\right),
+\]
+
+\end_inset
+
+which is a noncentral 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ with 
+\begin_inset Formula $2q+2$
+\end_inset
+
+ degrees of freedom and noncentrality parameter 
+\begin_inset Formula $2u$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
