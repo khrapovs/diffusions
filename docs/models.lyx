@@ -38,6 +38,7 @@
 \pdf_colorlinks true
 \pdf_backref false
 \pdf_pdfusetitle true
+\pdf_quoted_options "linkcolor=red, citecolor=blue, urlcolor=blue, filecolor=blue"
 \papersize default
 \use_geometry true
 \use_package amsmath 1
@@ -84,8 +85,57 @@
 
 \begin_body
 
+\begin_layout Title
+
+\shape smallcaps
+Affine Diffusion Models
+\shape default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Python implementation can be found here: 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/khrapovs/diffusions"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Stanislav Khrapov
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Address: New Economic School, 100A Novaya Street, Skolkovo, Moscow, 143026
+ Russia.
+ E-mail: 
+\begin_inset CommandInset href
+LatexCommand href
+target "khrapovs@gmail.com"
+type "mailto:"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Stochastic diffusion models
+Introduction
 \end_layout
 
 \begin_layout Subsection
@@ -244,6 +294,10 @@ g\left(y_{t,t+h};\theta\right)=A\left(L\right)y_{t,t+h}=\sum_{j=0}^{L}a_{l}y_{t-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Models
 \end_layout
 
 \begin_layout Subsection
@@ -494,7 +548,7 @@ Cox-Ingersoll-Ross model
 The model
 \end_layout
 
-\begin_layout Example
+\begin_layout Standard
 Cox, Ingersoll, and Ross (1985; Ecta) developed a theory of the term structure
  of interest rates in which the instantaneous short-term rate of interest,
  
