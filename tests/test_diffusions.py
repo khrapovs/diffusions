@@ -12,6 +12,7 @@ import numpy as np
 
 from diffusions import GBM, GBMparam
 from diffusions import Vasicek, VasicekParam
+from diffusions import CIR, CIRparam
 from diffusions import Heston, HestonParam
 from diffusions import SDE
 from diffusions import nice_errors, ajd_drift, ajd_diff
@@ -106,6 +107,33 @@ class HelperFunctionsTestCase(ut.TestCase):
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
+    def test_ajd_drift_cir(self):
+        """Test AJD drift function for CIR model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = CIRparam(mean, kappa, sigma)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state = np.ones(size)
+        drift = kappa * (mean - state)
+
+        self.assertEqual(ajd_drift(state, param).shape, size)
+        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+
+    def test_ajd_diff_cir(self):
+        """Test AJD diffusion function for CIR model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = CIRparam(mean, kappa, sigma)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state_val = 4
+        state = np.ones(size)*state_val
+        diff = sigma * state_val**.5 * np.ones((nsim, nvars, nvars))
+
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
 
@@ -186,6 +214,28 @@ class SimulationTestCase(ut.TestCase):
         self.assertEqual(new_state.shape, size)
         np.testing.assert_array_equal(new_state, new_state_compute)
 
+    def test_cir_simupdate(self):
+        """Test simulation update of the CIR model."""
+
+        mean, kappa, sigma = 1.5, 1, .2
+        param = CIRparam(mean, kappa, sigma)
+        cir = CIR(param)
+        cir.ndiscr, cir.interval = 2, .5
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state_val = 4
+        state = np.ones(size) * state_val
+        error = np.zeros(size)
+
+        new_state = cir.update(state, error)
+        loc = kappa * (mean - state)
+        scale = np.ones((nsim, nvars, nvars)) * sigma * state**.5
+        delta = cir.interval / cir.ndiscr
+        new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
+
+        self.assertEqual(new_state.shape, size)
+        np.testing.assert_array_equal(new_state, new_state_compute)
+
     def test_heston_simupdate(self):
         """Test simulation update of the Heston model."""
 
@@ -244,6 +294,19 @@ class SimulationTestCase(ut.TestCase):
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
         paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
+
+        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+
+    def test_cir_simulation(self):
+        """Test simulation of the CIR model."""
+
+        nvars = 1
+        mean, kappa, sigma = 1.5, .1, .2
+        param = CIRparam(mean, kappa, sigma)
+        cir = CIR(param)
+        start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
+        nobs = int(nperiods / interval)
+        paths = cir.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
 

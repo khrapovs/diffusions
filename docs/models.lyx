@@ -509,7 +509,11 @@ dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma\sqrt{r_{t}}dW_{t}.
 
 \end_inset
 
+Feller condition for positivity of the process is 
+\begin_inset Formula $\kappa\mu>\frac{1}{2}\sigma^{2}$
+\end_inset
 
+.
 \end_layout
 
 \begin_layout Subsubsection
