@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Geometric Brownian Motion (GBM) model
-=====================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Suppose that :math:`S_{t}` evolves according to
 

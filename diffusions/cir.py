@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Cox-Ingersoll-Ross (CIR) model
-==============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Suppose that :math:`r_{t}` evolves according to
 

@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
+Introduction
+============
+
 Affine Diffusion
-================
+~~~~~~~~~~~~~~~~
 
 A jump-diffusion process is a Markov process solving the stochastic
 differential equationd
@@ -46,7 +49,7 @@ of :math:`Y` as well as the effects of any discounting.
 
 
 Discretization and moments
-==========================
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Given the generic continuous-time diffusion model
 
@@ -112,8 +115,8 @@ class SDE(object):
 
     Attributes
     ----------
-    paths : (nvars, nobs, nsim) array
-        Simulated observations
+    theta_true : parameter instance
+        True parameters used for simulation of the data
 
     Methods
     -------
@@ -129,7 +132,6 @@ class SDE(object):
             True parameters used for simulation of the data
 
         """
-        self.paths = None
         self.interval = None
         self.nobs = None
         self.theta_true = theta_true

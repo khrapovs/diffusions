@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Heston model for stochastic volatility
-======================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The model is
 

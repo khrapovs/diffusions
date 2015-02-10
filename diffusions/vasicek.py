@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Vasicek model for interest rates
-================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Suppose that :math:`r_{t}` evolves according to
 
