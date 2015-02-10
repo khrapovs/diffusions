@@ -13,9 +13,9 @@ from diffusions.helper_functions import plot_trajectories, plot_final_distr
 
 
 def try_simulation():
-    mean, kappa, sigma = .5, .1, .2
-    theta_true = CIRparam(mean, kappa, sigma)
-    # 2 * kappa * mean - sigma**2 > 0
+    mean, kappa, eta = .5, .1, .2
+    theta_true = CIRparam(mean, kappa, eta)
+    # 2 * kappa * mean - eta**2 > 0
     print(theta_true.is_valid())
     cir = CIR(theta_true)
 

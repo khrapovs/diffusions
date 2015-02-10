@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
-Geometric Brownian Motion
-=========================
+Geometric Brownian Motion (GBM) model
+=====================================
 
 Suppose that :math:`S_{t}` evolves according to
 

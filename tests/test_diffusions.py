@@ -84,8 +84,8 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_drift_vasicek(self):
         """Test AJD drift function for Vasicek model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = VasicekParam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
@@ -97,12 +97,12 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_diff_vasicek(self):
         """Test AJD diffusion function for Vasicek model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = VasicekParam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
-        diff = np.ones((nsim, nvars, nvars)) * sigma
+        diff = np.ones((nsim, nvars, nvars)) * eta
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
@@ -110,8 +110,8 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_drift_cir(self):
         """Test AJD drift function for CIR model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = CIRparam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = CIRparam(mean, kappa, eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
@@ -123,13 +123,13 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_diff_cir(self):
         """Test AJD diffusion function for CIR model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = CIRparam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = CIRparam(mean, kappa, eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state_val = 4
         state = np.ones(size)*state_val
-        diff = sigma * state_val**.5 * np.ones((nsim, nvars, nvars))
+        diff = eta * state_val**.5 * np.ones((nsim, nvars, nvars))
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
@@ -137,9 +137,9 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
 
-        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.5
+        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2, -.5
         param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
-                            sigma=sigma, rho=rho)
+                            eta=eta, rho=rho)
         nvars, nsim = 2, 3
         size = (nsim, nvars)
         state = np.ones(size)
@@ -154,14 +154,14 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_diff_heston(self):
         """Test AJD diffusion function for Heston model."""
 
-        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2, -.0
+        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2, -.0
         param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
-                            sigma=sigma, rho=rho)
+                            eta=eta, rho=rho)
         nvars, nsim = 2, 3
         size = (nsim, nvars)
         state = np.ones(size)
         diff = np.ones((nsim, nvars, nvars))
-        var = np.array([[1, sigma*rho], [sigma*rho, sigma**2]])
+        var = np.array([[1, eta*rho], [eta*rho, eta**2]])
         var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
         diff = np.linalg.cholesky(var)
 
@@ -196,8 +196,8 @@ class SimulationTestCase(ut.TestCase):
     def test_vasicek_simupdate(self):
         """Test simulation update of the Vasicek model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = VasicekParam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, eta)
         vasicek = Vasicek(param)
         vasicek.ndiscr, vasicek.interval = 2, .5
         nvars, nsim = 1, 2
@@ -207,7 +207,7 @@ class SimulationTestCase(ut.TestCase):
 
         new_state = vasicek.update(state, error)
         loc = kappa * (mean - state)
-        scale = np.ones((nsim, nvars, nvars)) * sigma
+        scale = np.ones((nsim, nvars, nvars)) * eta
         delta = vasicek.interval / vasicek.ndiscr
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
@@ -217,8 +217,8 @@ class SimulationTestCase(ut.TestCase):
     def test_cir_simupdate(self):
         """Test simulation update of the CIR model."""
 
-        mean, kappa, sigma = 1.5, 1, .2
-        param = CIRparam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, 1, .2
+        param = CIRparam(mean, kappa, eta)
         cir = CIR(param)
         cir.ndiscr, cir.interval = 2, .5
         nvars, nsim = 1, 2
@@ -229,7 +229,7 @@ class SimulationTestCase(ut.TestCase):
 
         new_state = cir.update(state, error)
         loc = kappa * (mean - state)
-        scale = np.ones((nsim, nvars, nvars)) * sigma * state**.5
+        scale = np.ones((nsim, nvars, nvars)) * eta * state**.5
         delta = cir.interval / cir.ndiscr
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
@@ -239,9 +239,9 @@ class SimulationTestCase(ut.TestCase):
     def test_heston_simupdate(self):
         """Test simulation update of the Heston model."""
 
-        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2**.5, -.5
+        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
         param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
-                            sigma=sigma, rho=rho)
+                            eta=eta, rho=rho)
         heston = Heston(param)
         heston.ndiscr, heston.interval = 2, .5
         nvars, nsim = 2, 3
@@ -254,7 +254,7 @@ class SimulationTestCase(ut.TestCase):
         drift_v = kappa * (mean_v - state[:, 1])
         loc = np.vstack([drift_r, drift_v]).T
 
-        var = np.array([[1, sigma*rho], [sigma*rho, sigma**2]])
+        var = np.array([[1, eta*rho], [eta*rho, eta**2]])
         var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
         scale = np.linalg.cholesky(var)
 
@@ -288,8 +288,8 @@ class SimulationTestCase(ut.TestCase):
         """Test simulation of the Vasicek model."""
 
         nvars = 1
-        mean, kappa, sigma = 1.5, .1, .2
-        param = VasicekParam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, .1, .2
+        param = VasicekParam(mean, kappa, eta)
         vasicek = Vasicek(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
@@ -301,8 +301,8 @@ class SimulationTestCase(ut.TestCase):
         """Test simulation of the CIR model."""
 
         nvars = 1
-        mean, kappa, sigma = 1.5, .1, .2
-        param = CIRparam(mean, kappa, sigma)
+        mean, kappa, eta = 1.5, .1, .2
+        param = CIRparam(mean, kappa, eta)
         cir = CIR(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
@@ -314,9 +314,9 @@ class SimulationTestCase(ut.TestCase):
         """Test simulation of the Heston model."""
 
         nvars = 2
-        mean_r, mean_v, kappa, sigma, rho = .01, .2, 1.5, .2**.5, -.5
+        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
         param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
-                            sigma=sigma, rho=rho)
+                            eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
         nobs = int(nperiods / interval)

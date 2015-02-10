@@ -7,7 +7,7 @@ Vasicek model for interest rates
 Suppose that :math:`r_{t}` evolves according to
 
 .. math::
-    dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma dW_{t}.
+    dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\eta dW_{t}.
 
 """
 from __future__ import print_function, division
@@ -29,12 +29,12 @@ class VasicekParam(object):
         Mean of the process
     kappa : float
         Mean reversion speed
-    sigma : float
+    eta : float
         Instantaneous standard deviation
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, sigma=.1):
+    def __init__(self, mean=.5, kappa=1.5, eta=.1):
         """Initialize class.
 
         Parameters
@@ -43,19 +43,19 @@ class VasicekParam(object):
             Mean of the process
         kappa : float
             Mean reversion speed
-        sigma : float
+        eta : float
             Instantaneous standard deviation
 
         """
         self.mean = mean
         self.kappa = kappa
-        self.sigma = sigma
+        self.eta = eta
         # Vector of parameters
-        self.theta = [mean, kappa, sigma]
+        self.theta = [mean, kappa, eta]
         # AJD parameters
         self.mat_k0 = kappa * mean
         self.mat_k1 = -kappa
-        self.mat_h0 = sigma**2
+        self.mat_h0 = eta**2
         self.mat_h1 = 0
 
 
@@ -111,7 +111,7 @@ class Vasicek(SDE):
             Diffusion value
 
         """
-        return theta.sigma
+        return theta.eta
 
 
 if __name__ == '__main__':

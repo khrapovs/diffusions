@@ -13,8 +13,8 @@ from diffusions.helper_functions import plot_trajectories, plot_final_distr
 
 
 def try_simulation():
-    mean, kappa, sigma = .5, .1, .2
-    theta_true = VasicekParam(mean, kappa, sigma)
+    mean, kappa, eta = .5, .1, .2
+    theta_true = VasicekParam(mean, kappa, eta)
     vasicek = Vasicek(theta_true)
 
     x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3

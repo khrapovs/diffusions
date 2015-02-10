@@ -16,11 +16,11 @@ def try_simulation():
     mean_r=.0
     mean_v=.5
     kappa=.1
-    sigma=.02**.5
+    eta=.02**.5
     rho=-.9
-    # 2 * self.kappa * self.mean_v - self.sigma**2 > 0
+    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
-                             sigma=sigma, rho=rho)
+                             eta=eta, rho=rho)
     heston = Heston(theta_true)
     print(theta_true.is_valid())
 
