@@ -261,6 +261,8 @@ class SDE(object):
             Simulated data
 
         """
+        if np.size(self.theta_true.mat_k0) != np.size(start):
+            raise ValueError('Start for paths is of wrong dimension!')
         self.interval = interval
         self.nobs = nobs
         self.ndiscr = ndiscr

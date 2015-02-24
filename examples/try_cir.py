@@ -6,10 +6,10 @@ Generic Model
 """
 from __future__ import print_function, division
 
-#import numpy as np
+import seaborn as sns
 
 from diffusions import CIR, CIRparam
-from diffusions import plot_trajectories, plot_final_distr
+from diffusions import plot_trajectories, plot_final_distr, plot_realized
 
 
 def try_simulation():
@@ -42,7 +42,21 @@ def try_marginal():
     plot_final_distr(data)
 
 
+def try_sim_realized():
+    mean, kappa, eta = .5, .1, .2
+    theta_true = CIRparam(mean, kappa, eta)
+    cir = CIR(theta_true)
+
+    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    returns, rvar = cir.sim_realized(start, interval, ndiscr,
+                                         nperiods, nsim, diff=0)
+
+    plot_realized(returns, rvar)
+
+
 if __name__ == '__main__':
 
+    sns.set_context('notebook')
     try_simulation()
     try_marginal()
+    try_sim_realized()

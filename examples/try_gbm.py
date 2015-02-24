@@ -71,7 +71,8 @@ def try_sim_realized():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_simulation()
-#    try_marginal()
-#    try_gmm()
+    try_simulation()
+    try_marginal()
     try_sim_realized()
+
+    try_gmm()

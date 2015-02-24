@@ -287,6 +287,10 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
+        fun = lambda: gbm.simulate([1, 1], interval, ndiscr,
+                                   nobs, nsim, diff=0)
+        self.assertRaises(ValueError, fun)
+
     def test_vasicek_simulation(self):
         """Test simulation of the Vasicek model."""
 
@@ -300,6 +304,11 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
+        fun = lambda: vasicek.simulate([1, 1], interval, ndiscr,
+                                       nobs, nsim, diff=0)
+
+        self.assertRaises(ValueError, fun)
+
     def test_cir_simulation(self):
         """Test simulation of the CIR model."""
 
@@ -312,6 +321,11 @@ class SimulationTestCase(ut.TestCase):
         paths = cir.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        fun = lambda: cir.simulate([1, 1], interval, ndiscr,
+                                   nobs, nsim, diff=0)
+
+        self.assertRaises(ValueError, fun)
 
     def test_heston_simulation(self):
         """Test simulation of the Heston model."""
@@ -330,6 +344,10 @@ class SimulationTestCase(ut.TestCase):
         paths = heston.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        fun = lambda: heston.simulate(0, interval, ndiscr, nobs, nsim, diff=0)
+
+        self.assertRaises(ValueError, fun)
 
     def test_gbm_sim_realized(self):
         """Test simulation of realized values of the GBM model."""
