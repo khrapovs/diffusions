@@ -10,8 +10,8 @@ import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 
-__all__ = ['nice_errors', 'plot_trajectories', 'plot_final_distr',
-           'ajd_drift', 'ajd_diff']
+__all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
+           'plot_trajectories', 'plot_final_distr', 'plot_realized']
 
 
 def ajd_drift(state, theta):
@@ -114,4 +114,23 @@ def plot_final_distr(paths):
     sns.kdeplot(paths[-1])
     plt.xlabel('x')
     plt.ylabel('f')
+    plt.show()
+
+
+def plot_realized(returns, rvar):
+    """Plot realized returns and volatility.
+
+    Parameters
+    ----------
+    returns : array
+        Returns
+    rvar : array
+        Realized variance
+
+    """
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(7, 6))
+    axes[0].plot(returns, label='Returns')
+    axes[1].plot(rvar**.5, label='Realized variance')
+    axes[0].legend()
+    axes[1].legend()
     plt.show()

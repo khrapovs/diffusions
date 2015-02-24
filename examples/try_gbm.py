@@ -6,10 +6,10 @@ Generic Model
 """
 from __future__ import print_function, division
 
-#import numpy as np
+import seaborn as sns
 
 from diffusions import GBM, GBMparam
-from diffusions import plot_trajectories, plot_final_distr
+from diffusions import plot_trajectories, plot_final_distr, plot_realized
 
 
 def try_simulation():
@@ -17,9 +17,9 @@ def try_simulation():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
+    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, 0, 0]
 
     plot_trajectories(data, interval)
@@ -30,9 +30,9 @@ def try_marginal():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 20
+    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 20
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, :, 0]
 
     plot_final_distr(data/interval)
@@ -43,9 +43,9 @@ def try_gmm():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 1
+    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 1
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(x0, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, 0, 0]
 
     plot_trajectories(data, interval)
@@ -56,8 +56,22 @@ def try_gmm():
     res.print_results()
 
 
+def try_sim_realized():
+    mean, sigma = .05, .2
+    theta_true = GBMparam(mean, sigma)
+    gbm = GBM(theta_true)
+
+    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    returns, rvar = gbm.sim_realized(start, interval, ndiscr,
+                                     nperiods, nsim, diff=0)
+
+    plot_realized(returns, rvar)
+
+
 if __name__ == '__main__':
 
-    try_simulation()
-    try_marginal()
-    try_gmm()
+    sns.set_context('notebook')
+#    try_simulation()
+#    try_marginal()
+#    try_gmm()
+    try_sim_realized()

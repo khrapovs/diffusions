@@ -285,7 +285,7 @@ class SDE(object):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(self, start, interval=1/80, ndiscr=10,
+    def sim_realized(self, start, interval=1/80, ndiscr=1,
                      nperiods=500, nsim=1, diff=None):
         """Simulate observations from the model.
 
@@ -309,16 +309,16 @@ class SDE(object):
         -------
         returns : (nperiods, ) array
             Simulated returns
-        realized_vol : (nperiods, ) array
-            Simulated realized volatility
+        rvar : (nperiods, ) array
+            Simulated realized variance
 
         """
         nobs = int(nperiods / interval)
         paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
         returns = paths[:, 0, 0].reshape((nperiods, int(nobs / nperiods)))
-        rvol = returns.var(1)
+        rvar = (returns**2).sum(1)
         returns = returns.sum(1)
-        return returns, rvol
+        return returns, rvar
 
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.
