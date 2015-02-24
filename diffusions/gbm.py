@@ -231,7 +231,7 @@ class GBM(SDE):
                          - 2 * sigma * self.interval**2
                          * (mean - sigma**2/2)], [0, 0]])
 
-    def realized_depvar(self, ret, rvar):
+    def realized_depvar(self, data):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -244,18 +244,19 @@ class GBM(SDE):
 
         Returns
         -------
-        array
+        (3, nobs) array
             Dependend variables
 
         """
+        ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 
-    def realized_const(self, param):
+    def realized_const(self, theta):
         """Intercept in the realized moment conditions.
 
         Parameters
         ----------
-        param : parameter instance
+        theta : array
             Parameters
 
         Returns
@@ -264,9 +265,73 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        return np.array([(param.mean - param.sigma**2/2) * self.interval,
-                         param.sigma**2 * self.interval,
-                         param.sigma**4 * self.interval**2])
+        mean, sigma = theta
+        return np.array([(mean - sigma**2/2) * self.interval,
+                         sigma**2 * self.interval,
+                         sigma**4 * self.interval**2])
+
+    def drealized_const(self, theta):
+        """Derivative of the intercept in the realized moment conditions.
+
+        Parameters
+        ----------
+        theta : array
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        return nd.Jacobian(self.realized_const)(theta)
+
+    def instruments(self, data, instrlag=1):
+        """Create an array of instruments.
+
+        Parameters
+        ----------
+        data : (2, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        (ninstr, nobs - instrlag) array
+            Derivatives of the coefficient
+
+        """
+        return np.vstack([np.ones_like(data[0]),
+                          lagmat(data.T, maxlag=instrlag).T])[:, instrlag:]
+
+    def realized_mom(self, theta, data=None, instrlag=1):
+        """Moment function.
+
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+        data : (2, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        moments : (nobs, nmoms) array
+            Moment restrictions
+        dmoments : (nmoms, nparams) array
+            Average derivative of the moment restrictions
+
+        """
+        ret, rvar = data
+        # (nobs-instrlag, 3) array
+        error = (self.realized_depvar(data).T[instrlag:]
+            - self.realized_const(theta))
+        # (ninstr, nobs - instrlag)
+        instruments = self.instruments(data, instrlag=instrlag)
+
 
     def momcond(self, theta, data=None, instrlag=1):
         """Moment function.

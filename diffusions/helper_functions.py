@@ -11,7 +11,8 @@ import matplotlib.pylab as plt
 import seaborn as sns
 
 __all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
-           'plot_trajectories', 'plot_final_distr', 'plot_realized']
+           'plot_trajectories', 'plot_final_distr', 'plot_realized',
+           'columnwise_prod']
 
 
 def ajd_drift(state, theta):
@@ -134,3 +135,38 @@ def plot_realized(returns, rvar):
     axes[0].legend()
     axes[1].legend()
     plt.show()
+
+
+def columnwise_prod(left, right):
+    """Columnwise kronker product.
+
+    Parameters
+    ----------
+    left : (n, m) array
+    right : (n, p) array
+
+    Returns
+    -------
+    (n, m*p) array
+        [left * right[:, 0], ..., left * right[:, -1]]
+
+    Example
+    -------
+    >>> left = np.arange(6).reshape((3,2))
+    >>> left
+    array([[0, 1],
+           [2, 3],
+           [4, 5]])
+    >>> right = np.arange(9).reshape((3,3))
+    >>> right
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> columnwise_prod(left, right)
+    array([[ 0,  0,  0,  1,  0,  2],
+           [ 6,  9,  8, 12, 10, 15],
+           [24, 30, 28, 35, 32, 40]])
+
+    """
+    prod = left[:, np.newaxis, :] * right[:, :, np.newaxis]
+    return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))

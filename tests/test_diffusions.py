@@ -14,7 +14,7 @@ from diffusions import GBM, GBMparam
 from diffusions import Vasicek, VasicekParam
 from diffusions import CIR, CIRparam
 from diffusions import Heston, HestonParam
-from diffusions import nice_errors, ajd_drift, ajd_diff
+from diffusions import nice_errors, ajd_drift, ajd_diff, columnwise_prod
 
 
 class SDEParameterTestCase(ut.TestCase):
@@ -166,6 +166,18 @@ class HelperFunctionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+    def test_columnwise_prod(self):
+        """Test columnwise product."""
+        left = np.arange(6).reshape((3, 2))
+        right = np.arange(9).reshape((3, 3))
+        prod = []
+        for i in range(right.shape[1]):
+            prod.append(left.T * right[:, i])
+        prod = np.vstack(prod).T
+        expected = columnwise_prod(left, right)
+
+        np.testing.assert_array_equal(prod, expected)
 
 
 class SimulationTestCase(ut.TestCase):
@@ -414,13 +426,13 @@ class RealizedMomentsTestCase(ut.TestCase):
         gbm.interval = .5
 
         nperiods = 10
-        ret = np.arange(nperiods)
-        rvar = np.arange(nperiods)
-        depvar = gbm.realized_depvar(ret, rvar)
+        data = np.ones((2, nperiods))
+
+        depvar = gbm.realized_depvar(data)
 
         self.assertEqual(depvar.shape, (3, nperiods))
 
-        const = gbm.realized_const(param)
+        const = gbm.realized_const(param.theta)
 
         self.assertEqual(const.shape, (3, ))
 
