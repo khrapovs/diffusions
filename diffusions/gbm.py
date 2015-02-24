@@ -32,6 +32,7 @@ import numdifftools as nd
 from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
+from .helper_functions import columnwise_prod
 
 __all__ = ['GBM', 'GBMparam']
 
@@ -280,7 +281,7 @@ class GBM(SDE):
 
         Returns
         -------
-        array
+        (nparams, nintercepts) array
             Derivatives of the coefficient
 
         """
@@ -326,12 +327,21 @@ class GBM(SDE):
 
         """
         ret, rvar = data
-        # (nobs-instrlag, 3) array
+        # (nobs - instrlag, 3) array
         error = (self.realized_depvar(data).T[instrlag:]
             - self.realized_const(theta))
-        # (ninstr, nobs - instrlag)
-        instruments = self.instruments(data, instrlag=instrlag)
+        # (nobs - instrlag, ninstr)
+        instr = self.instruments(data, instrlag=instrlag).T
+        # (nobs - instrlag, 3 * ninstr = nmoms)
+        moms = columnwise_prod(error, instr)
+        # (nintercepts, nparams)
+        dmoms = self.drealized_const(theta)
+        dmoments = []
+        for minstr in instr.mean(0):
+            dmoments.append(dmoms * minstr)
+        dmoments = np.vstack(dmoments)
 
+        return moms, dmoments
 
     def momcond(self, theta, data=None, instrlag=1):
         """Moment function.

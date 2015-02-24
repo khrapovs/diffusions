@@ -427,6 +427,7 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         nperiods = 10
         data = np.ones((2, nperiods))
+        instrlag = 2
 
         depvar = gbm.realized_depvar(data)
 
@@ -435,6 +436,18 @@ class RealizedMomentsTestCase(ut.TestCase):
         const = gbm.realized_const(param.theta)
 
         self.assertEqual(const.shape, (3, ))
+
+        instr = gbm.instruments(data, instrlag=instrlag)
+        ninstr = 1 + data.shape[0] * instrlag
+
+        self.assertEqual(instr.shape, (ninstr, nperiods - instrlag))
+
+        rmom, drmom = gbm.realized_mom(param.theta, data=data,
+                                       instrlag=instrlag)
+        nmoms = 3 * ninstr
+
+        self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
+        self.assertEqual(drmom.shape, (nmoms, np.size(param.theta)))
 
 
 if __name__ == '__main__':
