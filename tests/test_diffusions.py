@@ -403,5 +403,27 @@ class SimulationTestCase(ut.TestCase):
         self.assertEqual(rvol.shape, (nperiods, ))
 
 
+class RealizedMomentsTestCase(ut.TestCase):
+    """Test realized moments."""
+
+    def test_gbm_relized_mom(self):
+        """Test realized moments of GBM model."""
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        gbm = GBM(param)
+        gbm.interval = .5
+
+        nperiods = 10
+        ret = np.arange(nperiods)
+        rvar = np.arange(nperiods)
+        depvar = gbm.realized_depvar(ret, rvar)
+
+        self.assertEqual(depvar.shape, (3, nperiods))
+
+        const = gbm.realized_const(param)
+
+        self.assertEqual(const.shape, (3, ))
+
+
 if __name__ == '__main__':
     ut.main()

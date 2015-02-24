@@ -231,6 +231,43 @@ class GBM(SDE):
                          - 2 * sigma * self.interval**2
                          * (mean - sigma**2/2)], [0, 0]])
 
+    def realized_depvar(self, ret, rvar):
+        """Array of the left-hand side variables
+        in realized moment conditions.
+
+        Parameters
+        ----------
+        ret : (nobs, ) array
+            Returns
+        rvar : (nobs, ) array
+            Realized variance
+
+        Returns
+        -------
+        array
+            Dependend variables
+
+        """
+        return np.vstack([ret, rvar, rvar**2])
+
+    def realized_const(self, param):
+        """Intercept in the realized moment conditions.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Parameters
+
+        Returns
+        -------
+        array
+            Derivatives of the coefficient
+
+        """
+        return np.array([(param.mean - param.sigma**2/2) * self.interval,
+                         param.sigma**2 * self.interval,
+                         param.sigma**4 * self.interval**2])
+
     def momcond(self, theta, data=None, instrlag=1):
         """Moment function.
 

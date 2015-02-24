@@ -513,7 +513,7 @@ Suppose we also have available ``intraday'' observations
 Hence, the moment function is instead
 \begin_inset Formula 
 \[
-g\left(r_{t,h};\theta\right)=X_{t,h}-C=\left[\begin{array}{c}
+g\left(r_{t,h},RV_{t,h};\theta\right)=X_{t,h}-C=\left[\begin{array}{c}
 r_{t,h}\\
 RV_{t,h}\\
 RV_{t,h}^{2}
