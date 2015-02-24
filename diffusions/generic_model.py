@@ -103,7 +103,7 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from mygmm import GMM
+from ..mygmm import GMM
 from .helper_functions import nice_errors, ajd_drift, ajd_diff
 
 __all__ = ['SDE']
@@ -236,7 +236,7 @@ class SDE(object):
 
         return new_state
 
-    def simulate(self, start, interval, ndiscr, nobs, nsim):
+    def simulate(self, start, interval, ndiscr, nobs, nsim, diff=None):
         """Simulate observations from the model.
 
         Parameters
@@ -251,10 +251,13 @@ class SDE(object):
             Number of points to simulate in one series
         nsim : int
             Number of time series to simulate
+        diff : int
+            Dimensions which should be differentiated,
+            i.e. return = price[1:] - price[:-1]
 
         Returns
         -------
-        paths : (nobs+1, 2*nsim, nvars) array
+        paths : (nobs, 2*nsim, nvars) array
             Simulated data
 
         """
@@ -278,12 +281,44 @@ class SDE(object):
 
         # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]
-        if nsim > 1:
-            # (nobs+1, 2*nsim, nvars)
-            return paths
-        else:
-            # (nobs+1, nvars)
-            return paths.flatten()
+        if diff is not None:
+            paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
+        return paths[1:]
+
+    def sim_realized(self, start, interval=1/80, ndiscr=10,
+                     nperiods=500, nsim=1, diff=None):
+        """Simulate observations from the model.
+
+        Parameters
+        ----------
+        start : array_like
+            Starting value for simulation
+        interval : float
+            Interval length
+        ndiscr : int
+            Number of Euler discretization points inside unit interval
+        nperiods : int
+            Number of points to simulate in one series
+        nsim : int
+            Number of time series to simulate
+        diff : int
+            Dimensions which should be differentiated,
+            i.e. return = price[1:] - price[:-1]
+
+        Returns
+        -------
+        returns : (nperiods, ) array
+            Simulated returns
+        realized_vol : (nperiods, ) array
+            Simulated realized volatility
+
+        """
+        nobs = int(nperiods / interval)
+        paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
+        returns = paths[:, 0, 0].reshape((nperiods, int(nobs / nperiods)))
+        rvol = returns.var(1)
+        returns = returns.sum(1)
+        return returns, rvol
 
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.

@@ -26,15 +26,12 @@ def try_simulation():
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 3
     npoints = int(nperiods / interval)
-    paths = heston.simulate(start, interval, ndiscr, npoints, nsim)
+    paths = heston.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
 
-    price = paths[:, 0, 0]
-    returns = price[1:] - price[:-1]
-    volatility = paths[1:, 0, 1]
+    returns = paths[:, 0, 0]
+    volatility = paths[:, 0, 1]
     plot_trajectories(returns, interval)
     plot_trajectories(volatility, interval)
-
-    return paths
 
 
 def try_marginal():
@@ -50,11 +47,10 @@ def try_marginal():
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 20
     npoints = int(nperiods / interval)
-    paths = heston.simulate(start, interval, ndiscr, npoints, nsim)
+    paths = heston.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
 
-    price = paths[:, :, 0]
-    returns = price[1:] - price[:-1]
-    volatility = paths[1:, :, 1]
+    returns = paths[:, :, 0]
+    volatility = paths[:, :, 1]
 
     plot_final_distr(returns)
     plot_final_distr(volatility)
@@ -62,9 +58,5 @@ def try_marginal():
 
 if __name__ == '__main__':
 
-    paths = try_simulation()
-    price = paths[:, 0, 0]
-    returns = price[1:] - price[:-1]
-    volatility = paths[1:, 0, 1]
-
+    try_simulation()
     try_marginal()

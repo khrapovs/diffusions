@@ -274,14 +274,18 @@ class SimulationTestCase(ut.TestCase):
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
 
-        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
         nsim = 1
+        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
         paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
     def test_vasicek_simulation(self):
         """Test simulation of the Vasicek model."""
@@ -294,7 +298,7 @@ class SimulationTestCase(ut.TestCase):
         nobs = int(nperiods / interval)
         paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
     def test_cir_simulation(self):
         """Test simulation of the CIR model."""
@@ -307,7 +311,7 @@ class SimulationTestCase(ut.TestCase):
         nobs = int(nperiods / interval)
         paths = cir.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
     def test_heston_simulation(self):
         """Test simulation of the Heston model."""
@@ -319,9 +323,27 @@ class SimulationTestCase(ut.TestCase):
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
         nobs = int(nperiods / interval)
+        paths = heston.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
         paths = heston.simulate(start, interval, ndiscr, nobs, nsim)
 
-        self.assertEqual(paths.shape, (nobs+1, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+    def test_gbm_sim_realized(self):
+        """Test simulation of realized values of the GBM model."""
+
+        nvars = 1
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        gbm = GBM(param)
+        start, nperiods, interval, ndiscr, nsim = 1, 5, 1/80, 3, 4
+        returns, rvol = gbm.sim_realized(start, interval, ndiscr, nperiods,
+                                        nsim, diff=0)
+
+        self.assertEqual(returns.shape, (nperiods, ))
+        self.assertEqual(rvol.shape, (nperiods, ))
 
 
 if __name__ == '__main__':

@@ -284,11 +284,49 @@ E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
 
 \end_inset
 
-Suppose that the moment function can be represented as a distributed lag
- function
+
+\end_layout
+
+\begin_layout Standard
+Suppose we also have ``intraday'' observations 
+\begin_inset Formula $y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}$
+\end_inset
+
+ for 
+\begin_inset Formula $j=1,\ldots,n$
+\end_inset
+
+.
+ These observations can be used to compute realized variance (RV) that approxima
+tes true integrated variance better than just squared ``daily'' observations
+ 
+\begin_inset Formula $y_{t,t+h}^{2}$
+\end_inset
+
+:
 \begin_inset Formula 
 \[
-g\left(y_{t,t+h};\theta\right)=A\left(L\right)y_{t,t+h}=\sum_{j=0}^{L}a_{l}y_{t-hj,t+h-hj}.
+RV_{t,h}\equiv\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\frac{1}{h}\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
+\]
+
+\end_inset
+
+Then, we can replace the second moment condition with the one corresponding
+ to RV:
+\begin_inset Formula 
+\[
+E_{t}\left[RV_{t,h}\right]=E_{t}\left[\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds\right].
+\]
+
+\end_inset
+
+So, the moment function becomes
+\begin_inset Formula 
+\[
+g\left(y_{t,t+h},RV_{t,h};\theta\right)=\left[\begin{array}{c}
+y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
+RV_{t,h}-\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
+\end{array}\right].
 \]
 
 \end_inset
@@ -432,7 +470,7 @@ E_{t}\left[g\left(r_{t,h};\theta\right)\right]=0.
 
 \end_inset
 
-the derivative of the moment function with respect to model parameters 
+The derivative of the moment function with respect to model parameters 
 \begin_inset Formula $\theta=\left[\mu,\sigma\right]$
 \end_inset
 
@@ -442,6 +480,47 @@ the derivative of the moment function with respect to model parameters
 \frac{\partial g}{\partial\theta}\left(r_{t,h};\theta\right)=\left[\begin{array}{cc}
 -h & \sigma h\\
 -2\left(\mu-\frac{1}{2}\sigma^{2}\right)h^{2} & -2\sigma h+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma h^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose we also have available ``intraday'' observations 
+\begin_inset Formula $y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}$
+\end_inset
+
+ for 
+\begin_inset Formula $j=1,\ldots,n$
+\end_inset
+
+ and are able to compute realized volatility 
+\begin_inset Formula $RV_{t,h}$
+\end_inset
+
+.
+ It is trivial to deduce that the integrated variance is constant
+\begin_inset Formula 
+\[
+\mathcal{V}_{t,h}=\sigma^{2}h.
+\]
+
+\end_inset
+
+Hence, the moment function is instead
+\begin_inset Formula 
+\[
+g\left(r_{t,h};\theta\right)=X_{t,h}-C=\left[\begin{array}{c}
+r_{t,h}\\
+RV_{t,h}\\
+RV_{t,h}^{2}
+\end{array}\right]-\left[\begin{array}{c}
+\left(\mu-\frac{1}{2}\sigma^{2}\right)h\\
+\sigma^{2}h\\
+\sigma^{4}h^{2}
 \end{array}\right].
 \]
 
