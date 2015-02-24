@@ -4,4 +4,4 @@
 	:members:
 
 .. autoclass:: diffusions.vasicek.Vasicek
-	:members: simulate
+	:members: simulate, sim_realized

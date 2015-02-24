@@ -4,4 +4,4 @@
 	:members:
 
 .. autoclass:: diffusions.gbm.GBM
-	:members: momcond, simulate
+	:members: simulate, sim_realized, gmmest

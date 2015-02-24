@@ -4,4 +4,4 @@
 	:members:
 
 .. autoclass:: diffusions.cir.CIR
-	:members: simulate
+	:members: simulate, sim_realized, gmmest

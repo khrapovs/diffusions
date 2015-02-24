@@ -12,8 +12,6 @@ Suppose that :math:`r_{t}` evolves according to
 """
 from __future__ import print_function, division
 
-import numpy as np
-
 from .generic_model import SDE
 
 __all__ = ['Vasicek', 'VasicekParam']

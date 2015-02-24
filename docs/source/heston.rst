@@ -3,4 +3,4 @@
 .. autoclass:: diffusions.heston.HestonParam
 
 .. autoclass:: diffusions.heston.Heston
-	:members: simulate
+	:members: simulate, sim_realized

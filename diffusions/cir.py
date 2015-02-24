@@ -15,8 +15,6 @@ Feller condition for positivity of the process is
 """
 from __future__ import print_function, division
 
-import numpy as np
-
 from .generic_model import SDE
 
 __all__ = ['CIR', 'CIRparam']
