@@ -130,7 +130,7 @@ def plot_realized(returns, rvar):
     """
     fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(7, 6))
     axes[0].plot(returns, label='Returns')
-    axes[1].plot(rvar**.5, label='Realized variance')
+    axes[1].plot(rvar**.5, label='Realized volatility')
     axes[0].legend()
     axes[1].legend()
     plt.show()
