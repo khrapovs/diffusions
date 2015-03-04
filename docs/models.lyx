@@ -306,7 +306,7 @@ tes true integrated variance better than just squared ``daily'' observations
 :
 \begin_inset Formula 
 \[
-RV_{t,h}\equiv\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
+RV_{t,h}\equiv\frac{1}{h}\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\frac{1}{h}\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
 \]
 
 \end_inset
@@ -315,7 +315,7 @@ Then, we can replace the second moment condition with the one corresponding
  to RV:
 \begin_inset Formula 
 \[
-E_{t}\left[RV_{t,h}\right]=E_{t}\left[\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds\right].
+E_{t}\left[RV_{t,h}\right]=E_{t}\left[\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds\right].
 \]
 
 \end_inset
@@ -325,7 +325,7 @@ So, the moment function becomes
 \[
 g\left(y_{t,t+h},RV_{t,h};\theta\right)=\left[\begin{array}{c}
 y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
-RV_{t,h}-\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
+RV_{t,h}-\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
 \end{array}\right].
 \]
 
@@ -397,7 +397,7 @@ Exact solution
 The solution is
 \begin_inset Formula 
 \[
-r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma\left(W_{t+h}-W_{t}\right).
+r_{t,h}=\frac{1}{h}\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)+\frac{1}{h}\sigma\left(W_{t+h}-W_{t}\right).
 \]
 
 \end_inset
@@ -405,7 +405,7 @@ r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma
 In other words,
 \begin_inset Formula 
 \[
-r_{t,h}\sim N\left(\left(\mu-\frac{1}{2}\sigma^{2}\right)h,\sigma^{2}h\right).
+r_{t,h}\sim N\left(\mu-\frac{1}{2}\sigma^{2},\sigma^{2}\right).
 \]
 
 \end_inset
@@ -425,7 +425,7 @@ After integration on the interval
 :
 \begin_inset Formula 
 \[
-r_{t,h}=\log\frac{S_{t+h}}{S_{t}}=\left(\mu-\frac{1}{2}\sigma^{2}\right)h+\sigma\sqrt{h}\varepsilon_{t+h},
+r_{t,h}=\frac{1}{h}\log\frac{S_{t+h}}{S_{t}}=\mu-\frac{1}{2}\sigma^{2}+\frac{\sigma}{\sqrt{h}}\varepsilon_{t+h},
 \]
 
 \end_inset
@@ -438,7 +438,7 @@ where
  The first conditional moment is
 \begin_inset Formula 
 \[
-E_{t}\left[r_{t,h}\right]=\left(\mu-\frac{1}{2}\sigma^{2}\right)h.
+E_{t}\left[r_{t,h}\right]=\mu-\frac{1}{2}\sigma^{2}.
 \]
 
 \end_inset
@@ -446,7 +446,7 @@ E_{t}\left[r_{t,h}\right]=\left(\mu-\frac{1}{2}\sigma^{2}\right)h.
 The second conditional moment is
 \begin_inset Formula 
 \[
-V_{t}\left[r_{t,h}\right]=E_{t}\left[r_{t,h}^{2}\right]-\left(E_{t}\left[r_{t,h}\right]\right)^{2}=\sigma^{2}h.
+V_{t}\left[r_{t,h}\right]=E_{t}\left[r_{t,h}^{2}\right]-\left(E_{t}\left[r_{t,h}\right]\right)^{2}=\sigma^{2}.
 \]
 
 \end_inset
@@ -455,8 +455,8 @@ Hence, the moment function is
 \begin_inset Formula 
 \[
 g\left(r_{t,h};\theta\right)=\left[\begin{array}{c}
-r_{t,h}-\left(\mu-\frac{1}{2}\sigma^{2}\right)h\\
-r_{t,h}^{2}-\sigma^{2}h-\left(\mu-\frac{1}{2}\sigma^{2}\right)^{2}h^{2}
+r_{t,h}-\left(\mu-\frac{1}{2}\sigma^{2}\right)\\
+r_{t,h}^{2}-\sigma^{2}-\left(\mu-\frac{1}{2}\sigma^{2}\right)^{2}
 \end{array}\right]
 \]
 
@@ -478,8 +478,8 @@ The derivative of the moment function with respect to model parameters
 \begin_inset Formula 
 \[
 \frac{\partial g}{\partial\theta}\left(r_{t,h};\theta\right)=\left[\begin{array}{cc}
--h & \sigma h\\
--2\left(\mu-\frac{1}{2}\sigma^{2}\right)h^{2} & -2\sigma h+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma h^{2}
+-1 & \sigma\\
+-2\left(\mu-\frac{1}{2}\sigma^{2}\right) & -2\sigma+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma
 \end{array}\right].
 \]
 
@@ -509,7 +509,7 @@ Suppose we also have available ``intraday'' observations
  It is trivial to deduce that the integrated variance is constant
 \begin_inset Formula 
 \[
-\mathcal{V}_{t,h}=\sigma^{2}h.
+\mathcal{V}_{t,h}=\sigma^{2}.
 \]
 
 \end_inset
@@ -522,9 +522,9 @@ r_{t,h}\\
 RV_{t,h}\\
 RV_{t,h}^{2}
 \end{array}\right]-\left[\begin{array}{c}
-\left(\mu-\frac{1}{2}\sigma^{2}\right)h\\
-\sigma^{2}h\\
-\sigma^{4}h^{2}
+\mu-\frac{1}{2}\sigma^{2}\\
+\sigma^{2}\\
+\sigma^{4}
 \end{array}\right].
 \]
 
@@ -786,7 +786,7 @@ The model
 Consider
 \begin_inset Formula 
 \begin{align*}
-dp_{t} & =\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+dp_{t} & =\left(r-\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
 d\sigma_{t}^{2} & =\kappa\left(\mu-\sigma_{t}^{2}\right)dt+\eta\sigma_{t}dW_{t}^{\sigma},
 \end{align*}
 
@@ -824,7 +824,7 @@ The drift and diffusion functions are
 r\\
 \kappa\mu
 \end{array}\right]+\left[\begin{array}{cc}
-0 & -\frac{1}{2}\\
+0 & \lambda-\frac{1}{2}\\
 0 & -\kappa
 \end{array}\right]\left[\begin{array}{c}
 p_{t}\\
@@ -866,7 +866,7 @@ K_{0}=\left[\begin{array}{c}
 r\\
 \kappa\mu
 \end{array}\right],\quad K_{1}=\left[\begin{array}{cc}
-0 & -\frac{1}{2}\\
+0 & \lambda-\frac{1}{2}\\
 0 & -\kappa
 \end{array}\right],
 \]
@@ -887,6 +887,307 @@ H_{0}=\left[\begin{array}{cc}
 \eta\rho & \eta^{2}
 \end{array}\right].
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Integrated moments
+\end_layout
+
+\begin_layout Standard
+The return equation can be integrated on 
+\begin_inset Formula $\left[t,t+h\right]$
+\end_inset
+
+ to obtain
+\begin_inset Formula 
+\[
+r_{t,h}\equiv\frac{1}{h}\int_{t}^{t+h}dp_{s}=r-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}+\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r},
+\]
+
+\end_inset
+
+The return first moment is
+\begin_inset Formula 
+\[
+E_{t}\left[r_{t,h}\right]=r-\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The spot volatility equation can be integrated to get 
+\begin_inset Formula 
+\[
+\sigma_{t+h}^{2}=C_{h}+A_{h}\sigma_{t}^{2}+\epsilon_{t,h}^{\sigma},
+\]
+
+\end_inset
+
+where I define coefficients as
+\begin_inset Formula 
+\[
+A_{h}=\exp\left(-\kappa h\right),\quad C_{h}=\mu\left(1-A_{h}\right),
+\]
+
+\end_inset
+
+and the integrated innovation is
+\begin_inset Formula 
+\[
+\epsilon_{t,h}^{\sigma}=\eta_{\sigma}\int_{t}^{t+h}\sigma_{u}A_{t+h-u}dW_{u}^{\sigma}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The spot volatility first moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\sigma_{t+h}^{2}\right]=C_{h}+A_{h}\sigma_{t}^{2},
+\]
+
+\end_inset
+
+or, using lag operator 
+\begin_inset Formula $L$
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+E_{t}\left[\left(1-A_{h}L\right)\sigma_{t+h}^{2}\right]=C_{h}.
+\]
+
+\end_inset
+
+The variance of the spot volaitlity is
+\begin_inset Formula 
+\[
+\begin{aligned}V_{t}\left[\sigma_{t+h}^{2}\right]= & V_{t}\left[\epsilon_{t,h}^{\sigma}\right]\\
+= & \eta^{2}\int_{t}^{t+h}E_{t}\left[\sigma_{u}^{2}\right]A_{t+h-u}^{2}du\\
+= & \eta^{2}\int_{t}^{t+h}\left(A_{u-t}\sigma_{t}^{2}+C_{u-t}\right)A_{t+h-u}^{2}du\\
+= & \sigma_{t}^{2}\eta^{2}\int_{0}^{h}A_{u}A_{h-u}^{2}du+\eta^{2}\int_{0}^{h}C_{u}A_{h-u}^{2}du\\
+= & D_{1}\sigma_{t}^{2}+F_{1}.
+\end{aligned}
+\]
+
+\end_inset
+
+Hence, the second moment of the spot volatility is
+\begin_inset Formula 
+\[
+E_{t}\left[\sigma_{t+h}^{4}\right]=F_{1}+C_{h}^{2}+\left(D_{1}+2A_{h}C_{h}\right)\sigma_{t}^{2}+A_{h}^{2}\sigma_{t}^{4}.
+\]
+
+\end_inset
+
+Using the lag operator we can make rewrite this equation as
+\begin_inset Formula 
+\[
+E_{t}\left[\left(1-A_{h}^{2}L\right)\sigma_{t+h}^{4}\right]=F_{1}+C_{h}^{2}+\left(D_{1}+2A_{h}C_{h}\right)\sigma_{t}^{2}.
+\]
+
+\end_inset
+
+Multiplying this equation by 
+\begin_inset Formula $\left(1-A_{h}L\right)$
+\end_inset
+
+ and moving the reference point by 
+\begin_inset Formula $h$
+\end_inset
+
+ we obtain
+\begin_inset Formula 
+\[
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\sigma_{t+2h}^{4}\right]=\left(1-A_{h}\right)\left(F_{1}+C_{h}^{2}\right)+\left(D_{1}+2A_{h}C_{h}\right)C_{h}\equiv R_{1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After repeated integration of the volatility equation over 
+\begin_inset Formula $t$
+\end_inset
+
+ as a dummy of the integration in the interval 
+\begin_inset Formula $\left[0,h\right]$
+\end_inset
+
+ we obtain
+\begin_inset Formula 
+\[
+\mathcal{V}_{t+h,h}=C_{h}+A_{h}\mathcal{V}_{t,h}+\frac{1}{h}\int_{0}^{h}\epsilon_{t+s,h}^{\sigma}ds.
+\]
+
+\end_inset
+
+The integrated volaitlity first moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\mathcal{V}_{t+h,h}\right]=C_{h}+A_{h}E_{t}\left[\mathcal{V}_{t,h}\right],
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right]=C_{h}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can also integrate the volatilty equation using 
+\begin_inset Formula $h$
+\end_inset
+
+ as a dummy of integration on the interval from 
+\begin_inset Formula $\left[0,h\right]$
+\end_inset
+
+: 
+\begin_inset Formula 
+\[
+\mathcal{V}_{t,h}=c_{h}+a_{h}\sigma_{t}^{2}+\frac{1}{h}\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds,
+\]
+
+\end_inset
+
+with
+\begin_inset Formula 
+\[
+a_{h}=\frac{1}{h}\int_{0}^{h}A_{s}ds,\quad c_{h}=\mu\left(1-a_{h}\right).
+\]
+
+\end_inset
+
+The error term may be simplified:
+\begin_inset Formula 
+\[
+\begin{aligned}\frac{1}{h}\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds= & \frac{1}{h}\int_{0}^{h}\left(\eta\int_{t}^{t+s}\sigma_{u}A_{t+s-u}dW_{u}^{\sigma}\right)ds\\
+= & \frac{1}{h}\eta\int_{t}^{t+h}\sigma_{u}\left(\int_{u-t}^{h}A_{t+s-u}ds\right)dW_{u}^{\sigma}\\
+= & \eta\int_{t}^{t+h}\sigma_{u}\left(\frac{1}{h}\int_{0}^{t+h-u}A_{s}ds\right)dW_{u}^{\sigma}\\
+= & \eta\int_{t}^{t+h}\sigma_{u}a_{t+h-u}dW_{u}^{\sigma}.
+\end{aligned}
+\]
+
+\end_inset
+
+Taking conditional expectation of the integrated eqation we obtain
+\begin_inset Formula 
+\[
+E_{t}\left[\mathcal{V}_{t,h}\right]=c_{h}+a_{h}\sigma_{t}^{2}.
+\]
+
+\end_inset
+
+The conditional variance of integrated volatility is
+\begin_inset Formula 
+\[
+\begin{aligned}V_{t}\left[\mathcal{V}_{t,h}\right]= & V_{t}\left[\frac{1}{h}\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds\right]\\
+= & \eta^{2}\int_{t}^{t+h}E_{t}\left[\sigma_{u}^{2}\right]a_{t+h-u}^{2}du\\
+= & \eta^{2}\int_{t}^{t+h}\left(A_{u-t}\sigma_{t}^{2}+C_{u-t}\right)a_{t+h-u}^{2}du\\
+= & \sigma_{t}^{2}\eta^{2}\int_{0}^{h}A_{u}a_{h-u}^{2}du+\eta^{2}\int_{0}^{h}C_{u}a_{h-u}^{2}du\\
+= & D_{2}\sigma_{t}^{2}+F_{2}.
+\end{aligned}
+\]
+
+\end_inset
+
+Hence, the second moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\mathcal{V}_{t,h}^{2}\right]=F_{2}+c_{h}^{2}+\left(D_{2}+2a_{h}c_{h}\right)\sigma_{t}^{2}+a_{h}^{2}\sigma_{t}^{4}.
+\]
+
+\end_inset
+
+Multiply this by 
+\begin_inset Formula $\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)$
+\end_inset
+
+ and use previously derived conditional moments to obtain
+\begin_inset Formula 
+\[
+\begin{aligned}E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right]= & \left(1-A_{h}\right)\left(1-A_{h}^{2}\right)\left(F_{2}+c_{h}^{2}\right)+\left(D_{2}+2a_{h}c_{h}\right)\left(1-A_{h}^{2}\right)C_{h}+a_{h}^{2}R_{1}\\
+\equiv & R_{2}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now multiply return by integrated volatility and take the expectation:
+\begin_inset Formula 
+\[
+E_{t}\left[r_{t,h}\mathcal{V}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}^{2}\right]+E_{t}\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
+\]
+
+\end_inset
+
+The last term can be modified as follows:
+\begin_inset Formula 
+\[
+\begin{aligned}E_{t}\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]= & \frac{1}{h}E_{t}\left[\frac{1}{h}\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]\\
+= & \eta\frac{1}{h}E_{t}\left[\left(\int_{t}^{t+h}\sigma_{u}a_{t+h-u}dW_{u}^{\sigma}\right)\left(\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right)\right]\\
+= & \rho\eta\frac{1}{h}E_{t}\left[\int_{t}^{t+h}\sigma_{u}^{2}a_{t+h-u}du\right]\\
+= & \rho\eta\frac{1}{h}\int_{t}^{t+h}E_{t}\left[\sigma_{u}^{2}\right]a_{t+h-u}du.\\
+= & \rho\eta\frac{1}{h}\int_{t}^{t+h}\left(A_{u-t}\sigma_{t}^{2}+C_{u-t}\right)a_{t+h-u}du\\
+= & \rho\eta\frac{1}{h}\left[\sigma_{t}^{2}\int_{t}^{t+h}A_{u-t}a_{t+h-u}du+\int_{t}^{t+h}C_{u-t}a_{t+h-u}du\right]\\
+= & D_{3}\sigma_{t}^{2}+F_{3}.
+\end{aligned}
+\]
+
+\end_inset
+
+Multiply conditional cross-moment by 
+\begin_inset Formula $\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)$
+\end_inset
+
+ and use previously derived conditional moments to obtain
+\begin_inset Formula 
+\[
+\begin{aligned}E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right]= & \left(\lambda-\frac{1}{2}\right)E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right]\\
+ & +E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\left(D_{3}\sigma_{t+2h}^{2}+F_{3}\right)\right]\\
+= & \left(\lambda-\frac{1}{2}\right)R_{2}+\left(1-A_{h}^{2}\right)D_{3}C_{h}+\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)F_{3}\equiv R_{3}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All in all, this gives us the following four integrated moments:
+\begin_inset Formula 
+\begin{align*}
+E_{t}\left[r_{t,h}+\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =r,\\
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{h},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =R_{2}.\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =R_{3}
+\end{align*}
 
 \end_inset
 
