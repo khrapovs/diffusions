@@ -267,9 +267,7 @@ class GBM(SDE):
 
         """
         mean, sigma = theta
-        return np.array([(mean - sigma**2/2) * self.interval,
-                         sigma**2 * self.interval,
-                         sigma**4 * self.interval**2])
+        return np.array([mean - sigma**2/2, sigma**2, sigma**4])
 
     def drealized_const(self, theta):
         """Derivative of the intercept in the realized moment conditions.
@@ -306,7 +304,7 @@ class GBM(SDE):
         return np.vstack([np.ones_like(data[0]),
                           lagmat(data.T, maxlag=instrlag).T])[:, instrlag:]
 
-    def realized_mom(self, theta, data=None, instrlag=1):
+    def integrated_mom(self, theta, data=None, instrlag=1):
         """Moment function.
 
         Parameters
@@ -335,7 +333,7 @@ class GBM(SDE):
         # (nobs - instrlag, 3 * ninstr = nmoms)
         moms = columnwise_prod(error, instr)
         # (nintercepts, nparams)
-        dmoms = self.drealized_const(theta)
+        dmoms = -self.drealized_const(theta)
         dmoments = []
         for minstr in instr.mean(0):
             dmoments.append(dmoms * minstr)

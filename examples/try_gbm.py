@@ -7,6 +7,7 @@ Generic Model
 from __future__ import print_function, division
 
 import seaborn as sns
+import numpy as np
 
 from diffusions import GBM, GBMparam
 from diffusions import plot_trajectories, plot_final_distr, plot_realized
@@ -68,11 +69,31 @@ def try_sim_realized():
     plot_realized(returns, rvar)
 
 
+def try_integrated_gmm():
+    mean, sigma = 1.5, .2
+    theta_true = GBMparam(mean, sigma)
+    gbm = GBM(theta_true)
+
+    start, nperiods, interval, ndiscr, nsim = 1, 100, 1/80, 1, 1
+    returns, rvar = gbm.sim_realized(start, interval, ndiscr,
+                                     nperiods, nsim, diff=0)
+    data = np.vstack([returns, rvar])
+    print(rvar.mean()**.5)
+#    plot_realized(returns, rvar)
+
+    mean, sigma = 2.5, .4
+    theta_start = GBMparam(mean, sigma)
+    res = gbm.integrated_gmm(theta_start, data=data, instrlag=2)
+    res.print_results()
+
+    return returns, rvar
+
+
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-    try_simulation()
-    try_marginal()
-    try_sim_realized()
-
-    try_gmm()
+#    try_simulation()
+#    try_marginal()
+#    try_sim_realized()
+#    try_gmm()
+    returns, rvar = try_integrated_gmm()

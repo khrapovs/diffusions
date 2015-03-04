@@ -315,10 +315,11 @@ class SDE(object):
             Simulated realized variance
 
         """
-        nobs = int(nperiods / interval)
+        intervals = int(1 / interval)
+        nobs = nperiods * intervals
         paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
-        returns = paths[:, 0, 0].reshape((nperiods, int(nobs / nperiods)))
-        rvar = (returns**2).sum(1)
+        returns = paths[:, 0, 0].reshape((nperiods, intervals))
+        rvar = returns.var(1) * intervals
         returns = returns.sum(1)
         return returns, rvar
 
@@ -333,6 +334,19 @@ class SDE(object):
 
         """
         estimator = GMM(self.momcond)
+        return estimator.gmmest(theta_start.theta, **kwargs)
+
+    def integrated_gmm(self, theta_start, **kwargs):
+        """Estimate model parameters using Integrated GMM.
+
+        Parameters
+        ----------
+        theta_start : parameter instance
+            Initial parameter values for estimation.
+            Object with mandatory attribute 'theta'.
+
+        """
+        estimator = GMM(self.integrated_mom)
         return estimator.gmmest(theta_start.theta, **kwargs)
 
 

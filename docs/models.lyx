@@ -306,7 +306,7 @@ tes true integrated variance better than just squared ``daily'' observations
 :
 \begin_inset Formula 
 \[
-RV_{t,h}\equiv\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\frac{1}{h}\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
+RV_{t,h}\equiv\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
 \]
 
 \end_inset
@@ -486,6 +486,10 @@ The derivative of the moment function with respect to model parameters
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Integrated moments
 \end_layout
 
 \begin_layout Standard
