@@ -120,6 +120,14 @@ class SDE(object):
 
     Methods
     -------
+    simulate
+        Simulate observations from the model
+    sim_realized
+        Simulate realized returns and variance from the model
+    gmmest
+        Estimate model parameters using GMM
+    integrated_gmm
+        Estimate model parameters using Integrated GMM
 
     """
 
@@ -133,7 +141,7 @@ class SDE(object):
 
         """
         self.interval = None
-        self.nobs = None
+        self.ndiscr = None
         self.theta_true = theta_true
 
     def euler_loc(self, state, theta):
@@ -264,7 +272,6 @@ class SDE(object):
         if np.size(self.theta_true.mat_k0) != np.size(start):
             raise ValueError('Start for paths is of wrong dimension!')
         self.interval = interval
-        self.nobs = nobs
         self.ndiscr = ndiscr
         nvars = np.size(start)
         npoints = nobs * ndiscr
@@ -289,7 +296,7 @@ class SDE(object):
 
     def sim_realized(self, start, interval=1/80, ndiscr=1,
                      nperiods=500, nsim=1, diff=None):
-        """Simulate observations from the model.
+        """Simulate realized returns and variance from the model.
 
         Parameters
         ----------
