@@ -786,7 +786,7 @@ The model
 Consider
 \begin_inset Formula 
 \begin{align*}
-dp_{t} & =\left(r-\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
 d\sigma_{t}^{2} & =\kappa\left(\mu-\sigma_{t}^{2}\right)dt+\eta\sigma_{t}dW_{t}^{\sigma},
 \end{align*}
 
@@ -905,7 +905,7 @@ The return equation can be integrated on
  to obtain
 \begin_inset Formula 
 \[
-r_{t,h}\equiv\frac{1}{h}\int_{t}^{t+h}dp_{s}=r-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}+\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r},
+r_{t,h}\equiv\frac{1}{h}\int_{t}^{t+h}dp_{s}=r+\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}+\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r},
 \]
 
 \end_inset
@@ -913,7 +913,7 @@ r_{t,h}\equiv\frac{1}{h}\int_{t}^{t+h}dp_{s}=r-\left(\lambda-\frac{1}{2}\right)\
 The return first moment is
 \begin_inset Formula 
 \[
-E_{t}\left[r_{t,h}\right]=r-\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}\right].
+E_{t}\left[r_{t,h}\right]=r+\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}\right].
 \]
 
 \end_inset
@@ -1035,7 +1035,7 @@ After repeated integration of the volatility equation over
 
 \end_inset
 
-The integrated volaitlity first moment is
+The integrated volatility first moment is
 \begin_inset Formula 
 \[
 E_{t}\left[\mathcal{V}_{t+h,h}\right]=C_{h}+A_{h}E_{t}\left[\mathcal{V}_{t,h}\right],
@@ -1185,9 +1185,76 @@ All in all, this gives us the following four integrated moments:
 \begin{align*}
 E_{t}\left[r_{t,h}+\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =r,\\
 E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{h},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =R_{2}.\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =R_{3}
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =R_{2},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =R_{3},
 \end{align*}
+
+\end_inset
+
+or in matrix notation
+\begin_inset Formula 
+\[
+E_{t-2h}\left[\left(\begin{array}{cccc}
+L^{2} & \left(\lambda-\frac{1}{2}\right)L^{2}\\
+ & \left(1-A_{h}L\right)L\\
+ &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
+ &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)
+\end{array}\right)\left(\begin{array}{c}
+r_{t,h}\\
+\mathcal{V}_{t,h}\\
+\mathcal{V}_{t,h}^{2}\\
+r_{t,h}\mathcal{V}_{t,h}
+\end{array}\right)-\left(\begin{array}{c}
+r\\
+C_{h}\\
+R_{2}\\
+R_{3}
+\end{array}\right)\right]=0.
+\]
+
+\end_inset
+
+Define the data vector as 
+\begin_inset Formula $X_{t,h}=\left[r_{t,h},\mathcal{V}_{t,h},\mathcal{V}_{t,h}^{2},r_{t,h}\mathcal{V}_{t,h}\right]$
+\end_inset
+
+.
+ Then, the moment conditions can be written more compactly as 
+\begin_inset Formula 
+\[
+E_{t-2h}\left[A\left(L\right)X_{t,h}-C\right]=0,
+\]
+
+\end_inset
+
+with the lag polynomial
+\begin_inset Formula 
+\[
+A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2},
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+A_{0}=\left(\begin{array}{cccc}
+0\\
+ & 0\\
+ &  & 1\\
+ &  &  & 1
+\end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
+0\\
+ & 1\\
+ &  & -A_{h}\left(1+A_{h}\right)\\
+ &  &  & -A_{h}\left(1+A_{h}\right)
+\end{array}\right),\quad A_{2}=\left(\begin{array}{cccc}
+1 & \lambda-\frac{1}{2}\\
+ & -A_{h}\\
+ &  & A_{h}^{3}\\
+ &  &  & A_{h}^{3}
+\end{array}\right).
+\]
 
 \end_inset
 
