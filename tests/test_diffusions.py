@@ -500,6 +500,9 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test shape of dependent variables
         self.assertEqual(depvar.shape, (nperiods, 3 * 5))
 
+        moments = heston.integrated_mom(param.get_theta(),
+                                        data=data, instrlag=1)
+        self.assertEqual(moments.shape, (nperiods, 3*4))
 #        const = gbm.realized_const(param.theta)
 #        # Test shape of the intercept
 #        self.assertEqual(const.shape, (3, ))

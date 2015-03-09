@@ -513,7 +513,31 @@ class Heston(SDE):
         mat_a[8:, 10:] = self.mat_a2(theta)
         return mat_a
 
+    def integrated_mom(self, theta, data=None, instrlag=1):
+        """Integrated moment function.
 
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+        data : (2, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        moments : (nobs, nmoms) array
+            Moment restrictions
+        dmoments : (nmoms, nparams) array
+            Average derivative of the moment restrictions
+
+        """
+        ret, rvar = data
+        # (nobs - instrlag, 3) array
+        error = self.realized_depvar(data).dot(self.mat_a(theta).T)
+
+        return error
 
 
 if __name__ == '__main__':
