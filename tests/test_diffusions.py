@@ -502,7 +502,7 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         moments = heston.integrated_mom(param.get_theta(),
                                         data=data, instrlag=1)
-        self.assertEqual(moments.shape, (nperiods, 3*4))
+        self.assertEqual(moments.shape, (nperiods, 4))
 #        const = gbm.realized_const(param.theta)
 #        # Test shape of the intercept
 #        self.assertEqual(const.shape, (3, ))
@@ -552,7 +552,7 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.mat_a1(theta).shape, (4, 5))
         self.assertEqual(heston.mat_a2(theta).shape, (4, 5))
 
-        self.assertEqual(heston.mat_a(theta).shape, (3*4, 3*5))
+        self.assertEqual(heston.mat_a(theta).shape, (4, 3*5))
 
 
 if __name__ == '__main__':

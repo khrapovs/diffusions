@@ -501,17 +501,14 @@ class Heston(SDE):
 
         Returns
         -------
-        (3*4, 3*5) array
+        (4, 3*5) array
             Matrix A
 
         """
         param = HestonParam()
         param.update(theta=theta)
-        mat_a = np.zeros((3*4, 3*5))
-        mat_a[:4, :5] = self.mat_a0(theta)
-        mat_a[4:8, 5:10] = self.mat_a1(theta)
-        mat_a[8:, 10:] = self.mat_a2(theta)
-        return mat_a
+        mat_a = (self.mat_a0(theta), self.mat_a1(theta), self.mat_a2(theta))
+        return np.hstack(mat_a)
 
     def integrated_mom(self, theta, data=None, instrlag=1):
         """Integrated moment function.
@@ -534,7 +531,7 @@ class Heston(SDE):
 
         """
         ret, rvar = data
-        # (nobs - instrlag, 3) array
+        # (nobs - instrlag, 4) array
         error = self.realized_depvar(data).dot(self.mat_a(theta).T)
 
         return error
