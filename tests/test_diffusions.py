@@ -21,7 +21,7 @@ class SDEParameterTestCase(ut.TestCase):
     """Test SDE, GBM classes."""
 
     def test_gbmparam_class(self):
-        """Test parameter class."""
+        """Test GBM parameter class."""
 
         mean, sigma = 1.5, .2
         param = GBMparam(mean, sigma)
@@ -34,6 +34,35 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_k1, np.array([[0]]))
         np.testing.assert_array_equal(param.mat_h0, np.array([[sigma**2]]))
         np.testing.assert_array_equal(param.mat_h1, np.array([[[0]]]))
+
+    def test_hestonparam_class(self):
+        """Test Heston parameter class."""
+
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa = 1.5
+        eta = .1
+        rho = -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho)
+
+        self.assertEqual(param.riskfree, riskfree)
+        self.assertEqual(param.lmbd, lmbd)
+        self.assertEqual(param.mean_v, mean_v)
+        self.assertEqual(param.kappa, kappa)
+        self.assertEqual(param.eta, eta)
+        self.assertEqual(param.rho, rho)
+
+        theta = np.array([riskfree, lmbd, mean_v, kappa, eta, rho])
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        theta = np.ones(6)
+        param = HestonParam()
+        param.update(theta=theta)
+        np.testing.assert_array_equal(param.get_theta(), theta)
+        # TODO : test AJD representation
 
 
 class HelperFunctionsTestCase(ut.TestCase):
@@ -136,14 +165,15 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
 
-        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2, -.5
-        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         nvars, nsim = 2, 3
         size = (nsim, nvars)
         state = np.ones(size)
         drift = np.ones(size)
-        drift_r = mean_r - state[:, 1]**2/2
+        drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
         drift_v = kappa * (mean_v - state[:, 1])
         drift = np.vstack([drift_r, drift_v]).T
 
@@ -153,8 +183,9 @@ class HelperFunctionsTestCase(ut.TestCase):
     def test_ajd_diff_heston(self):
         """Test AJD diffusion function for Heston model."""
 
-        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2, -.0
-        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2, -.0
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         nvars, nsim = 2, 3
         size = (nsim, nvars)
@@ -250,8 +281,9 @@ class SimulationTestCase(ut.TestCase):
     def test_heston_simupdate(self):
         """Test simulation update of the Heston model."""
 
-        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         heston = Heston(param)
         heston.ndiscr, heston.interval = 2, .5
@@ -261,7 +293,7 @@ class SimulationTestCase(ut.TestCase):
         error = np.vstack([np.zeros(nsim), np.ones(nsim)]).T
 
         new_state = heston.update(state, error)
-        drift_r = mean_r - state[:, 1]**2/2
+        drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
         drift_v = kappa * (mean_v - state[:, 1])
         loc = np.vstack([drift_r, drift_v]).T
 
@@ -343,8 +375,9 @@ class SimulationTestCase(ut.TestCase):
         """Test simulation of the Heston model."""
 
         nvars = 2
-        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
@@ -403,8 +436,9 @@ class SimulationTestCase(ut.TestCase):
     def test_heston_sim_realized(self):
         """Test simulation of realized values of the Heston model."""
 
-        mean_r, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
@@ -448,6 +482,32 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test shape of moments and gradients
         self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
         self.assertEqual(drmom.shape, (nmoms, np.size(param.theta)))
+
+    def test_heston_coefs(self):
+        """Test coefficients in descretization of Heston model.
+
+        """
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho)
+        heston = Heston(param)
+        heston.interval = .1
+        theta = param.get_theta()
+
+        self.assertIsInstance(heston.coef_big_a(theta), float)
+        self.assertIsInstance(heston.coef_small_a(theta), float)
+        self.assertIsInstance(heston.coef_big_c(theta), float)
+        self.assertIsInstance(heston.coef_small_c(theta), float)
+        self.assertIsInstance(heston.coef_d1(theta), float)
+        self.assertIsInstance(heston.coef_d2(theta), float)
+        self.assertIsInstance(heston.coef_d3(theta), float)
+        self.assertIsInstance(heston.coef_f1(theta), float)
+        self.assertIsInstance(heston.coef_f2(theta), float)
+        self.assertIsInstance(heston.coef_f3(theta), float)
+        self.assertIsInstance(heston.coef_r1(theta), float)
+        self.assertIsInstance(heston.coef_r2(theta), float)
+        self.assertIsInstance(heston.coef_r3(theta), float)
 
 
 if __name__ == '__main__':

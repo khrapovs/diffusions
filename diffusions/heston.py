@@ -50,13 +50,16 @@ class HestonParam(object):
 
     """
 
-    def __init__(self, mean_r=.01, mean_v=.5, kappa=1.5, eta=.1, rho=-.5):
+    def __init__(self, riskfree=.0, lmbd = .1,
+                 mean_v=.5, kappa=1.5, eta=.1, rho=-.5):
         """Initialize class.
 
         Parameters
         ----------
-        mean_r : float
-            Instantaneous rate of return
+        riskfree : float
+            Risk-free rate of return
+        lmbd : float
+            Equity risk premium
         mean_v : float
             Mean of the volatility process
         kappa : float
@@ -67,15 +70,15 @@ class HestonParam(object):
             Correlation
 
         """
-        self.mean_r = mean_r
+        self.riskfree = riskfree
+        self.lmbd = lmbd
         self.mean_v = mean_v
         self.kappa = kappa
         self.eta = eta
-        # Vector of parameters
-        self.theta = [mean_r, mean_v, kappa, eta, rho]
+        self.rho = rho
         # AJD parameters
-        self.mat_k0 = [mean_r, kappa * mean_v]
-        self.mat_k1 = [[0, -.5], [0, -kappa]]
+        self.mat_k0 = [riskfree, kappa * mean_v]
+        self.mat_k1 = [[0, lmbd - .5], [0, -kappa]]
         self.mat_h0 = np.zeros((2, 2))
         self.mat_h1 = [np.zeros((2, 2)),
                        [[1, eta*rho], [eta*rho, eta**2]]]
@@ -90,6 +93,30 @@ class HestonParam(object):
 
         """
         return 2 * self.kappa * self.mean_v - self.eta**2 > 0
+
+    def update(self, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        """
+        [self.riskfree, self.lmbd, self.mean_v,
+         self.kappa, self.eta, self.rho] = theta
+
+    def get_theta(self):
+        """Return vector of parameters.
+
+        Returns
+        -------
+        (6, ) array
+            Parameter vector
+
+        """
+        return [self.riskfree, self.lmbd, self.mean_v,
+                self.kappa, self.eta, self.rho]
 
 
 class Heston(SDE):
@@ -110,41 +137,268 @@ class Heston(SDE):
         """
         super(Heston, self).__init__(theta_true)
 
-    def drift(self, state, theta):
-        """Drift function.
+    def coef_big_a(self, theta):
+        """Coefficient A_h in exact discretization of volatility.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
-            Current value of the process
-        theta : parameter instance
-            Model parameter
+        theta : (6, ) array
+            Parameter vector
 
         Returns
         -------
-        scalar
-            Drift value
+        float
+            Coefficient A_h
 
         """
-        return theta.kappa * (theta.mean - state)
+        param = HestonParam()
+        param.update(theta=theta)
+        return np.exp(-param.kappa * self.interval)
 
-    def diff(self, state, theta):
-        """Diffusion (instantaneous volatility) function.
+    def coef_small_a(self, theta):
+        """Coefficient a_h in exact discretization of volatility.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
-            Current value of the process
-        theta : parameter instance
-            Model parameter
+        theta : (6, ) array
+            Parameter vector
 
         Returns
         -------
-        scalar
-            Diffusion value
+        float
+            Coefficient a_h
 
         """
-        return theta.eta
+        param = HestonParam()
+        param.update(theta=theta)
+        return (1 - self.coef_big_a(theta)) / param.kappa
+
+    def coef_big_c(self, theta):
+        """Coefficient C_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient C_h
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return (1 - self.coef_big_a(theta)) * param.mean_v
+
+    def coef_small_c(self, theta):
+        """Coefficient c_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient c_h
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return (self.interval - self.coef_small_a(theta)) * param.mean_v
+
+    def coef_d1(self, theta):
+        """Coefficient D_1 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient D_1
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return param.eta**2 / param.kappa * self.coef_big_a(theta) \
+            * (1 - self.coef_big_a(theta))
+
+    def coef_f1(self, theta):
+        """Coefficient F_1 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient F_1
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return param.mean_v * param.eta**2 / param.kappa / 2 \
+            * (1 - self.coef_big_a(theta)**2) \
+            * (1 - self.coef_big_a(theta))
+
+    def coef_d2(self, theta):
+        """Coefficient D_2 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient D_2
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return (param.eta / param.kappa / self.interval)**2 \
+            * ((1 - self.coef_big_a(theta)**2) / param.kappa \
+            - 2 * self.interval * self.coef_big_a(theta))
+
+    def coef_f2(self, theta):
+        """Coefficient F_2 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient F_2
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return param.mean_v * (param.eta / param.kappa / self.interval)**2 \
+            * (self.interval * (1 + 2 * self.coef_big_a(theta)) \
+            - (1 - self.coef_big_a(theta)) * (5 + self.coef_big_a(theta)) \
+            / param.kappa / 2)
+
+    def coef_d3(self, theta):
+        """Coefficient D_3 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient D_3
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return param.rho * param.eta / param.kappa / self.interval**2 \
+            * ((1 - self.coef_big_a(theta)) / param.kappa \
+            - self.coef_big_a(theta) * self.interval)
+
+    def coef_f3(self, theta):
+        """Coefficient F_3 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient F_3
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return param.mean_v * param.rho * param.eta / param.kappa \
+            / self.interval**2 \
+            * ((1 + self.coef_big_a(theta)) * self.interval \
+            - (1 - self.coef_big_a(theta)) / param.kappa * 2)
+
+    def coef_r1(self, theta):
+        """Coefficient R_1 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient R_1
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return (1 - self.coef_big_a(theta)) \
+            * (self.coef_f1(theta) + self.coef_big_c(theta)**2) \
+            + (self.coef_d1(theta) \
+            + 2 * self.coef_big_a(theta) * self.coef_big_c(theta)) \
+            * self.coef_big_c(theta)
+
+    def coef_r2(self, theta):
+        """Coefficient R_2 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient R_2
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return ((1 - self.coef_big_a(theta)) \
+            * (self.coef_f2(theta) \
+            + self.coef_small_c(theta) / self.interval**2) \
+            + (self.coef_d2(theta) \
+            + 2 * self.coef_small_a(theta) * self.coef_small_c(theta) \
+            / self.interval**2) * self.coef_big_c(theta)) \
+            * (1 - self.coef_big_a(theta)**2) \
+            + self.coef_small_a(theta)**2 / self.interval**2 \
+            * self.coef_r1(theta)
+
+    def coef_r3(self, theta):
+        """Coefficient R_3 in exact discretization of volatility.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        float
+            Coefficient R_3
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return (param.lmbd - .5) * self.coef_r2(theta) \
+            + (1 - self.coef_big_a(theta)**2) * self.coef_d3(theta) \
+            * self.coef_big_c(theta) \
+            + (1 - self.coef_big_a(theta)) * (1 - self.coef_big_a(theta)**2) \
+            * self.coef_f3(theta)
 
 
 if __name__ == '__main__':

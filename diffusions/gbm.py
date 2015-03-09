@@ -305,7 +305,7 @@ class GBM(SDE):
                           lagmat(data.T, maxlag=instrlag).T])[:, instrlag:]
 
     def integrated_mom(self, theta, data=None, instrlag=1):
-        """Moment function.
+        """Integrated moment function.
 
         Parameters
         ----------
