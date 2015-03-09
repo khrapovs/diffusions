@@ -13,13 +13,15 @@ from diffusions import plot_trajectories, plot_final_distr, plot_realized
 
 
 def try_simulation():
-    mean_r = .0
+    riskfree = .0
+    lmbd = .0
     mean_v = .5
     kappa = .1
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                             mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
     heston = Heston(theta_true)
     print(theta_true.is_valid())
@@ -35,13 +37,15 @@ def try_simulation():
 
 
 def try_marginal():
-    mean_r = .0
+    riskfree = .0
+    lmbd = .0
     mean_v = .5
     kappa = .1
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                             mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
     heston = Heston(theta_true)
 
@@ -57,13 +61,15 @@ def try_marginal():
 
 
 def try_sim_realized():
-    mean_r = .0
+    riskfree = .0
+    lmbd = .0
     mean_v = .5
     kappa = .1
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(mean_r=mean_r, mean_v=mean_v, kappa=kappa,
+    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                             mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
     heston = Heston(theta_true)
 

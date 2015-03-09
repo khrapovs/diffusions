@@ -25,6 +25,7 @@ Feller condition for positivity of the volatility process is
 from __future__ import print_function, division
 
 import numpy as np
+from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
 
@@ -399,6 +400,24 @@ class Heston(SDE):
             * self.coef_big_c(theta) \
             + (1 - self.coef_big_a(theta)) * (1 - self.coef_big_a(theta)**2) \
             * self.coef_f3(theta)
+
+    def realized_depvar(self, data):
+        """Array of the left-hand side variables
+        in realized moment conditions.
+
+        Parameters
+        ----------
+        data : (2, nobs) array
+            Returns and realized variance
+
+        Returns
+        -------
+        (3, nobs) array
+            Dependend variables
+
+        """
+        ret, rvar = data
+        return np.vstack([ret, rvar, rvar**2])
 
 
 if __name__ == '__main__':

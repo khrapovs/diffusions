@@ -238,10 +238,8 @@ class GBM(SDE):
 
         Parameters
         ----------
-        ret : (nobs, ) array
-            Returns
-        rvar : (nobs, ) array
-            Realized variance
+        data : (2, nobs) array
+            Returns and realized variance
 
         Returns
         -------
