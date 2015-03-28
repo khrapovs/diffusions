@@ -26,8 +26,10 @@ from __future__ import print_function, division
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
+import numdifftools as nd
 
 from .generic_model import SDE
+from .helper_functions import columnwise_prod
 
 __all__ = ['Heston', 'HestonParam']
 
@@ -116,8 +118,8 @@ class HestonParam(object):
             Parameter vector
 
         """
-        return [self.riskfree, self.lmbd, self.mean_v,
-                self.kappa, self.eta, self.rho]
+        return np.array([self.riskfree, self.lmbd, self.mean_v,
+                         self.kappa, self.eta, self.rho])
 
 
 class Heston(SDE):
@@ -418,7 +420,7 @@ class Heston(SDE):
         """
         ret, rvar = data
         var = np.vstack([ret, rvar, rvar**2, ret * rvar])
-        return lagmat(var.T, maxlag=2, original=True)
+        return lagmat(var.T, maxlag=2, original=True)[2:]
 
     def realized_const(self, theta):
         """Intercept in the realized moment conditions.
@@ -430,7 +432,7 @@ class Heston(SDE):
 
         Returns
         -------
-        array
+        (4, ) array
             Intercept
 
         """
@@ -516,6 +518,79 @@ class Heston(SDE):
         mat_a = (self.mat_a0(theta), self.mat_a1(theta), self.mat_a2(theta))
         return np.hstack(mat_a)
 
+    def instruments(self, data, instrlag=1):
+        """Create an array of instruments.
+
+        Parameters
+        ----------
+        data : (ninstr, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        (nobs - instrlag, ninstr*instrlag + 1) array
+            Derivatives of the coefficient
+
+        """
+        instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)[instrlag:]
+        width = ((0, 0), (1, 0))
+        return np.pad(instr, width, mode='constant', constant_values=1)
+
+    def integrated_error(self, theta, data=None, instrlag=1):
+        """Integrated moment function.
+
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+        data : (2, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
+            Moment restrictions
+
+        """
+        ret, rvar = data
+        # (nobs - instrlag, 4) array
+        error = self.realized_depvar(data).dot(self.mat_a(theta).T) \
+            - self.realized_const(theta)
+
+        # (nobs - instrlag, ninstr*instrlag + 1)
+        instr = self.instruments(rvar, instrlag=instrlag)
+        lag = 2
+        # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
+        moms = columnwise_prod(error[lag:], instr[:-lag])
+
+        return moms
+
+    def diff_integrated_error(self, theta, data=None, instrlag=1):
+        """Integrated moment function.
+
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+        data : (2, nobs) array
+            Returns and realized variance
+        instrlag : int
+            Number of lags for the instruments
+
+        Returns
+        -------
+        dmoments : (nmoms, nparams) array
+            Average derivative of the moment restrictions
+
+        """
+        return nd.Jacobian(lambda x:
+            self.integrated_error(x, data=data,
+                                  instrlag=instrlag).mean(0))(theta)
+
     def integrated_mom(self, theta, data=None, instrlag=1):
         """Integrated moment function.
 
@@ -536,12 +611,9 @@ class Heston(SDE):
             Average derivative of the moment restrictions
 
         """
-        ret, rvar = data
-        # (nobs - instrlag, 4) array
-        error = self.realized_depvar(data).dot(self.mat_a(theta).T) \
-            - self.realized_const(theta)
-
-        return error
+        moms = self.integrated_error(theta, data=data, instrlag=instrlag)
+        dmoms = self.diff_integrated_error(theta, data=data, instrlag=instrlag)
+        return moms, dmoms
 
 
 if __name__ == '__main__':

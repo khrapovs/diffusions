@@ -491,33 +491,45 @@ class RealizedMomentsTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         heston.interval = .5
+        nparams = param.get_theta().size
 
         nperiods = 10
         data = np.ones((2, nperiods))
         instrlag = 2
 
         depvar = heston.realized_depvar(data)
-        # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (nperiods, 3 * 4))
 
-        moments = heston.integrated_mom(param.get_theta(),
-                                        data=data, instrlag=1)
-        self.assertEqual(moments.shape, (nperiods, 4))
-#        const = gbm.realized_const(param.theta)
-#        # Test shape of the intercept
-#        self.assertEqual(const.shape, (3, ))
-#
-#        instr = gbm.instruments(data, instrlag=instrlag)
-#        ninstr = 1 + data.shape[0] * instrlag
-#        # Test shape of instrument matrix
-#        self.assertEqual(instr.shape, (ninstr, nperiods - instrlag))
-#
-#        rmom, drmom = gbm.integrated_mom(param.theta, data=data,
-#                                         instrlag=instrlag)
-#        nmoms = 3 * ninstr
-#        # Test shape of moments and gradients
-#        self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
-#        self.assertEqual(drmom.shape, (nmoms, np.size(param.theta)))
+        # Test shape of dependent variables
+        self.assertEqual(depvar.shape, (nperiods-2, 3 * 4))
+
+        instruments = heston.instruments(data[0], instrlag=instrlag)
+        ninstr = 1
+        shape = (nperiods - instrlag, ninstr*instrlag + 1)
+
+        # Test the shape of instruments
+        self.assertEqual(instruments.shape, shape)
+
+        error = heston.integrated_error(param.get_theta(),
+                                        data=data, instrlag=instrlag)
+        nmoms = 4 * (ninstr*instrlag + 1)
+        mom_shape = (nperiods - instrlag - 2, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(error.shape, mom_shape)
+
+        dmom = heston.diff_integrated_error(param.get_theta(), data=data,
+                                            instrlag=instrlag)
+        dmom_shape = (nmoms, nparams)
+
+        # Test the shape of the Jacobian
+        self.assertEqual(dmom.shape, dmom_shape)
+
+        moments, dmoments = heston.integrated_mom(param.get_theta(),
+                                                  data=data, instrlag=instrlag)
+
+        # Test the shape of moments and their derivatives
+        self.assertEqual(moments.shape, mom_shape)
+        self.assertEqual(dmoments.shape, dmom_shape)
 
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
@@ -553,6 +565,8 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.mat_a2(theta).shape, (4, 4))
 
         self.assertEqual(heston.mat_a(theta).shape, (4, 3*4))
+
+        self.assertEqual(heston.realized_const(theta).shape, (4, ))
 
 
 if __name__ == '__main__':
