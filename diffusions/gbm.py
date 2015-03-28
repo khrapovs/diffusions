@@ -63,13 +63,22 @@ class GBMparam(object):
         """
         self.mean = mean
         self.sigma = sigma
-        # Vector of parameters
-        self.theta = [mean, sigma]
         # AJD parameters
         self.mat_k0 = mean - sigma**2/2
         self.mat_k1 = 0
         self.mat_h0 = sigma**2
         self.mat_h1 = 0
+
+    def get_theta(self):
+        """Return vector of parameters.
+
+        Returns
+        -------
+        (2, ) array
+            Parameter vector
+
+        """
+        return np.array([self.mean, self.sigma])
 
 
 class GBM(SDE):

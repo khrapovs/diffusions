@@ -102,23 +102,22 @@ class HestonParam(object):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         """
-        [self.riskfree, self.lmbd, self.mean_v,
-         self.kappa, self.eta, self.rho] = theta
+        [self.lmbd, self.mean_v, self.kappa, self.eta, self.rho] = theta
 
     def get_theta(self):
-        """Return vector of parameters.
+        """Return vector of model parameters.
 
         Returns
         -------
-        (6, ) array
+        (nparams, ) array
             Parameter vector
 
         """
-        return np.array([self.riskfree, self.lmbd, self.mean_v,
+        return np.array([self.lmbd, self.mean_v,
                          self.kappa, self.eta, self.rho])
 
 
@@ -145,7 +144,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -163,7 +162,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -181,7 +180,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -199,7 +198,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -217,7 +216,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -236,7 +235,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -256,7 +255,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -276,7 +275,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -297,7 +296,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -317,7 +316,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -338,7 +337,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -360,7 +359,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -386,7 +385,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -414,7 +413,7 @@ class Heston(SDE):
 
         Returns
         -------
-        (nobs, 3*4) array
+        (nobs, 3*nmoms) array
             Dependend variables
 
         """
@@ -427,7 +426,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -446,7 +445,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -464,7 +463,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -483,7 +482,7 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
@@ -496,7 +495,7 @@ class Heston(SDE):
         param.update(theta=theta)
         temp = self.coef_big_a(theta)**3
         mat_a = np.diag([1, -self.coef_big_a(theta), temp, temp])
-        mat_a[0, 1] = param.lmbd - .5
+        mat_a[0, 1] = .5 - param.lmbd
         return mat_a
 
     def mat_a(self, theta):
@@ -504,12 +503,12 @@ class Heston(SDE):
 
         Parameters
         ----------
-        theta : (6, ) array
+        theta : (nparams, ) array
             Parameter vector
 
         Returns
         -------
-        (4, 3*4) array
+        (nmoms, 3*nmoms) array
             Matrix A
 
         """
@@ -517,6 +516,44 @@ class Heston(SDE):
         param.update(theta=theta)
         mat_a = (self.mat_a0(theta), self.mat_a1(theta), self.mat_a2(theta))
         return np.hstack(mat_a)
+
+    def diff_mat_a(self, theta):
+        """Derivative of Matrix A in integrated moments.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        Returns
+        -------
+        (nmoms, 3*nmoms) array
+            Matrix A
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        diff = []
+        for i in range(self.mat_a(theta).shape[0]):
+            # (nparams, 3*nmoms)
+            diff.append(nd.Jacobian(lambda x: self.mat_a(x)[i])(theta))
+        return diff
+
+    def drealized_const(self, theta):
+        """Intercept in the realized moment conditions.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        Returns
+        -------
+        (nparams, nmoms) array
+            Intercept
+
+        """
+        return nd.Jacobian(self.realized_const)(theta)
 
     def instruments(self, data, instrlag=1):
         """Create an array of instruments.
@@ -538,7 +575,7 @@ class Heston(SDE):
         width = ((0, 0), (1, 0))
         return np.pad(instr, width, mode='constant', constant_values=1)
 
-    def integrated_error(self, theta, data=None, instrlag=1):
+    def integrated_mom(self, theta, data=None, instrlag=1):
         """Integrated moment function.
 
         Parameters
@@ -554,12 +591,14 @@ class Heston(SDE):
         -------
         moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
             Moment restrictions
+        dmoments : (nmoms, nparams) array
+            Average derivative of the moment restrictions
 
         """
         ret, rvar = data
+        depvar = self.realized_depvar(data)
         # (nobs - instrlag, 4) array
-        error = self.realized_depvar(data).dot(self.mat_a(theta).T) \
-            - self.realized_const(theta)
+        error = depvar.dot(self.mat_a(theta).T) - self.realized_const(theta)
 
         # (nobs - instrlag, ninstr*instrlag + 1)
         instr = self.instruments(rvar, instrlag=instrlag)
@@ -567,52 +606,16 @@ class Heston(SDE):
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error[lag:], instr[:-lag])
 
-        return moms
+        # (nparams, nmoms)
+        dconst = self.drealized_const(theta)
 
-    def diff_integrated_error(self, theta, data=None, instrlag=1):
-        """Integrated moment function.
+        dmoms = []
+        for mat_a, mat_c in zip(self.diff_mat_a(theta), dconst):
+            for i in range(instr.shape[1]):
+                left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
+                dmoms.append(left - mat_c)
+        dmoms = np.vstack(dmoms)
 
-        Parameters
-        ----------
-        theta : array
-            Model parameters
-        data : (2, nobs) array
-            Returns and realized variance
-        instrlag : int
-            Number of lags for the instruments
-
-        Returns
-        -------
-        dmoments : (nmoms, nparams) array
-            Average derivative of the moment restrictions
-
-        """
-        return nd.Jacobian(lambda x:
-            self.integrated_error(x, data=data,
-                                  instrlag=instrlag).mean(0))(theta)
-
-    def integrated_mom(self, theta, data=None, instrlag=1):
-        """Integrated moment function.
-
-        Parameters
-        ----------
-        theta : array
-            Model parameters
-        data : (2, nobs) array
-            Returns and realized variance
-        instrlag : int
-            Number of lags for the instruments
-
-        Returns
-        -------
-        moments : (nobs, nmoms) array
-            Moment restrictions
-        dmoments : (nmoms, nparams) array
-            Average derivative of the moment restrictions
-
-        """
-        moms = self.integrated_error(theta, data=data, instrlag=instrlag)
-        dmoms = self.diff_integrated_error(theta, data=data, instrlag=instrlag)
         return moms, dmoms
 
 

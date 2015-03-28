@@ -918,10 +918,10 @@ E_{t}\left[r_{t,h}\right]=r+\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{
 
 \end_inset
 
-The variance is
+The unconditional mean is
 \begin_inset Formula 
 \[
-V_{t}\left[r_{t,h}\right]=\frac{1}{h}E_{t}\left[\mathcal{V}_{t,h}\right].
+E\left[r_{t,h}\right]=r+\left(\lambda-\frac{1}{2}\right)\mu.
 \]
 
 \end_inset
@@ -1252,7 +1252,7 @@ Multiply conditional cross-moment by
 All in all, this gives us the following four integrated moments:
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[r_{t,h}+\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =r,\\
+E_{t}\left[r_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =r,\\
 E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{h},\\
 E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =R_{2},\\
 E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =R_{3},
@@ -1264,7 +1264,7 @@ or in matrix notation
 \begin_inset Formula 
 \[
 E_{t-2h}\left[\left(\begin{array}{cccc}
-L^{2} & \left(\lambda-\frac{1}{2}\right)L^{2}\\
+L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2}\\
  & \left(1-A_{h}L\right)L\\
  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
  &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)
@@ -1326,7 +1326,7 @@ A_{0}=\left(\begin{array}{cccc}
 \begin_inset Formula 
 \[
 A_{2}=\left(\begin{array}{cccc}
-1 & \lambda-\frac{1}{2} & \cdot & \cdot\\
+1 & \frac{1}{2}-\lambda & \cdot & \cdot\\
 \cdot & -A_{h} & \cdot & \cdot\\
 \cdot & \cdot & A_{h}^{3} & \cdot\\
 \cdot & \cdot & \cdot & A_{h}^{3}

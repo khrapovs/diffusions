@@ -341,7 +341,7 @@ class SDE(object):
 
         """
         estimator = GMM(self.momcond)
-        return estimator.gmmest(theta_start.theta, **kwargs)
+        return estimator.gmmest(theta_start.get_theta(), **kwargs)
 
     def integrated_gmm(self, theta_start, **kwargs):
         """Estimate model parameters using Integrated GMM.
@@ -354,7 +354,7 @@ class SDE(object):
 
         """
         estimator = GMM(self.integrated_mom)
-        return estimator.gmmest(theta_start.theta, **kwargs)
+        return estimator.gmmest(theta_start.get_theta(), **kwargs)
 
 
 if __name__ == '__main__':
