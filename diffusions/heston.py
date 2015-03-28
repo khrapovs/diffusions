@@ -412,13 +412,32 @@ class Heston(SDE):
 
         Returns
         -------
-        (nobs, 3*5) array
+        (nobs, 3*4) array
             Dependend variables
 
         """
         ret, rvar = data
-        var = np.vstack([np.ones_like(ret), ret, rvar, rvar**2, ret * rvar])
+        var = np.vstack([ret, rvar, rvar**2, ret * rvar])
         return lagmat(var.T, maxlag=2, original=True)
+
+    def realized_const(self, theta):
+        """Intercept in the realized moment conditions.
+
+        Parameters
+        ----------
+        theta : (6, ) array
+            Parameter vector
+
+        Returns
+        -------
+        array
+            Intercept
+
+        """
+        param = HestonParam()
+        param.update(theta=theta)
+        return np.array([param.riskfree, self.coef_big_c(theta),
+                         self.coef_r2(theta), self.coef_r3(theta)])
 
     def mat_a0(self, theta):
         """Matrix A_0 in integrated moments.
@@ -430,20 +449,13 @@ class Heston(SDE):
 
         Returns
         -------
-        (4, 5) array
+        (4, 4) array
             Matrix A_0
 
         """
         param = HestonParam()
         param.update(theta=theta)
-        mat_a = np.zeros((4, 5))
-        mat_a[0, 0] = - param.riskfree
-        mat_a[1, 0] = - self.coef_big_c(theta)
-        mat_a[2, 0] = - self.coef_r2(theta)
-        mat_a[3, 0] = - self.coef_r3(theta)
-        mat_a[2, 3] = 1
-        mat_a[3, 4] = 1
-        return mat_a
+        return np.diag([0, 0, 1, 1])
 
     def mat_a1(self, theta):
         """Matrix A_1 in integrated moments.
@@ -455,17 +467,14 @@ class Heston(SDE):
 
         Returns
         -------
-        (4, 5) array
+        (4, 4) array
             Matrix A_1
 
         """
         param = HestonParam()
         param.update(theta=theta)
-        mat_a = np.zeros((4, 5))
-        mat_a[1, 2] = 1
-        mat_a[2, 3] = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
-        mat_a[3, 4] = mat_a[2, 3]
-        return mat_a
+        temp = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
+        return np.diag([0, 1, temp, temp])
 
     def mat_a2(self, theta):
         """Matrix A_2 in integrated moments.
@@ -477,18 +486,15 @@ class Heston(SDE):
 
         Returns
         -------
-        (4, 5) array
+        (4, 4) array
             Matrix A_2
 
         """
         param = HestonParam()
         param.update(theta=theta)
-        mat_a = np.zeros((4, 5))
-        mat_a[0, 1] = 1
-        mat_a[0, 2] = param.lmbd - .5
-        mat_a[1, 2] = -self.coef_big_a(theta)
-        mat_a[2, 3] = self.coef_big_a(theta)**3
-        mat_a[3, 4] = mat_a[2, 3]
+        temp = self.coef_big_a(theta)**3
+        mat_a = np.diag([1, -self.coef_big_a(theta), temp, temp])
+        mat_a[0, 1] = param.lmbd - .5
         return mat_a
 
     def mat_a(self, theta):
@@ -501,7 +507,7 @@ class Heston(SDE):
 
         Returns
         -------
-        (4, 3*5) array
+        (4, 3*4) array
             Matrix A
 
         """
@@ -532,7 +538,8 @@ class Heston(SDE):
         """
         ret, rvar = data
         # (nobs - instrlag, 4) array
-        error = self.realized_depvar(data).dot(self.mat_a(theta).T)
+        error = self.realized_depvar(data).dot(self.mat_a(theta).T) \
+            - self.realized_const(theta)
 
         return error
 

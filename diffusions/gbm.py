@@ -261,7 +261,7 @@ class GBM(SDE):
         Returns
         -------
         array
-            Derivatives of the coefficient
+            Intercept
 
         """
         mean, sigma = theta

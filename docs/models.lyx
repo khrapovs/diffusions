@@ -1263,31 +1263,35 @@ E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{
 or in matrix notation
 \begin_inset Formula 
 \[
-E_{t-2h}\left[\left(\begin{array}{ccccc}
--r & L^{2} & \left(\lambda-\frac{1}{2}\right)L^{2}\\
--C_{h} &  & \left(1-A_{h}L\right)L\\
--R_{2} &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
--R_{3} &  &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)
+E_{t-2h}\left[\left(\begin{array}{cccc}
+L^{2} & \left(\lambda-\frac{1}{2}\right)L^{2}\\
+ & \left(1-A_{h}L\right)L\\
+ &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
+ &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)
 \end{array}\right)\left(\begin{array}{c}
-1\\
 r_{t,h}\\
 \mathcal{V}_{t,h}\\
 \mathcal{V}_{t,h}^{2}\\
 r_{t,h}\mathcal{V}_{t,h}
-\end{array}\right)\right]=0.
+\end{array}\right)\right]=\left(\begin{array}{c}
+r\\
+C_{h}\\
+R_{2}\\
+R_{3}
+\end{array}\right).
 \]
 
 \end_inset
 
 Define the data vector as 
-\begin_inset Formula $X_{t,h}=\left[1,r_{t,h},\mathcal{V}_{t,h},\mathcal{V}_{t,h}^{2},r_{t,h}\mathcal{V}_{t,h}\right]$
+\begin_inset Formula $X_{t,h}=\left[r_{t,h},\mathcal{V}_{t,h},\mathcal{V}_{t,h}^{2},r_{t,h}\mathcal{V}_{t,h}\right]$
 \end_inset
 
 .
  Then, the moment conditions can be written more compactly as 
 \begin_inset Formula 
 \[
-E_{t-2h}\left[A\left(L\right)X_{t,h}\right]=0,
+E_{t-2h}\left[A\left(L\right)X_{t,h}\right]=C,
 \]
 
 \end_inset
@@ -1303,16 +1307,16 @@ A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2},
 and
 \begin_inset Formula 
 \[
-A_{0}=\left(\begin{array}{ccccc}
--r & \cdot & \cdot & \cdot & \cdot\\
--C_{h} & \cdot & \cdot & \cdot & \cdot\\
--R_{2} & \cdot & \cdot & 1 & \cdot\\
--R_{3} & \cdot & \cdot & \cdot & 1
-\end{array}\right),\quad A_{1}=\left(\begin{array}{ccccc}
-\cdot & \cdot & \cdot & \cdot & \cdot\\
-\cdot & \cdot & 1 & \cdot & \cdot\\
-\cdot & \cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
-\cdot & \cdot & \cdot & \cdot & -A_{h}\left(1+A_{h}\right)
+A_{0}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & 1 & \cdot\\
+\cdot & \cdot & \cdot & 1
+\end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & 1 & \cdot & \cdot\\
+\cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
+\cdot & \cdot & \cdot & -A_{h}\left(1+A_{h}\right)
 \end{array}\right),
 \]
 
@@ -1321,11 +1325,11 @@ A_{0}=\left(\begin{array}{ccccc}
 
 \begin_inset Formula 
 \[
-A_{2}=\left(\begin{array}{ccccc}
-0 & 1 & \lambda-\frac{1}{2} & \cdot & \cdot\\
-\cdot & \cdot & -A_{h} & \cdot & \cdot\\
-\cdot & \cdot & \cdot & A_{h}^{3} & \cdot\\
-\cdot & \cdot & \cdot & \cdot & A_{h}^{3}
+A_{2}=\left(\begin{array}{cccc}
+1 & \lambda-\frac{1}{2} & \cdot & \cdot\\
+\cdot & -A_{h} & \cdot & \cdot\\
+\cdot & \cdot & A_{h}^{3} & \cdot\\
+\cdot & \cdot & \cdot & A_{h}^{3}
 \end{array}\right).
 \]
 
@@ -1339,7 +1343,7 @@ A_{0} & A_{1} & A_{2}\end{array}\right)\left(\begin{array}{c}
 X_{t,h}\\
 LX_{t,h}\\
 L^{2}X_{t,h}
-\end{array}\right)\right]=0,
+\end{array}\right)\right]=C,
 \]
 
 \end_inset

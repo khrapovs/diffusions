@@ -498,7 +498,7 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         depvar = heston.realized_depvar(data)
         # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (nperiods, 3 * 5))
+        self.assertEqual(depvar.shape, (nperiods, 3 * 4))
 
         moments = heston.integrated_mom(param.get_theta(),
                                         data=data, instrlag=1)
@@ -548,11 +548,11 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertIsInstance(heston.coef_r2(theta), float)
         self.assertIsInstance(heston.coef_r3(theta), float)
 
-        self.assertEqual(heston.mat_a0(theta).shape, (4, 5))
-        self.assertEqual(heston.mat_a1(theta).shape, (4, 5))
-        self.assertEqual(heston.mat_a2(theta).shape, (4, 5))
+        self.assertEqual(heston.mat_a0(theta).shape, (4, 4))
+        self.assertEqual(heston.mat_a1(theta).shape, (4, 4))
+        self.assertEqual(heston.mat_a2(theta).shape, (4, 4))
 
-        self.assertEqual(heston.mat_a(theta).shape, (4, 3*5))
+        self.assertEqual(heston.mat_a(theta).shape, (4, 3*4))
 
 
 if __name__ == '__main__':
