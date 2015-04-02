@@ -102,8 +102,14 @@ def try_integrated_gmm():
     theta_start = theta_true
     theta_start.update(theta_true.get_theta()/2)
     res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
-                                instr_choice='var', method='SLSQP',
+                                instr_choice='var', method='L-BFGS-B',
                                 use_jacob=False,
+                                bounds=theta_start.get_bounds())
+    res.print_results()
+
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
+                                instr_choice='var', method='L-BFGS-B',
+                                use_jacob=True,
                                 bounds=theta_start.get_bounds())
     res.print_results()
 
@@ -114,5 +120,5 @@ if __name__ == '__main__':
     sns.set_context('notebook')
 #    try_simulation()
 #    try_marginal()
-#    try_sim_realized()
-    try_integrated_gmm()
+    try_sim_realized()
+#    try_integrated_gmm()

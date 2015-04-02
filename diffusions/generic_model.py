@@ -326,7 +326,7 @@ class SDE(object):
         nobs = nperiods * intervals
         paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
-        rvar = returns.var(1) * intervals
+        rvar = (returns**2).sum(1)
         returns = returns.sum(1)
         return returns, rvar
 

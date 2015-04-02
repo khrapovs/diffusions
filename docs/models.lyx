@@ -1400,7 +1400,7 @@ Multiply this by
 Now multiply return by integrated volatility and take the expectation:
 \begin_inset Formula 
 \[
-E_{t}\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}^{2}\right]+E_{t}\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
+E_{t}\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}^{2}\right]=E_{t}\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
 \]
 
 \end_inset
@@ -1408,15 +1408,7 @@ E_{t}\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}\right]=\left(\lambda-\frac{1}{2}\rig
 We can guess that
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\tilde{r}_{t+2h,h}\mathcal{V}_{t+2h,h}\right]=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}\right].
-\]
-
-\end_inset
-
-The unconditional expectation of the cross product is
-\begin_inset Formula 
-\[
-E\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,h}^{2}\right]+E\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
+E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}^{2}\right)\right]=\left(1-A_{h}\right)E\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
 \]
 
 \end_inset
@@ -1440,7 +1432,7 @@ The last term is
 so
 \begin_inset Formula 
 \[
-E\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,h}^{2}\right]+\frac{\rho\mu\eta}{\kappa h}\left(1-a_{h}/h\right).
+E\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]=\frac{\rho\mu\eta}{\kappa h}\left(1-a_{h}/h\right).
 \]
 
 \end_inset
@@ -1520,10 +1512,10 @@ Multiply conditional cross-moment by
 All in all, this gives us the following four integrated moments:
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[\tilde{r}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =0,\\
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =\left(1-A_{h}\right)E\left[\mathcal{V}_{t+h,h}\right],\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t+2h,h}^{2}\right],\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\tilde{r}_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\tilde{r}_{t+2h,h}\mathcal{V}_{t+2h,h}\right],
+E_{t}\left[\tilde{r}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =C_{1}=0,\\
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{2},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,h}\mathcal{V}_{t+h,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,h}^{2}\right)\right] & =C_{4},
 \end{align*}
 
 \end_inset
@@ -1535,7 +1527,7 @@ E_{t-2h}\left[\left(\begin{array}{cccc}
 L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2}\\
  & \left(1-A_{h}L\right)L\\
  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
- &  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)
+ &  & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
 \end{array}\right)\left(\begin{array}{c}
 \tilde{r}_{t,h}\\
 \mathcal{V}_{t,h}\\
@@ -1579,7 +1571,7 @@ A_{0}=\left(\begin{array}{cccc}
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & 1 & \cdot & \cdot\\
 \cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
-\cdot & \cdot & \cdot & -A_{h}\left(1+A_{h}\right)
+\cdot & \cdot & \frac{1}{2}-\lambda & 1
 \end{array}\right),
 \]
 
@@ -1592,7 +1584,7 @@ A_{2}=\left(\begin{array}{cccc}
 1 & \frac{1}{2}-\lambda & \cdot & \cdot\\
 \cdot & -A_{h} & \cdot & \cdot\\
 \cdot & \cdot & A_{h}^{3} & \cdot\\
-\cdot & \cdot & \cdot & A_{h}^{3}
+\cdot & \cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & -A_{h}
 \end{array}\right).
 \]
 

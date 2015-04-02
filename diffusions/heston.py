@@ -276,8 +276,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        temp = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
-        return np.diag([0, 1, temp, temp])
+        mat_a1 = np.diag([0, 1, 0, 1])
+        mat_a1[2, 2] = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
+        mat_a1[3, 2] = .5 - param.lmbd
+        return mat_a1
 
     def mat_a2(self, theta):
         """Matrix A_2 in integrated moments.
@@ -295,9 +297,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        temp = self.coef_big_a(theta)**3
-        mat_a = np.diag([1, -self.coef_big_a(theta), temp, temp])
+        mat_a = np.diag([1, -self.coef_big_a(theta),
+                         self.coef_big_a(theta)**3, -self.coef_big_a(theta)])
         mat_a[0, 1] = .5 - param.lmbd
+        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(theta)
         return mat_a
 
     def mat_a(self, theta):
