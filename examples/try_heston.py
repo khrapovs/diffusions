@@ -107,6 +107,12 @@ def try_integrated_gmm():
                                 bounds=theta_start.get_bounds())
     res.print_results()
 
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
+                                instr_choice='var', method='SLSQP',
+                                use_jacob=True,
+                                bounds=theta_start.get_bounds())
+    res.print_results()
+
 
 if __name__ == '__main__':
 

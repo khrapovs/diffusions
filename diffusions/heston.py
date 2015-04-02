@@ -258,7 +258,7 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return np.diag([0, 0, 1, 1])
+        return np.diag([0, 0, 1, 1]).astype(float)
 
     def mat_a1(self, theta):
         """Matrix A_1 in integrated moments.
