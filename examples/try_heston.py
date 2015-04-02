@@ -98,7 +98,10 @@ def try_integrated_gmm():
     data = heston.sim_realized(start, interval, ndiscr,
                                nperiods, nsim, diff=0)
 
-    res = heston.integrated_gmm(theta_true, data=data, instrlag=2)
+    theta_start = theta_true
+    theta_start.update(theta_true.get_theta()/2)
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
+                                instr_choice='var')
     res.print_results()
 
 

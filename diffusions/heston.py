@@ -24,6 +24,8 @@ Feller condition for positivity of the volatility process is
 """
 from __future__ import print_function, division
 
+import warnings
+
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 import numdifftools as nd
@@ -155,7 +157,8 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return np.exp(-param.kappa * self.interval)
+        h = 1
+        return np.exp(-param.kappa * h)
 
     def coef_small_a(self, theta):
         """Coefficient a_h in exact discretization of volatility.
@@ -209,200 +212,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return (self.interval - self.coef_small_a(theta)) * param.mean_v
+        h = 1
+        return (h - self.coef_small_a(theta)) * param.mean_v
 
-    def coef_d1(self, theta):
-        """Coefficient D_1 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient D_1
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.eta**2 / param.kappa * self.coef_big_a(theta) \
-            * (1 - self.coef_big_a(theta))
-
-    def coef_f1(self, theta):
-        """Coefficient F_1 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient F_1
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.mean_v * param.eta**2 / param.kappa / 2 \
-            * (1 - self.coef_big_a(theta)**2) \
-            * (1 - self.coef_big_a(theta))
-
-    def coef_d2(self, theta):
-        """Coefficient D_2 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient D_2
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return (param.eta / param.kappa / self.interval)**2 \
-            * ((1 - self.coef_big_a(theta)**2) / param.kappa \
-            - 2 * self.interval * self.coef_big_a(theta))
-
-    def coef_f2(self, theta):
-        """Coefficient F_2 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient F_2
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.mean_v * (param.eta / param.kappa / self.interval)**2 \
-            * (self.interval * (1 + 2 * self.coef_big_a(theta)) \
-            - (1 - self.coef_big_a(theta)) * (5 + self.coef_big_a(theta)) \
-            / param.kappa / 2)
-
-    def coef_d3(self, theta):
-        """Coefficient D_3 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient D_3
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.rho * param.eta / param.kappa / self.interval**2 \
-            * ((1 - self.coef_big_a(theta)) / param.kappa \
-            - self.coef_big_a(theta) * self.interval)
-
-    def coef_f3(self, theta):
-        """Coefficient F_3 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient F_3
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.mean_v * param.rho * param.eta / param.kappa \
-            / self.interval**2 \
-            * ((1 + self.coef_big_a(theta)) * self.interval \
-            - (1 - self.coef_big_a(theta)) / param.kappa * 2)
-
-    def coef_r1(self, theta):
-        """Coefficient R_1 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient R_1
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return (1 - self.coef_big_a(theta)) \
-            * (self.coef_f1(theta) + self.coef_big_c(theta)**2) \
-            + (self.coef_d1(theta) \
-            + 2 * self.coef_big_a(theta) * self.coef_big_c(theta)) \
-            * self.coef_big_c(theta)
-
-    def coef_r2(self, theta):
-        """Coefficient R_2 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient R_2
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return ((1 - self.coef_big_a(theta)) \
-            * (self.coef_f2(theta) \
-            + self.coef_small_c(theta) / self.interval**2) \
-            + (self.coef_d2(theta) \
-            + 2 * self.coef_small_a(theta) * self.coef_small_c(theta) \
-            / self.interval**2) * self.coef_big_c(theta)) \
-            * (1 - self.coef_big_a(theta)**2) \
-            + self.coef_small_a(theta)**2 / self.interval**2 \
-            * self.coef_r1(theta)
-
-    def coef_r3(self, theta):
-        """Coefficient R_3 in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient R_3
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return (param.lmbd - .5) * self.coef_r2(theta) \
-            + (1 - self.coef_big_a(theta)**2) * self.coef_d3(theta) \
-            * self.coef_big_c(theta) \
-            + (1 - self.coef_big_a(theta)) * (1 - self.coef_big_a(theta)**2) \
-            * self.coef_f3(theta)
-
-    def realized_depvar(self, data):
+    def depvar_unc_mean(self, theta):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -417,9 +230,23 @@ class Heston(SDE):
             Dependend variables
 
         """
-        ret, rvar = data
-        var = np.vstack([ret, rvar, rvar**2, ret * rvar])
-        return lagmat(var.T, maxlag=2, original=True)[2:]
+        param = HestonParam()
+        param.update(theta=theta)
+        h = 1
+
+        mean_ret = (param.lmbd - .5) * param.mean_v
+
+        mean_vol = param.mean_v
+
+        mean_vol2 = (param.mean_v * (param.eta / param.kappa)**2
+                     * (1 - self.coef_small_a(theta) / h) / h
+                     + param.mean_v**2)
+
+        mean_cross = ((param.lmbd - .5) * mean_vol2
+                      + param.rho * param.mean_v * param.eta / param.kappa / h
+                      * (1 - self.coef_small_a(theta) / h))
+
+        return np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
 
     def realized_const(self, theta):
         """Intercept in the realized moment conditions.
@@ -437,8 +264,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return np.array([param.riskfree, self.coef_big_c(theta),
-                         self.coef_r2(theta), self.coef_r3(theta)])
+#        return np.array([param.riskfree, self.coef_big_c(theta),
+#                         self.coef_r2(theta), self.coef_r3(theta)])
+        return ((self.mat_a0(theta) + self.mat_a1(theta) + self.mat_a2(theta))
+            * self.depvar_unc_mean(theta)).sum(1)
 
     def mat_a0(self, theta):
         """Matrix A_0 in integrated moments.
@@ -527,7 +356,7 @@ class Heston(SDE):
 
         Returns
         -------
-        (nmoms, 3*nmoms) array
+        list of nmoms (3*nmoms, nparams) arrays
             Matrix A
 
         """
@@ -549,13 +378,35 @@ class Heston(SDE):
 
         Returns
         -------
-        (nparams, nmoms) array
+        (nmoms, nparams) array
             Intercept
 
         """
-        return nd.Jacobian(self.realized_const)(theta)
+        try:
+            return nd.Jacobian(self.realized_const)(theta)
+        except:
+            print('bad')
 
-    def instruments(self, data, instrlag=1):
+    def realized_depvar(self, data):
+        """Array of the left-hand side variables
+        in realized moment conditions.
+
+        Parameters
+        ----------
+        data : (2, nobs) array
+            Returns and realized variance
+
+        Returns
+        -------
+        (nobs, 3*nmoms) array
+            Dependend variables
+
+        """
+        ret, rvar = data
+        var = np.vstack([ret, rvar, rvar**2, ret * rvar])
+        return lagmat(var.T, maxlag=2, original='in')
+
+    def instruments(self, data=None, instrlag=0, nobs=None):
         """Create an array of instruments.
 
         Parameters
@@ -567,15 +418,19 @@ class Heston(SDE):
 
         Returns
         -------
-        (nobs - instrlag, ninstr*instrlag + 1) array
-            Derivatives of the coefficient
+        (nobs, ninstr*instrlag + 1) array
+            Instrument array
 
         """
-        instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)[instrlag:]
-        width = ((0, 0), (1, 0))
-        return np.pad(instr, width, mode='constant', constant_values=1)
+        if data is None:
+            return np.ones((nobs, 1))
+        else:
+            instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
+            width = ((0, 0), (1, 0))
+            return np.pad(instr, width, mode='constant', constant_values=1)
 
-    def integrated_mom(self, theta, data=None, instrlag=1):
+    def integrated_mom(self, theta, data=None, instr_choice='const',
+                       instrlag=1):
         """Integrated moment function.
 
         Parameters
@@ -586,6 +441,10 @@ class Heston(SDE):
             Returns and realized variance
         instrlag : int
             Number of lags for the instruments
+        instr_choice : str {'const', 'var'}
+            Choice of instruments.
+                - 'const' : just a constant (unconditional moments)
+                - 'var' : lags of data
 
         Returns
         -------
@@ -596,15 +455,22 @@ class Heston(SDE):
 
         """
         ret, rvar = data
-        depvar = self.realized_depvar(data)
-        # (nobs - instrlag, 4) array
+        lag = 2
+        # self.realized_depvar(data): (nobs, 3*nmoms)
+        depvar = self.realized_depvar(data)[lag:]
+        # (nobs - lag, 4) array
         error = depvar.dot(self.mat_a(theta).T) - self.realized_const(theta)
 
-        # (nobs - instrlag, ninstr*instrlag + 1)
-        instr = self.instruments(rvar, instrlag=instrlag)
-        lag = 2
+        # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
+        # (nobs-lag, ninstr*instrlag+1)
+        if instr_choice == 'const':
+            instr = self.instruments(nobs=rvar.size)[:-lag]
+        else:
+            instr = self.instruments(rvar, instrlag=instrlag)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
-        moms = columnwise_prod(error[lag:], instr[:-lag])
+        moms = columnwise_prod(error, instr)
+        if moms.shape[1] <= 5:
+            warnings.warn("Not enough degrees of freedom!")
 
         # (nparams, nmoms)
         dconst = self.drealized_const(theta)

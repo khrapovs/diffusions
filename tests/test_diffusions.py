@@ -484,6 +484,33 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
         self.assertEqual(drmom.shape, (nmoms, np.size(param.get_theta())))
 
+    def test_heston_instruments(self):
+        """Test realized moments of Heston model."""
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho)
+        heston = Heston(param)
+        heston.interval = .5
+
+        nperiods = 10
+        data = np.ones((2, nperiods))
+        instrlag = 2
+
+        instruments = heston.instruments(data[0], instrlag=instrlag)
+        ninstr = 1
+        shape = (nperiods, ninstr*instrlag + 1)
+
+        # Test the shape of instruments
+        self.assertEqual(instruments.shape, shape)
+
+        instruments = heston.instruments(nobs=nperiods)
+        ninstr = 0
+        shape = (nperiods, ninstr*instrlag + 1)
+
+        # Test the shape of instruments
+        self.assertEqual(instruments.shape, shape)
+
     def test_heston_relized_mom(self):
         """Test realized moments of Heston model."""
         riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
@@ -498,23 +525,18 @@ class RealizedMomentsTestCase(ut.TestCase):
         nperiods = 10
         data = np.ones((2, nperiods))
         instrlag = 2
+        ninstr = 1
 
         depvar = heston.realized_depvar(data)
 
         # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (nperiods-2, 3 * 4))
-
-        instruments = heston.instruments(data[0], instrlag=instrlag)
-        ninstr = 1
-        shape = (nperiods - instrlag, ninstr*instrlag + 1)
-
-        # Test the shape of instruments
-        self.assertEqual(instruments.shape, shape)
+        self.assertEqual(depvar.shape, (nperiods, 3 * 4))
 
         mom, dmom = heston.integrated_mom(param.get_theta(),
+                                          instr_choice='var',
                                           data=data, instrlag=instrlag)
         nmoms_all = nmoms * (ninstr*instrlag + 1)
-        mom_shape = (nperiods - instrlag - 2, nmoms_all)
+        mom_shape = (nperiods - instrlag, nmoms_all)
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
@@ -523,6 +545,15 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of the Jacobian
         self.assertEqual(dmom.shape, dmom_shape)
+
+        mom, dmom = heston.integrated_mom(param.get_theta(),
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms_all = nmoms
+        mom_shape = (nperiods - instrlag, nmoms_all)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
 
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
@@ -543,18 +574,6 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertIsInstance(heston.coef_big_c(theta), float)
         self.assertIsInstance(heston.coef_small_c(theta), float)
 
-        self.assertIsInstance(heston.coef_d1(theta), float)
-        self.assertIsInstance(heston.coef_d2(theta), float)
-        self.assertIsInstance(heston.coef_d3(theta), float)
-
-        self.assertIsInstance(heston.coef_f1(theta), float)
-        self.assertIsInstance(heston.coef_f2(theta), float)
-        self.assertIsInstance(heston.coef_f3(theta), float)
-
-        self.assertIsInstance(heston.coef_r1(theta), float)
-        self.assertIsInstance(heston.coef_r2(theta), float)
-        self.assertIsInstance(heston.coef_r3(theta), float)
-
         self.assertEqual(heston.mat_a0(theta).shape, (4, 4))
         self.assertEqual(heston.mat_a1(theta).shape, (4, 4))
         self.assertEqual(heston.mat_a2(theta).shape, (4, 4))
@@ -562,6 +581,19 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.mat_a(theta).shape, (4, 3*4))
 
         self.assertEqual(heston.realized_const(theta).shape, (4, ))
+        self.assertEqual(heston.realized_const(theta)[0], 0)
+        res = heston.coef_big_c(theta)
+        self.assertEqual(heston.realized_const(theta)[1], res)
+        res = param.mean_v * (1 - heston.coef_big_a(theta))
+        self.assertEqual(heston.realized_const(theta)[1], res)
+        res = heston.depvar_unc_mean(theta)[2] \
+            * (1 - heston.coef_big_a(theta)) \
+            * (1 - heston.coef_big_a(theta)**2)
+        self.assertEqual(heston.realized_const(theta)[2], res)
+        res = heston.depvar_unc_mean(theta)[3] \
+            * (1 - heston.coef_big_a(theta)) \
+            * (1 - heston.coef_big_a(theta)**2)
+        self.assertEqual(heston.realized_const(theta)[3], res)
 
         dconst = heston.drealized_const(param.get_theta())
 
@@ -574,7 +606,6 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(len(dmat_a), nmoms)
         for mat in dmat_a:
             self.assertEqual(mat.shape, (3*nmoms, nparams))
-
 
 
 if __name__ == '__main__':
