@@ -583,14 +583,21 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.realized_const(theta).shape, (4, ))
         self.assertEqual(heston.realized_const(theta)[0], 0)
 
+        res = heston.depvar_unc_mean(theta)[1] * (1 - heston.coef_big_a(theta))
+
+        self.assertEqual(heston.realized_const(theta)[1], res)
+
         res = heston.depvar_unc_mean(theta)[2] \
             * (1 - heston.coef_big_a(theta)) \
             * (1 - heston.coef_big_a(theta)**2)
+
         self.assertEqual(heston.realized_const(theta)[2], res)
-        res = heston.depvar_unc_mean(theta)[3] \
-            * (1 - heston.coef_big_a(theta)) \
-            * (1 - heston.coef_big_a(theta)**2)
-        self.assertEqual(heston.realized_const(theta)[3], res)
+
+        res = (heston.depvar_unc_mean(theta)[2] * (.5 - param.lmbd) \
+            + heston.depvar_unc_mean(theta)[3]) \
+            * (1 - heston.coef_big_a(theta))
+
+        self.assertAlmostEqual(heston.realized_const(theta)[3], res)
 
         dconst = heston.drealized_const(param.get_theta())
 

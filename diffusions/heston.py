@@ -258,7 +258,7 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return np.diag([0, 0, 1, 1])
+        return np.diag([0, 0, 1, 0]).astype(float)
 
     def mat_a1(self, theta):
         """Matrix A_1 in integrated moments.
@@ -276,10 +276,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        mat_a1 = np.diag([0, 1, 0, 1])
-        mat_a1[2, 2] = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
-        mat_a1[3, 2] = .5 - param.lmbd
-        return mat_a1
+        mat_a = np.diag([0, 1, 0, 1]).astype(float)
+        mat_a[2, 2] = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
+        mat_a[3, 2] = .5 - param.lmbd
+        return mat_a
 
     def mat_a2(self, theta):
         """Matrix A_2 in integrated moments.
@@ -453,11 +453,11 @@ class Heston(SDE):
 
         # (nmoms, nparams)
         dconst = self.drealized_const(theta)
-        diff_mat_a = self.diff_mat_a(theta)
+        dmat_a = self.diff_mat_a(theta)
 
         dmoms = []
         for i in range(instr.shape[1]):
-            for mat_a, mat_c in zip(diff_mat_a, dconst):
+            for mat_a, mat_c in zip(dmat_a, dconst):
                 left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
                 dmoms.append(left - mat_c)
         dmoms = np.vstack(dmoms)

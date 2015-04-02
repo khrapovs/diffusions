@@ -1566,7 +1566,7 @@ A_{0}=\left(\begin{array}{cccc}
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & \cdot & 1 & \cdot\\
-\cdot & \cdot & \cdot & 1
+\cdot & \cdot & \cdot & \cdot
 \end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & 1 & \cdot & \cdot\\
