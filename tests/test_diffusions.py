@@ -522,8 +522,10 @@ class RealizedMomentsTestCase(ut.TestCase):
         nparams = param.get_theta().size
         nmoms = 4
 
-        nperiods = 10
-        data = np.ones((2, nperiods))
+        nperiods = 5
+        ret = np.arange(nperiods)
+        rvar = ret ** 2
+        data = np.vstack([ret, rvar])
         instrlag = 2
         ninstr = 1
 
@@ -571,8 +573,6 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         self.assertIsInstance(heston.coef_big_a(theta), float)
         self.assertIsInstance(heston.coef_small_a(theta), float)
-        self.assertIsInstance(heston.coef_big_c(theta), float)
-        self.assertIsInstance(heston.coef_small_c(theta), float)
 
         self.assertEqual(heston.mat_a0(theta).shape, (4, 4))
         self.assertEqual(heston.mat_a1(theta).shape, (4, 4))
@@ -582,10 +582,7 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         self.assertEqual(heston.realized_const(theta).shape, (4, ))
         self.assertEqual(heston.realized_const(theta)[0], 0)
-        res = heston.coef_big_c(theta)
-        self.assertEqual(heston.realized_const(theta)[1], res)
-        res = param.mean_v * (1 - heston.coef_big_a(theta))
-        self.assertEqual(heston.realized_const(theta)[1], res)
+
         res = heston.depvar_unc_mean(theta)[2] \
             * (1 - heston.coef_big_a(theta)) \
             * (1 - heston.coef_big_a(theta)**2)

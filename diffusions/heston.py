@@ -122,6 +122,18 @@ class HestonParam(object):
         return np.array([self.lmbd, self.mean_v,
                          self.kappa, self.eta, self.rho])
 
+    def get_bounds(self):
+        """Bounds on parameters.
+
+        Returns
+        -------
+        sequence of (min, max) tuples
+
+        """
+        lb = [None, 1e-5, 1e-5, 1e-5, -1]
+        ub = [None, None, None, None, 1]
+        return list(zip(lb, ub))
+
 
 class Heston(SDE):
 
@@ -178,43 +190,6 @@ class Heston(SDE):
         param.update(theta=theta)
         return (1 - self.coef_big_a(theta)) / param.kappa
 
-    def coef_big_c(self, theta):
-        """Coefficient C_h in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient C_h
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        return (1 - self.coef_big_a(theta)) * param.mean_v
-
-    def coef_small_c(self, theta):
-        """Coefficient c_h in exact discretization of volatility.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        Returns
-        -------
-        float
-            Coefficient c_h
-
-        """
-        param = HestonParam()
-        param.update(theta=theta)
-        h = 1
-        return (h - self.coef_small_a(theta)) * param.mean_v
-
     def depvar_unc_mean(self, theta):
         """Array of the left-hand side variables
         in realized moment conditions.
@@ -264,8 +239,6 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-#        return np.array([param.riskfree, self.coef_big_c(theta),
-#                         self.coef_r2(theta), self.coef_r3(theta)])
         return ((self.mat_a0(theta) + self.mat_a1(theta) + self.mat_a2(theta))
             * self.depvar_unc_mean(theta)).sum(1)
 
@@ -365,7 +338,10 @@ class Heston(SDE):
         diff = []
         for i in range(self.mat_a(theta).shape[0]):
             # (nparams, 3*nmoms)
-            diff.append(nd.Jacobian(lambda x: self.mat_a(x)[i])(theta))
+            try:
+                diff.append(nd.Jacobian(lambda x: self.mat_a(x)[i])(theta))
+            except:
+                print('Bad!')
         return diff
 
     def drealized_const(self, theta):
@@ -430,7 +406,7 @@ class Heston(SDE):
             return np.pad(instr, width, mode='constant', constant_values=1)
 
     def integrated_mom(self, theta, data=None, instr_choice='const',
-                       instrlag=1):
+                       instrlag=1., **kwargs):
         """Integrated moment function.
 
         Parameters
@@ -472,12 +448,13 @@ class Heston(SDE):
         if moms.shape[1] <= 5:
             warnings.warn("Not enough degrees of freedom!")
 
-        # (nparams, nmoms)
+        # (nmoms, nparams)
         dconst = self.drealized_const(theta)
+        diff_mat_a = self.diff_mat_a(theta)
 
         dmoms = []
-        for mat_a, mat_c in zip(self.diff_mat_a(theta), dconst):
-            for i in range(instr.shape[1]):
+        for i in range(instr.shape[1]):
+            for mat_a, mat_c in zip(diff_mat_a, dconst):
                 left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
                 dmoms.append(left - mat_c)
         dmoms = np.vstack(dmoms)

@@ -83,7 +83,8 @@ def try_sim_realized():
 
 def try_integrated_gmm():
     riskfree = .0
-    lmbd = .0
+
+    lmbd = .3
     mean_v = .5
     kappa = .1
     eta = .02**.5
@@ -101,7 +102,9 @@ def try_integrated_gmm():
     theta_start = theta_true
     theta_start.update(theta_true.get_theta()/2)
     res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
-                                instr_choice='var')
+                                instr_choice='var', method='SLSQP',
+                                use_jacob=False,
+                                bounds=theta_start.get_bounds())
     res.print_results()
 
 

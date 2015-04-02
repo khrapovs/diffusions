@@ -1521,9 +1521,9 @@ All in all, this gives us the following four integrated moments:
 \begin_inset Formula 
 \begin{align*}
 E_{t}\left[\tilde{r}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =0,\\
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{h},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =R_{2},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)r_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =R_{3},
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =\left(1-A_{h}\right)E\left[\mathcal{V}_{t+h,h}\right],\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t+2h,h}^{2}\right],\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\tilde{r}_{t+2h,h}\mathcal{V}_{t+2h,h}\right] & =\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\tilde{r}_{t+2h,h}\mathcal{V}_{t+2h,h}\right],
 \end{align*}
 
 \end_inset
