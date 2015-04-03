@@ -7,6 +7,7 @@ Try Heston model
 from __future__ import print_function, division
 
 import time
+import itertools
 
 import numpy as np
 import seaborn as sns
@@ -90,7 +91,7 @@ def try_integrated_gmm():
     mean_v = .5
     kappa = .1
     eta = .02**.5
-    rho = -.9
+    rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
@@ -100,31 +101,23 @@ def try_integrated_gmm():
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/80, 1, 1
     data = heston.sim_realized(start, interval, ndiscr,
                                nperiods, nsim, diff=0)
+    ret, rvar = data
+    instr_data = np.vstack([rvar, rvar**2])
 
     theta_start = theta_true
     theta_start.update(theta_true.get_theta()/2)
 
-    res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
-                                instr_choice='var', method='SLSQP',
-                                use_jacob=True, exact_jacob=True,
-                                bounds=theta_start.get_bounds())
-    res.print_results()
-
-    res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
-                                instr_choice='var', method='SLSQP',
-                                use_jacob=True,
-                                bounds=theta_start.get_bounds())
-    res.print_results()
-#    for jacob in [True, False]:
-#        for method in ['L-BFGS-B', 'TNC', 'SLSQP']:
-#            time_start = time.time()
-#            res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
-#                                        instr_choice='var', method=method,
-#                                        use_jacob=jacob,
-#                                        bounds=theta_start.get_bounds())
-#            res.print_results()
-#            print(jacob, method)
-#            print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+    tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
+    for lag, method in tasks:
+        time_start = time.time()
+        res = heston.integrated_gmm(theta_start, data=data, instrlag=lag,
+                                    instr_data=instr_data,
+                                    instr_choice='var', method=method,
+                                    use_jacob=True, exact_jacob=False,
+                                    bounds=theta_start.get_bounds(), iter=3)
+        res.print_results()
+        print(lag, method)
+        print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
 if __name__ == '__main__':

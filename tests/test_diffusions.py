@@ -527,14 +527,16 @@ class RealizedMomentsTestCase(ut.TestCase):
         rvar = ret ** 2
         data = np.vstack([ret, rvar])
         instrlag = 2
-        ninstr = 1
 
         depvar = heston.realized_depvar(data)
+        instr_data = np.vstack([rvar, rvar**2])
+        ninstr = instr_data.shape[0]
 
         # Test shape of dependent variables
         self.assertEqual(depvar.shape, (nperiods, 3 * 4))
 
         mom, dmom = heston.integrated_mom(param.get_theta(),
+                                          instr_data=instr_data,
                                           instr_choice='var', exact_jacob=True,
                                           data=data, instrlag=instrlag)
         nmoms_all = nmoms * (ninstr*instrlag + 1)

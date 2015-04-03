@@ -406,7 +406,8 @@ class Heston(SDE):
             width = ((0, 0), (1, 0))
             return np.pad(instr, width, mode='constant', constant_values=1)
 
-    def integrated_mom(self, theta, data=None, instr_choice='const',
+    def integrated_mom(self, theta, data=None, instr_data=None,
+                       instr_choice='const',
                        instrlag=1., exact_jacob=False, **kwargs):
         """Integrated moment function.
 
@@ -443,7 +444,7 @@ class Heston(SDE):
         if instr_choice == 'const':
             instr = self.instruments(nobs=rvar.size)[:-lag]
         else:
-            instr = self.instruments(rvar, instrlag=instrlag)[:-lag]
+            instr = self.instruments(instr_data, instrlag=instrlag)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
 
