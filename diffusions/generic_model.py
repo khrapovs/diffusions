@@ -103,7 +103,8 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from diffusions.mygmm import GMM
+#from diffusions.mygmm import GMM
+from mygmm import GMM
 from .helper_functions import nice_errors, ajd_drift, ajd_diff
 
 __all__ = ['SDE']
@@ -326,7 +327,7 @@ class SDE(object):
         nobs = nperiods * intervals
         paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
-        rvar = returns.var(1) * intervals
+        rvar = (returns**2).sum(1)
         returns = returns.sum(1)
         return returns, rvar
 

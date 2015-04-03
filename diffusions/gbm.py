@@ -290,7 +290,8 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        return nd.Jacobian(self.realized_const)(theta)
+        with np.errstate(divide='ignore'):
+            return nd.Jacobian(self.realized_const)(theta)
 
     def instruments(self, data, instrlag=1):
         """Create an array of instruments.

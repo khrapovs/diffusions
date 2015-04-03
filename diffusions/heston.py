@@ -81,6 +81,8 @@ class HestonParam(object):
         self.kappa = kappa
         self.eta = eta
         self.rho = rho
+        if not self.is_valid():
+            warnings.warn('Feller condition is violated!')
         # AJD parameters
         self.mat_k0 = [riskfree, kappa * mean_v]
         self.mat_k1 = [[0, lmbd - .5], [0, -kappa]]
@@ -258,7 +260,7 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        return np.diag([0, 0, 1, 1]).astype(float)
+        return np.diag([0, 0, 1, 0]).astype(float)
 
     def mat_a1(self, theta):
         """Matrix A_1 in integrated moments.
@@ -276,8 +278,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        temp = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
-        return np.diag([0, 1, temp, temp])
+        mat_a = np.diag([0, 1, 0, 1]).astype(float)
+        mat_a[2, 2] = -self.coef_big_a(theta) * (1 + self.coef_big_a(theta))
+        mat_a[3, 2] = .5 - param.lmbd
+        return mat_a
 
     def mat_a2(self, theta):
         """Matrix A_2 in integrated moments.
@@ -295,9 +299,10 @@ class Heston(SDE):
         """
         param = HestonParam()
         param.update(theta=theta)
-        temp = self.coef_big_a(theta)**3
-        mat_a = np.diag([1, -self.coef_big_a(theta), temp, temp])
+        mat_a = np.diag([1, -self.coef_big_a(theta),
+                         self.coef_big_a(theta)**3, -self.coef_big_a(theta)])
         mat_a[0, 1] = .5 - param.lmbd
+        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(theta)
         return mat_a
 
     def mat_a(self, theta):
@@ -337,11 +342,9 @@ class Heston(SDE):
         param.update(theta=theta)
         diff = []
         for i in range(self.mat_a(theta).shape[0]):
-            # (nparams, 3*nmoms)
-            try:
+            # (3*nmoms, nparams)
+            with np.errstate(divide='ignore'):
                 diff.append(nd.Jacobian(lambda x: self.mat_a(x)[i])(theta))
-            except:
-                print('Bad!')
         return diff
 
     def drealized_const(self, theta):
@@ -358,10 +361,8 @@ class Heston(SDE):
             Intercept
 
         """
-        try:
+        with np.errstate(divide='ignore'):
             return nd.Jacobian(self.realized_const)(theta)
-        except:
-            print('bad')
 
     def realized_depvar(self, data):
         """Array of the left-hand side variables
@@ -406,7 +407,7 @@ class Heston(SDE):
             return np.pad(instr, width, mode='constant', constant_values=1)
 
     def integrated_mom(self, theta, data=None, instr_choice='const',
-                       instrlag=1., **kwargs):
+                       instrlag=1., exact_jacob=False, **kwargs):
         """Integrated moment function.
 
         Parameters
@@ -445,19 +446,20 @@ class Heston(SDE):
             instr = self.instruments(rvar, instrlag=instrlag)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
-        if moms.shape[1] <= 5:
-            warnings.warn("Not enough degrees of freedom!")
 
-        # (nmoms, nparams)
-        dconst = self.drealized_const(theta)
-        diff_mat_a = self.diff_mat_a(theta)
+        if exact_jacob:
+            # (nmoms, nparams)
+            dconst = self.drealized_const(theta)
+            dmat_a = self.diff_mat_a(theta)
 
-        dmoms = []
-        for i in range(instr.shape[1]):
-            for mat_a, mat_c in zip(diff_mat_a, dconst):
-                left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
-                dmoms.append(left - mat_c)
-        dmoms = np.vstack(dmoms)
+            dmoms = []
+            for i in range(instr.shape[1]):
+                for mat_a, mat_c in zip(dmat_a, dconst):
+                    left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
+                    dmoms.append(left - mat_c)
+            dmoms = np.vstack(dmoms)
+        else:
+            dmoms = None
 
         return moms, dmoms
 

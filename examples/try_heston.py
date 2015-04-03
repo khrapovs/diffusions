@@ -6,6 +6,8 @@ Try Heston model
 """
 from __future__ import print_function, division
 
+import time
+
 import numpy as np
 import seaborn as sns
 
@@ -101,9 +103,10 @@ def try_integrated_gmm():
 
     theta_start = theta_true
     theta_start.update(theta_true.get_theta()/2)
+
     res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
                                 instr_choice='var', method='SLSQP',
-                                use_jacob=False,
+                                use_jacob=True, exact_jacob=True,
                                 bounds=theta_start.get_bounds())
     res.print_results()
 
@@ -112,6 +115,16 @@ def try_integrated_gmm():
                                 use_jacob=True,
                                 bounds=theta_start.get_bounds())
     res.print_results()
+#    for jacob in [True, False]:
+#        for method in ['L-BFGS-B', 'TNC', 'SLSQP']:
+#            time_start = time.time()
+#            res = heston.integrated_gmm(theta_start, data=data, instrlag=1,
+#                                        instr_choice='var', method=method,
+#                                        use_jacob=jacob,
+#                                        bounds=theta_start.get_bounds())
+#            res.print_results()
+#            print(jacob, method)
+#            print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
 if __name__ == '__main__':
