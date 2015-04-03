@@ -535,7 +535,7 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(depvar.shape, (nperiods, 3 * 4))
 
         mom, dmom = heston.integrated_mom(param.get_theta(),
-                                          instr_choice='var',
+                                          instr_choice='var', exact_jacob=True,
                                           data=data, instrlag=instrlag)
         nmoms_all = nmoms * (ninstr*instrlag + 1)
         mom_shape = (nperiods - instrlag, nmoms_all)

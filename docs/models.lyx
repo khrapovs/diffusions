@@ -1423,7 +1423,7 @@ The last term is
 = & \rho\mu\eta\int_{0}^{h}a_{h-u}du\\
 = & \rho\mu\eta\int_{0}^{h}\frac{1}{\kappa}\left(1-A_{h-u}\right)du\\
 = & \frac{\rho\mu\eta}{\kappa}\left(h-\frac{1}{\kappa}\left(1-A_{h}\right)\right)\\
-= & \frac{\rho\mu\eta}{\kappa}\left(h-a_{h}\right),
+= & \frac{\rho\mu\eta}{\kappa}\left(h-a_{h}\right)=\frac{\rho\eta}{\kappa}c_{h},
 \end{aligned}
 \]
 

@@ -81,6 +81,8 @@ class HestonParam(object):
         self.kappa = kappa
         self.eta = eta
         self.rho = rho
+        if not self.is_valid():
+            warnings.warn('Feller condition is violated!')
         # AJD parameters
         self.mat_k0 = [riskfree, kappa * mean_v]
         self.mat_k1 = [[0, lmbd - .5], [0, -kappa]]
@@ -340,11 +342,9 @@ class Heston(SDE):
         param.update(theta=theta)
         diff = []
         for i in range(self.mat_a(theta).shape[0]):
-            # (nparams, 3*nmoms)
-            try:
+            # (3*nmoms, nparams)
+            with np.errstate(divide='ignore'):
                 diff.append(nd.Jacobian(lambda x: self.mat_a(x)[i])(theta))
-            except:
-                print('Bad!')
         return diff
 
     def drealized_const(self, theta):
@@ -361,10 +361,8 @@ class Heston(SDE):
             Intercept
 
         """
-        try:
+        with np.errstate(divide='ignore'):
             return nd.Jacobian(self.realized_const)(theta)
-        except:
-            print('bad')
 
     def realized_depvar(self, data):
         """Array of the left-hand side variables
@@ -409,7 +407,7 @@ class Heston(SDE):
             return np.pad(instr, width, mode='constant', constant_values=1)
 
     def integrated_mom(self, theta, data=None, instr_choice='const',
-                       instrlag=1., **kwargs):
+                       instrlag=1., exact_jacob=False, **kwargs):
         """Integrated moment function.
 
         Parameters
@@ -448,19 +446,20 @@ class Heston(SDE):
             instr = self.instruments(rvar, instrlag=instrlag)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
-        if moms.shape[1] <= 5:
-            warnings.warn("Not enough degrees of freedom!")
 
-        # (nmoms, nparams)
-        dconst = self.drealized_const(theta)
-        dmat_a = self.diff_mat_a(theta)
+        if exact_jacob:
+            # (nmoms, nparams)
+            dconst = self.drealized_const(theta)
+            dmat_a = self.diff_mat_a(theta)
 
-        dmoms = []
-        for i in range(instr.shape[1]):
-            for mat_a, mat_c in zip(dmat_a, dconst):
-                left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
-                dmoms.append(left - mat_c)
-        dmoms = np.vstack(dmoms)
+            dmoms = []
+            for i in range(instr.shape[1]):
+                for mat_a, mat_c in zip(dmat_a, dconst):
+                    left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
+                    dmoms.append(left - mat_c)
+            dmoms = np.vstack(dmoms)
+        else:
+            dmoms = None
 
         return moms, dmoms
 
