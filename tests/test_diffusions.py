@@ -14,7 +14,8 @@ from diffusions import GBM, GBMparam
 from diffusions import Vasicek, VasicekParam
 from diffusions import CIR, CIRparam
 from diffusions import Heston, HestonParam
-from diffusions import nice_errors, ajd_drift, ajd_diff, columnwise_prod
+from diffusions import (nice_errors, ajd_drift, ajd_diff, columnwise_prod,
+                        rolling_window)
 
 
 class SDEParameterTestCase(ut.TestCase):
@@ -210,6 +211,18 @@ class HelperFunctionsTestCase(ut.TestCase):
         expected = columnwise_prod(left, right)
 
         np.testing.assert_array_equal(prod, expected)
+
+    def test_rolling_window(self):
+        """test riolling window apply."""
+
+        mat = rolling_window(np.sum, np.ones(5), window=2)
+
+        np.testing.assert_array_equal(mat, np.ones(4) * 2)
+        mat = np.arange(10).reshape((2,5))
+        mat = rolling_window(np.mean, mat, window=2)
+        expect = np.array([[ 0.5,  1.5,  2.5,  3.5], [ 5.5,  6.5,  7.5,  8.5]])
+
+        np.testing.assert_array_equal(mat, expect)
 
 
 class SimulationTestCase(ut.TestCase):

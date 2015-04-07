@@ -12,7 +12,7 @@ import seaborn as sns
 
 __all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
            'plot_trajectories', 'plot_final_distr', 'plot_realized',
-           'columnwise_prod']
+           'columnwise_prod', 'rolling_window']
 
 
 def ajd_drift(state, theta):
@@ -170,3 +170,42 @@ def columnwise_prod(left, right):
     """
     prod = left[:, np.newaxis, :] * right[:, :, np.newaxis]
     return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))
+
+
+def rolling_window(fun, mat, window=1):
+    """Rolling window apply.
+
+    Source: http://www.rigtorp.se/2011/01/01/rolling-statistics-numpy.html
+
+    Parameters
+    ----------
+    fun : function
+        Function to apply
+    mat : array_like
+        Data to transform
+    window : int
+        Window size
+    axis : int
+        Which axis to apply to
+
+    Returns
+    -------
+    array
+
+    Examples
+    --------
+    .. doctest::
+
+        >>> mat = np.arange(10).reshape((2,5))
+        >>> mat
+        array([[0, 1, 2, 3, 4],
+               [5, 6, 7, 8, 9]])
+        >>> rolling_window(np.mean, mat, window=2)
+        array([[ 0.5,  1.5,  2.5,  3.5],
+               [ 5.5,  6.5,  7.5,  8.5]])
+
+    """
+    shape = mat.shape[:-1] + (mat.shape[-1] - window + 1, window)
+    strides = mat.strides + (mat.strides[-1],)
+    mat = np.lib.stride_tricks.as_strided(mat, shape=shape, strides=strides)
+    return np.apply_along_axis(fun, -1, mat)
