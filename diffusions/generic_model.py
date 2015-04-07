@@ -104,7 +104,7 @@ from __future__ import print_function, division
 import numpy as np
 
 from diffusions.mygmm import GMM
-from .helper_functions import nice_errors, ajd_drift, ajd_diff
+from .helper_functions import nice_errors, ajd_drift, ajd_diff, rolling_window
 
 __all__ = ['SDE']
 
@@ -294,7 +294,7 @@ class SDE(object):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(self, start, interval=1/80, ndiscr=1,
+    def sim_realized(self, start, interval=1/80, ndiscr=1, aggh=1,
                      nperiods=500, nsim=1, diff=None):
         """Simulate realized returns and variance from the model.
 
@@ -303,11 +303,13 @@ class SDE(object):
         start : array_like
             Starting value for simulation
         interval : float
-            Interval length
+            Interval length for latent simulation (fraction of the day)
         ndiscr : int
             Number of Euler discretization points inside unit interval
+        aggh : int
+            Number of
         nperiods : int
-            Number of points to simulate in one series
+            Number of points to simulate in one series (days)
         nsim : int
             Number of time series to simulate
         diff : int
@@ -326,8 +328,12 @@ class SDE(object):
         nobs = nperiods * intervals
         paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
+        # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
         returns = returns.sum(1)
+        # Aggregate over arbitrary number of days
+        rvar = rolling_window(np.mean, rvar, window=aggh)
+        returns = rolling_window(np.mean, returns, window=aggh)
         return returns, rvar
 
     def gmmest(self, theta_start, **kwargs):

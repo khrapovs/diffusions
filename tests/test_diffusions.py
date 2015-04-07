@@ -415,8 +415,9 @@ class SimulationTestCase(ut.TestCase):
         param = GBMparam(mean, sigma)
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, 1/80, 3, 4
-        returns, rvol = gbm.sim_realized(start, interval, ndiscr, nperiods,
-                                        nsim, diff=0)
+        returns, rvol = gbm.sim_realized(start, interval=interval,
+                                         ndiscr=ndiscr, nperiods=nperiods,
+                                         nsim=nsim, diff=0)
 
         self.assertEqual(returns.shape, (nperiods, ))
         self.assertEqual(rvol.shape, (nperiods, ))
@@ -428,8 +429,9 @@ class SimulationTestCase(ut.TestCase):
         param = VasicekParam(mean, kappa, eta)
         vasicek = Vasicek(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
-        returns, rvol = vasicek.sim_realized(start, interval, ndiscr, nperiods,
-                                        nsim, diff=0)
+        returns, rvol = vasicek.sim_realized(start, interval=interval,
+                                             ndiscr=ndiscr, nperiods=nperiods,
+                                             nsim=nsim, diff=0)
 
         self.assertEqual(returns.shape, (nperiods, ))
         self.assertEqual(rvol.shape, (nperiods, ))
@@ -441,8 +443,9 @@ class SimulationTestCase(ut.TestCase):
         param = CIRparam(mean, kappa, eta)
         cir = CIR(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
-        returns, rvol = cir.sim_realized(start, interval, ndiscr, nperiods,
-                                        nsim, diff=0)
+        returns, rvol = cir.sim_realized(start, interval=interval,
+                                         ndiscr=ndiscr, nperiods=nperiods,
+                                         nsim=nsim, diff=0)
 
         self.assertEqual(returns.shape, (nperiods, ))
         self.assertEqual(rvol.shape, (nperiods, ))
@@ -456,8 +459,9 @@ class SimulationTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
-        returns, rvol = heston.sim_realized(start, interval, ndiscr, nperiods,
-                                            nsim, diff=0)
+        returns, rvol = heston.sim_realized(start, interval=interval,
+                                            ndiscr=ndiscr, nperiods=nperiods,
+                                            nsim=nsim, diff=0)
 
         self.assertEqual(returns.shape, (nperiods, ))
         self.assertEqual(rvol.shape, (nperiods, ))
