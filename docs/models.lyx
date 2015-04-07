@@ -893,11 +893,15 @@ H_{0}=\left[\begin{array}{cc}
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Comment
+status collapsed
+
 \begin_layout Subsubsection
 Integrated moments (alternative)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The return equation can be integrated on 
 \begin_inset Formula $\left[t,t+h\right]$
 \end_inset
@@ -929,7 +933,7 @@ E\left[r_{t,h}\right]=r+\left(\lambda-\frac{1}{2}\right)\mu.
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The spot volatility equation can be integrated to get 
 \begin_inset Formula 
 \[
@@ -1012,19 +1016,24 @@ E_{t}\left[\left(h\mathcal{V}_{t,h}-E_{t}\left[h\mathcal{V}_{t,h}\right]\right)^
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Integrated moments
 \end_layout
 
 \begin_layout Standard
 The return equation can be integrated on 
-\begin_inset Formula $\left[t,t+h\right]$
+\begin_inset Formula $\left[t,t+H\right]$
 \end_inset
 
  to obtain
 \begin_inset Formula 
 \[
-\tilde{r}_{t,h}\equiv\frac{1}{h}\int_{t}^{t+h}dp_{s}-r=\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}+\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r},
+\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
 \]
 
 \end_inset
@@ -1032,15 +1041,15 @@ The return equation can be integrated on
 The return first conditional moment is
 \begin_inset Formula 
 \[
-E_{t}\left[\tilde{r}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,h}\right].
+E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
 \]
 
 \end_inset
 
-The unconditional mean is
+or
 \begin_inset Formula 
 \[
-E\left[\tilde{r}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)\mu.
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=0.
 \]
 
 \end_inset
@@ -1049,26 +1058,30 @@ E\left[\tilde{r}_{t,h}\right]=\left(\lambda-\frac{1}{2}\right)\mu.
 \end_layout
 
 \begin_layout Standard
-The spot volatility equation can be integrated to get 
+The spot volatility equation can be integrated on the interval 
+\begin_inset Formula $\left[t,t+h\right]$
+\end_inset
+
+ with 
+\begin_inset Formula $h$
+\end_inset
+
+ possibly different from 
+\begin_inset Formula $H$
+\end_inset
+
+ to get 
 \begin_inset Formula 
-\[
-\sigma_{t+h}^{2}=C_{h}+A_{h}\sigma_{t}^{2}+\epsilon_{t,h}^{\sigma},
-\]
+\begin{equation}
+\sigma_{t+h}^{2}=C_{h}+A_{h}\sigma_{t}^{2}+\epsilon_{t,h}^{\sigma},\label{eq:spot_vol_equation}
+\end{equation}
 
 \end_inset
 
-where I define coefficients as
+where I define coefficients and the integrated innovation as
 \begin_inset Formula 
 \[
-A_{h}=\exp\left(-\kappa h\right),\quad C_{h}=\mu\left(1-A_{h}\right),
-\]
-
-\end_inset
-
-and the integrated innovation is
-\begin_inset Formula 
-\[
-\epsilon_{t,h}^{\sigma}=\eta_{\sigma}\int_{t}^{t+h}\sigma_{u}A_{t+h-u}dW_{u}^{\sigma}.
+A_{h}=\exp\left(-\kappa h\right),\quad C_{h}=\mu\left(1-A_{h}\right),\quad\epsilon_{t,h}^{\sigma}=\eta_{\sigma}\int_{t}^{t+h}\sigma_{u}A_{t+h-u}dW_{u}^{\sigma}.
 \]
 
 \end_inset
@@ -1092,16 +1105,12 @@ or, using lag operator
 ,
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\sigma_{t+h}^{2}\right]=\left(1-A_{h}\right)E\left[\sigma_{t}^{2}\right]
+E_{t}\left[\left(1-A_{h}L\right)\sigma_{t+h}^{2}\right]=\left(1-A_{h}\right)E\left[\sigma_{t}^{2}\right]=\left(1-A_{h}\right)\mu.
 \]
 
 \end_inset
 
-with 
-\begin_inset Formula $E\left[\sigma_{t}^{2}\right]=\mu$
-\end_inset
 
-.
 \end_layout
 
 \begin_layout Standard
@@ -1198,66 +1207,68 @@ E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\sigma_{t+2h}^{4}\right
 \end_layout
 
 \begin_layout Standard
-After repeated integration of the volatility equation over 
+After repeated integration of the volatility equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:spot_vol_equation"
+
+\end_inset
+
+ over 
 \begin_inset Formula $t$
 \end_inset
 
- as a dummy of the integration in the interval 
-\begin_inset Formula $\left[0,h\right]$
+ as a dummy of the integration on the interval 
+\begin_inset Formula $\left[t,t+H\right]$
 \end_inset
 
  we obtain
 \begin_inset Formula 
 \[
-\mathcal{V}_{t+h,h}=C_{h}+A_{h}\mathcal{V}_{t,h}+\frac{1}{h}\int_{0}^{h}\epsilon_{t+s,h}^{\sigma}ds.
+\mathcal{V}_{t+h,H}=C_{h}+A_{h}\mathcal{V}_{t,H}+\frac{1}{H}\int_{0}^{H}\epsilon_{t+s,h}^{\sigma}ds.
 \]
 
 \end_inset
 
-The integrated volatility first moment is
+Hence, the integrated volatility first moment is
 \begin_inset Formula 
 \[
-E_{t}\left[\mathcal{V}_{t+h,h}\right]=C_{h}+A_{h}E_{t}\left[\mathcal{V}_{t,h}\right],
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right]=\left(1-A_{h}\right)E\left[\mathcal{V}_{t,H}\right]=\left(1-A_{h}\right)\mu.
 \]
 
 \end_inset
 
-or
-\begin_inset Formula 
-\[
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right]=\left(1-A_{h}\right)E\left[\mathcal{V}_{t,h}\right]
-\]
 
-\end_inset
-
-with 
-\begin_inset Formula $E\left[\mathcal{V}_{t,h}\right]=\mu$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
-We can also integrate the volatility equation using 
+We can also integrate the volatility equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:spot_vol_equation"
+
+\end_inset
+
+ using 
 \begin_inset Formula $h$
 \end_inset
 
  as a dummy of integration on the interval from 
-\begin_inset Formula $\left[0,h\right]$
+\begin_inset Formula $\left[0,H\right]$
 \end_inset
 
 : 
 \begin_inset Formula 
-\[
-h\mathcal{V}_{t,h}=c_{h}+a_{h}\sigma_{t}^{2}+\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds,
-\]
+\begin{equation}
+\mathcal{V}_{t,H}=c_{H}+a_{H}\sigma_{t}^{2}+\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds,\label{eq:int_vol_equation}
+\end{equation}
 
 \end_inset
 
 with
 \begin_inset Formula 
 \[
-a_{h}=\int_{0}^{h}A_{s}ds=\frac{1}{\kappa}\left(1-A_{h}\right),\quad c_{h}=\mu\left(h-a_{h}\right).
+a_{H}=\frac{1}{H}\int_{0}^{H}A_{s}ds=\frac{1}{\kappa H}\left(1-A_{H}\right),\quad c_{H}=\mu\left(1-a_{H}\right).
 \]
 
 \end_inset
@@ -1265,10 +1276,10 @@ a_{h}=\int_{0}^{h}A_{s}ds=\frac{1}{\kappa}\left(1-A_{h}\right),\quad c_{h}=\mu\l
 The error term may be simplified:
 \begin_inset Formula 
 \[
-\begin{aligned}\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds= & \int_{0}^{h}\left(\eta\int_{t}^{t+s}\sigma_{u}A_{t+s-u}dW_{u}^{\sigma}\right)ds\\
-= & \eta\int_{t}^{t+h}\sigma_{u}\left(\int_{u-t}^{h}A_{t+s-u}ds\right)dW_{u}^{\sigma}\\
-= & \eta\int_{t}^{t+h}\sigma_{u}\left(\int_{0}^{t+h-u}A_{s}ds\right)dW_{u}^{\sigma}\\
-= & \eta\int_{t}^{t+h}\sigma_{u}a_{t+h-u}dW_{u}^{\sigma}.
+\begin{aligned}\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds= & \frac{1}{H}\int_{0}^{H}\left(\eta\int_{t}^{t+s}\sigma_{u}A_{t+s-u}dW_{u}^{\sigma}\right)ds\\
+= & \frac{\eta}{H}\int_{t}^{t+H}\sigma_{u}\left(\int_{u-t}^{H}A_{t+s-u}ds\right)dW_{u}^{\sigma}\\
+= & \frac{\eta}{H}\int_{t}^{t+H}\sigma_{u}\left(\int_{0}^{t+H-u}A_{s}ds\right)dW_{u}^{\sigma}\\
+= & \eta\int_{t}^{t+H}\sigma_{u}a_{t+H-u}dW_{u}^{\sigma}.
 \end{aligned}
 \]
 
@@ -1277,28 +1288,32 @@ The error term may be simplified:
 From this we can guess that
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right]=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t,h}^{2}\right].
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right]=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
 \]
 
 \end_inset
 
-From the equation for 
-\begin_inset Formula $h\mathcal{V}_{t,h}$
+From the equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:int_vol_equation"
+
 \end_inset
 
- we can compute
+ for 
+\begin_inset Formula $\mathcal{V}_{t,H}$
+\end_inset
+
+ we can derive
 \begin_inset Formula 
 \[
-\begin{aligned}V\left[h\mathcal{V}_{t,h}\right]= & a_{h}^{2}V\left[\sigma_{t}^{2}\right]+V\left[\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds\right]\\
-= & a_{h}^{2}\frac{\mu\eta^{2}}{2\kappa}+V\left[\eta\int_{t}^{t+h}\sigma_{u}a_{t+h-u}dW_{u}^{\sigma}\right]\\
-= & a_{h}^{2}\frac{\mu\eta^{2}}{2\kappa}+E\left[\eta^{2}\int_{t}^{t+h}\sigma_{u}^{2}a_{t+h-u}^{2}du\right]\\
-= & a_{h}^{2}\frac{\mu\eta^{2}}{2\kappa}+\mu\eta^{2}\int_{0}^{h}a_{h-u}^{2}du\\
-= & a_{h}^{2}\frac{\mu\eta^{2}}{2\kappa}+\frac{\mu\eta^{2}}{\kappa^{2}}\int_{0}^{h}\left(1-A_{h-u}\right)^{2}du\\
-= & \left(1-A_{h}\right)^{2}\frac{\mu\eta^{2}}{2\kappa^{3}}+\frac{\mu\eta^{2}}{\kappa^{2}}\left(h-\frac{2}{\kappa}\left(1-A_{h}\right)+\frac{1}{2\kappa}\left(1-A_{2h}\right)\right)\\
-= & \frac{\mu\eta^{2}}{\kappa^{2}}\left[\left(1-2A_{h}+A_{2h}\right)\frac{1}{2\kappa}+h-\frac{2}{\kappa}\left(1-A_{h}\right)+\frac{1}{2\kappa}\left(1-A_{2h}\right)\right]\\
-= & \frac{\mu\eta^{2}}{\kappa^{2}}\left[\left(1-A_{h}\right)\frac{1}{\kappa}+h-\frac{2}{\kappa}\left(1-A_{h}\right)\right]\\
-= & \frac{\mu\eta^{2}}{\kappa^{2}}\left[h-\frac{1}{\kappa}\left(1-A_{h}\right)\right]\\
-= & \frac{\mu\eta^{2}}{\kappa^{2}}\left(h-a_{h}\right)=\frac{c_{h}\eta^{2}}{\kappa^{2}}.
+\begin{aligned}V\left[\mathcal{V}_{t,H}\right]= & a_{H}^{2}V\left[\sigma_{t}^{2}\right]+V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]=a_{H}^{2}\frac{\mu\eta^{2}}{2\kappa}+V\left[\eta\int_{t}^{t+H}\sigma_{u}a_{t+H-u}dW_{u}^{\sigma}\right]\\
+= & a_{H}^{2}\frac{\mu\eta^{2}}{2\kappa}+E\left[\eta^{2}\int_{t}^{t+H}\sigma_{u}^{2}a_{t+H-u}^{2}du\right]=a_{H}^{2}\frac{\mu\eta^{2}}{2\kappa}+\mu\eta^{2}\int_{0}^{H}a_{H-u}^{2}du\\
+= & a_{H}^{2}\frac{\mu\eta^{2}}{2\kappa}+\frac{\mu\eta^{2}}{\kappa^{2}H^{2}}\int_{0}^{H}\left(1-A_{H-u}\right)^{2}du\\
+= & \left(1-A_{H}\right)^{2}\frac{\mu\eta^{2}}{2\kappa^{3}H^{2}}+\frac{\mu\eta^{2}}{\kappa^{2}H^{2}}\left(H-\frac{2}{\kappa}\left(1-A_{H}\right)+\frac{1}{2\kappa}\left(1-A_{2H}\right)\right)\\
+= & \frac{\mu\eta^{2}}{\kappa^{2}H^{2}}\left[\left(1-2A_{H}+A_{2H}\right)\frac{1}{2\kappa}+H-\frac{2}{\kappa}\left(1-A_{H}\right)+\frac{1}{2\kappa}\left(1-A_{2H}\right)\right]\\
+= & \frac{\mu\eta^{2}}{\kappa^{2}H^{2}}\left[\left(1-A_{H}\right)\frac{1}{\kappa}+H-\frac{2}{\kappa}\left(1-A_{H}\right)\right]\\
+= & \frac{\mu\eta^{2}}{\kappa^{2}H^{2}}\left[H-\frac{1}{\kappa}\left(1-A_{H}\right)\right]=\frac{\mu\eta^{2}}{\kappa^{2}H}\left(1-a_{H}\right)=\frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}.
 \end{aligned}
 \]
 
@@ -1307,7 +1322,7 @@ From the equation for
 Hence,
 \begin_inset Formula 
 \[
-E\left[\mathcal{V}_{t,h}^{2}\right]=V\left[\mathcal{V}_{t,h}\right]+\left(E\left[\mathcal{V}_{t,h}\right]\right)^{2}=\frac{\mu\eta^{2}}{\kappa^{2}}\left(1-a_{h}/h\right)/h+\mu^{2}.
+E\left[\mathcal{V}_{t,H}^{2}\right]=V\left[\mathcal{V}_{t,H}\right]+\left(E\left[\mathcal{V}_{t,H}\right]\right)^{2}=\frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2}.
 \]
 
 \end_inset
@@ -1400,7 +1415,7 @@ Multiply this by
 Now multiply return by integrated volatility and take the expectation:
 \begin_inset Formula 
 \[
-E_{t}\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}^{2}\right]=E_{t}\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
+E_{t}\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}^{2}\right]=E_{t}\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right].
 \]
 
 \end_inset
@@ -1408,7 +1423,7 @@ E_{t}\left[\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mat
 We can guess that
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}^{2}\right)\right]=\left(1-A_{h}\right)E\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right].
+E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t,H}\mathcal{V}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}^{2}\right)\right]=\left(1-A_{h}\right)E\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right].
 \]
 
 \end_inset
@@ -1416,23 +1431,12 @@ E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t,h}\mathcal{V}_{t,h}-\left(\la
 The last term is
 \begin_inset Formula 
 \[
-\begin{aligned}E\left[h\mathcal{V}_{t,h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]= & E\left[\int_{0}^{h}\epsilon_{t,s}^{\sigma}ds\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]\\
-= & \eta E\left[\left(\int_{t}^{t+h}\sigma_{u}a_{t+h-u}dW_{u}^{\sigma}\right)\left(\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right)\right]\\
-= & \rho\eta E\left[\int_{t}^{t+h}\sigma_{u}^{2}a_{t+h-u}du\right]\\
-= & \rho\eta\int_{t}^{t+h}E\left[\sigma_{u}^{2}\right]a_{t+h-u}du.\\
-= & \rho\mu\eta\int_{0}^{h}a_{h-u}du\\
-= & \rho\mu\eta\int_{0}^{h}\frac{1}{\kappa}\left(1-A_{h-u}\right)du\\
-= & \frac{\rho\mu\eta}{\kappa}\left(h-\frac{1}{\kappa}\left(1-A_{h}\right)\right)\\
-= & \frac{\rho\mu\eta}{\kappa}\left(h-a_{h}\right)=\frac{\rho\eta}{\kappa}c_{h},
+\begin{aligned}E\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right]= & E\left[\frac{1}{H^{2}}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right]\\
+= & \frac{\eta}{H}E\left[\left(\int_{t}^{t+H}\sigma_{u}a_{t+H-u}dW_{u}^{\sigma}\right)\left(\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right)\right]\\
+= & \rho\frac{\eta}{H}E\left[\int_{t}^{t+H}\sigma_{u}^{2}a_{t+H-u}du\right]=\rho\frac{\eta}{H}\int_{t}^{t+H}E\left[\sigma_{u}^{2}\right]a_{t+H-u}du.\\
+= & \rho\frac{\mu\eta}{H}\int_{0}^{H}a_{H-u}du=\rho\frac{\mu\eta}{H^{2}}\int_{0}^{H}\frac{1}{\kappa}\left(1-A_{H-u}\right)du\\
+= & \rho\frac{\mu\eta}{H^{2}}\left(H-\frac{1}{\kappa}\left(1-A_{H}\right)\right)=\rho\frac{\mu\eta}{\kappa H}\left(1-a_{H}\right)=\rho\frac{\eta}{\kappa}\frac{c_{H}}{H}.
 \end{aligned}
-\]
-
-\end_inset
-
-so
-\begin_inset Formula 
-\[
-E\left[\mathcal{V}_{t,h}\frac{1}{h}\int_{t}^{t+h}\sigma_{s}dW_{s}^{r}\right]=\frac{\rho\mu\eta}{\kappa h}\left(1-a_{h}/h\right).
 \]
 
 \end_inset
@@ -1512,10 +1516,10 @@ Multiply conditional cross-moment by
 All in all, this gives us the following four integrated moments:
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[\tilde{r}_{t,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,h}\right] & =C_{1}=0,\\
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,h}\right] & =C_{2},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,h}^{2}\right] & =C_{3},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,h}\mathcal{V}_{t+h,h}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,h}^{2}\right)\right] & =C_{4},
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{2},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
 \end{align*}
 
 \end_inset
@@ -1529,24 +1533,24 @@ L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2}\\
  &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
  &  & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
 \end{array}\right)\left(\begin{array}{c}
-\tilde{r}_{t,h}\\
-\mathcal{V}_{t,h}\\
-\mathcal{V}_{t,h}^{2}\\
-\tilde{r}_{t,h}\mathcal{V}_{t,h}
+\tilde{r}_{t,H}\\
+\mathcal{V}_{t,H}\\
+\mathcal{V}_{t,H}^{2}\\
+\tilde{r}_{t,H}\mathcal{V}_{t,H}
 \end{array}\right)\right]=C.
 \]
 
 \end_inset
 
 Define the data vector as 
-\begin_inset Formula $X_{t,h}=\left[\tilde{r}_{t,h},\mathcal{V}_{t,h},\mathcal{V}_{t,h}^{2},\tilde{r}_{t,h}\mathcal{V}_{t,h}\right]$
+\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
 \end_inset
 
 .
  Then, the moment conditions can be written more compactly as 
 \begin_inset Formula 
 \[
-E_{t-2h}\left[A\left(L\right)X_{t,h}\right]=C,
+E_{t-2h}\left[A\left(L\right)X_{t,H}\right]=C,
 \]
 
 \end_inset
@@ -1595,9 +1599,9 @@ To make this one single matrix product, we can write
 \[
 E_{t-2h}\left[\left(\begin{array}{ccc}
 A_{0} & A_{1} & A_{2}\end{array}\right)\left(\begin{array}{c}
-X_{t,h}\\
-LX_{t,h}\\
-L^{2}X_{t,h}
+X_{t,H}\\
+LX_{t,H}\\
+L^{2}X_{t,H}
 \end{array}\right)\right]=C,
 \]
 
@@ -1606,8 +1610,19 @@ L^{2}X_{t,h}
 where
 \begin_inset Formula 
 \[
-C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,h}\right]
+C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,H}\right],
 \]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray*}
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda-\frac{1}{2}\right)\mu,\\
+E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
+E\left[\mathcal{V}_{t,H}^{2}\right] & = & \frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2},\\
+E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+\end{eqnarray*}
 
 \end_inset
 
