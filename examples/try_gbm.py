@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Generic Model
+Try Geometric Brownian Motion
 
 """
 from __future__ import print_function, division
@@ -63,8 +63,10 @@ def try_sim_realized():
     gbm = GBM(theta_true)
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
-    returns, rvar = gbm.sim_realized(start, interval, ndiscr,
-                                     nperiods, nsim, diff=0)
+    aggh = 10
+    returns, rvar = gbm.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                                     aggh=aggh, nperiods=nperiods,
+nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
 
@@ -74,12 +76,14 @@ def try_integrated_gmm():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 100, 1/80, 1, 1
-    returns, rvar = gbm.sim_realized(start, interval, ndiscr,
-                                     nperiods, nsim, diff=0)
+    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    aggh = 10
+    returns, rvar = gbm.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                                     aggh=aggh, nperiods=nperiods,
+                                     nsim=nsim, diff=0)
     data = np.vstack([returns, rvar])
     print(rvar.mean()**.5)
-#    plot_realized(returns, rvar)
+    plot_realized(returns, rvar)
 
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)

@@ -419,13 +419,13 @@ Moments
 
 \begin_layout Standard
 After integration on the interval 
-\begin_inset Formula $\left[t,t+h\right]$
+\begin_inset Formula $\left[t,t+H\right]$
 \end_inset
 
 :
 \begin_inset Formula 
 \[
-r_{t,h}=\frac{1}{h}\log\frac{S_{t+h}}{S_{t}}=\mu-\frac{1}{2}\sigma^{2}+\frac{\sigma}{\sqrt{h}}\varepsilon_{t+h},
+r_{t,H}=\frac{1}{H}\log\frac{S_{t+H}}{S_{t}}=\mu-\frac{1}{2}\sigma^{2}+\frac{\sigma}{\sqrt{H}}\varepsilon_{t+H},
 \]
 
 \end_inset
@@ -438,7 +438,7 @@ where
  The first conditional moment is
 \begin_inset Formula 
 \[
-E_{t}\left[r_{t,h}\right]=\mu-\frac{1}{2}\sigma^{2}.
+E_{t}\left[r_{t,H}\right]=\mu-\frac{1}{2}\sigma^{2}.
 \]
 
 \end_inset
@@ -446,7 +446,7 @@ E_{t}\left[r_{t,h}\right]=\mu-\frac{1}{2}\sigma^{2}.
 The second conditional moment is
 \begin_inset Formula 
 \[
-V_{t}\left[r_{t,h}\right]=E_{t}\left[r_{t,h}^{2}\right]-\left(E_{t}\left[r_{t,h}\right]\right)^{2}=\sigma^{2}.
+V_{t}\left[r_{t,H}\right]=E_{t}\left[r_{t,H}^{2}\right]-\left(E_{t}\left[r_{t,H}\right]\right)^{2}=\sigma^{2}.
 \]
 
 \end_inset
@@ -454,9 +454,9 @@ V_{t}\left[r_{t,h}\right]=E_{t}\left[r_{t,h}^{2}\right]-\left(E_{t}\left[r_{t,h}
 Hence, the moment function is
 \begin_inset Formula 
 \[
-g\left(r_{t,h};\theta\right)=\left[\begin{array}{c}
-r_{t,h}-\left(\mu-\frac{1}{2}\sigma^{2}\right)\\
-r_{t,h}^{2}-\sigma^{2}-\left(\mu-\frac{1}{2}\sigma^{2}\right)^{2}
+g\left(r_{t,H};\theta\right)=\left[\begin{array}{c}
+r_{t,H}-\left(\mu-\frac{1}{2}\sigma^{2}\right)\\
+r_{t,H}^{2}-\sigma^{2}-\left(\mu-\frac{1}{2}\sigma^{2}\right)^{2}
 \end{array}\right]
 \]
 
@@ -465,7 +465,7 @@ r_{t,h}^{2}-\sigma^{2}-\left(\mu-\frac{1}{2}\sigma^{2}\right)^{2}
 with
 \begin_inset Formula 
 \[
-E_{t}\left[g\left(r_{t,h};\theta\right)\right]=0.
+E_{t}\left[g\left(r_{t,H};\theta\right)\right]=0.
 \]
 
 \end_inset
@@ -477,7 +477,7 @@ The derivative of the moment function with respect to model parameters
  is
 \begin_inset Formula 
 \[
-\frac{\partial g}{\partial\theta}\left(r_{t,h};\theta\right)=\left[\begin{array}{cc}
+\frac{\partial g}{\partial\theta}\left(r_{t,H};\theta\right)=\left[\begin{array}{cc}
 -1 & \sigma\\
 -2\left(\mu-\frac{1}{2}\sigma^{2}\right) & -2\sigma+2\left(\mu-\frac{1}{2}\sigma^{2}\right)\sigma
 \end{array}\right].
@@ -493,8 +493,16 @@ Integrated moments
 \end_layout
 
 \begin_layout Standard
-Suppose we also have available ``intraday'' observations 
-\begin_inset Formula $y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}$
+Suppose we also have available 
+\begin_inset Quotes eld
+\end_inset
+
+intraday
+\begin_inset Quotes erd
+\end_inset
+
+ observations 
+\begin_inset Formula $y_{t+\frac{j-1}{n}H,t+\frac{j}{n}H}$
 \end_inset
 
  for 
@@ -502,14 +510,14 @@ Suppose we also have available ``intraday'' observations
 \end_inset
 
  and are able to compute realized volatility 
-\begin_inset Formula $RV_{t,h}$
+\begin_inset Formula $RV_{t,H}$
 \end_inset
 
 .
  It is trivial to deduce that the integrated variance is constant
 \begin_inset Formula 
 \[
-\mathcal{V}_{t,h}=\sigma^{2}.
+\mathcal{V}_{t,H}=\sigma^{2}.
 \]
 
 \end_inset
@@ -517,10 +525,10 @@ Suppose we also have available ``intraday'' observations
 Hence, the moment function is instead
 \begin_inset Formula 
 \[
-g\left(r_{t,h},RV_{t,h};\theta\right)=X_{t,h}-C=\left[\begin{array}{c}
-r_{t,h}\\
-RV_{t,h}\\
-RV_{t,h}^{2}
+g\left(r_{t,H},RV_{t,H};\theta\right)=X_{t,H}-C=\left[\begin{array}{c}
+r_{t,H}\\
+RV_{t,H}\\
+RV_{t,H}^{2}
 \end{array}\right]-\left[\begin{array}{c}
 \mu-\frac{1}{2}\sigma^{2}\\
 \sigma^{2}\\

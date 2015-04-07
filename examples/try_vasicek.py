@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Generic Model
+Try Vasicek Model
 
 """
 from __future__ import print_function, division
@@ -44,8 +44,10 @@ def try_sim_realized():
     vasicek = Vasicek(theta_true)
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
-    returns, rvar = vasicek.sim_realized(start, interval, ndiscr,
-                                         nperiods, nsim, diff=0)
+    aggh = 10
+    returns, rvar = vasicek.sim_realized(start, interval=interval,
+                                         ndiscr=ndiscr, aggh=aggh,
+                                         nperiods=nperiods, nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
 
@@ -53,6 +55,6 @@ def try_sim_realized():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-    try_marginal()
-    try_simulation()
+#    try_marginal()
+#    try_simulation()
     try_sim_realized()

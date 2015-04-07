@@ -78,8 +78,11 @@ def try_sim_realized():
     heston = Heston(theta_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/80, 1, 1
-    returns, rvar = heston.sim_realized(start, interval, ndiscr,
-                                        nperiods, nsim, diff=0)
+    aggh = 10
+
+    returns, rvar = heston.sim_realized(start, interval=interval,
+                                        ndiscr=ndiscr, aggh=aggh,
+                                        nperiods=nperiods, nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
 
@@ -99,8 +102,9 @@ def try_integrated_gmm():
     heston = Heston(theta_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/80, 1, 1
-    data = heston.sim_realized(start, interval, ndiscr,
-                               nperiods, nsim, diff=0)
+    aggh = 10
+    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                               aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
     instr_data = np.vstack([rvar, rvar**2])
 
@@ -126,5 +130,5 @@ if __name__ == '__main__':
     sns.set_context('notebook')
 #    try_simulation()
 #    try_marginal()
-#    try_sim_realized()
-    try_integrated_gmm()
+    try_sim_realized()
+#    try_integrated_gmm()
