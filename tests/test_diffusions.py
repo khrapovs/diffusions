@@ -415,12 +415,13 @@ class SimulationTestCase(ut.TestCase):
         param = GBMparam(mean, sigma)
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, 1/80, 3, 4
-        returns, rvol = gbm.sim_realized(start, interval=interval,
+        aggh = 2
+        returns, rvol = gbm.sim_realized(start, interval=interval, aggh=aggh,
                                          ndiscr=ndiscr, nperiods=nperiods,
                                          nsim=nsim, diff=0)
 
-        self.assertEqual(returns.shape, (nperiods, ))
-        self.assertEqual(rvol.shape, (nperiods, ))
+        self.assertEqual(returns.shape, (nperiods-aggh+1, ))
+        self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
     def test_vasicek_sim_realized(self):
         """Test simulation of realized values of the Vasicek model."""
@@ -429,12 +430,13 @@ class SimulationTestCase(ut.TestCase):
         param = VasicekParam(mean, kappa, eta)
         vasicek = Vasicek(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
+        aggh = 2
         returns, rvol = vasicek.sim_realized(start, interval=interval,
                                              ndiscr=ndiscr, nperiods=nperiods,
-                                             nsim=nsim, diff=0)
+                                             nsim=nsim, aggh=aggh, diff=0)
 
-        self.assertEqual(returns.shape, (nperiods, ))
-        self.assertEqual(rvol.shape, (nperiods, ))
+        self.assertEqual(returns.shape, (nperiods-aggh+1, ))
+        self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
     def test_cir_sim_realized(self):
         """Test simulation of realized values of the CIR model."""
@@ -443,12 +445,13 @@ class SimulationTestCase(ut.TestCase):
         param = CIRparam(mean, kappa, eta)
         cir = CIR(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
+        aggh = 2
         returns, rvol = cir.sim_realized(start, interval=interval,
                                          ndiscr=ndiscr, nperiods=nperiods,
-                                         nsim=nsim, diff=0)
+                                         nsim=nsim, aggh=aggh, diff=0)
 
-        self.assertEqual(returns.shape, (nperiods, ))
-        self.assertEqual(rvol.shape, (nperiods, ))
+        self.assertEqual(returns.shape, (nperiods-aggh+1, ))
+        self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
     def test_heston_sim_realized(self):
         """Test simulation of realized values of the Heston model."""
@@ -459,12 +462,13 @@ class SimulationTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
+        aggh = 2
         returns, rvol = heston.sim_realized(start, interval=interval,
                                             ndiscr=ndiscr, nperiods=nperiods,
-                                            nsim=nsim, diff=0)
+                                            nsim=nsim, aggh=aggh, diff=0)
 
-        self.assertEqual(returns.shape, (nperiods, ))
-        self.assertEqual(rvol.shape, (nperiods, ))
+        self.assertEqual(returns.shape, (nperiods-aggh+1, ))
+        self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
 
 class RealizedMomentsTestCase(ut.TestCase):
