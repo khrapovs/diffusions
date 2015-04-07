@@ -307,7 +307,7 @@ class SDE(object):
         ndiscr : int
             Number of Euler discretization points inside unit interval
         aggh : int
-            Number of
+            Number of intervals (days) to aggregate over using rolling mean
         nperiods : int
             Number of points to simulate in one series (days)
         nsim : int
