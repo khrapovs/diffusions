@@ -26,13 +26,53 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.sigma, sigma)
         np.testing.assert_array_equal(param.get_theta(),
                                       np.array([mean, sigma]))
-        np.testing.assert_array_equal(param.mat_k0,
-                                      np.array([mean - sigma**2/2]))
-        np.testing.assert_array_equal(param.mat_k1, np.array([[0]]))
-        np.testing.assert_array_equal(param.mat_h0, np.array([[sigma**2]]))
-        np.testing.assert_array_equal(param.mat_h1, np.array([[[0]]]))
 
-    # TODO : test Vasicek parameters
+        theta = np.array([mean, sigma])
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        theta = np.ones(2)
+        param = GBMparam()
+        param.update(theta=theta)
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        mat_k0 = param.mean - param.sigma**2/2
+        mat_k1 = 0.
+        mat_h0 = param.sigma**2
+        mat_h1 = 0.
+
+        np.testing.assert_array_equal(param.mat_k0, mat_k0)
+        np.testing.assert_array_equal(param.mat_k1, mat_k1)
+        np.testing.assert_array_equal(param.mat_h0, mat_h0)
+        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+
+    def test_vasicekparam_class(self):
+        """Test Vasicek parameter class."""
+
+        mean, kappa, eta = 1.5, 1., .2
+        param = VasicekParam(mean, kappa, eta)
+
+        self.assertEqual(param.mean, mean)
+        self.assertEqual(param.kappa, kappa)
+        self.assertEqual(param.eta, eta)
+
+        np.testing.assert_array_equal(param.get_theta(),
+                                      np.array([mean, kappa, eta]))
+
+        theta = np.ones(3)
+        param = VasicekParam()
+        param.update(theta=theta)
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        mat_k0 = param.kappa * param.mean
+        mat_k1 = -param.kappa
+        mat_h0 = param.eta**2
+        mat_h1 = 0
+
+        np.testing.assert_array_equal(param.mat_k0, mat_k0)
+        np.testing.assert_array_equal(param.mat_k1, mat_k1)
+        np.testing.assert_array_equal(param.mat_h0, mat_h0)
+        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+
     # TODO : test CIR parameters
 
     def test_hestonparam_class(self):

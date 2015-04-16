@@ -63,11 +63,17 @@ class GBMparam(object):
         """
         self.mean = mean
         self.sigma = sigma
+        self.update_ajd()
+
+    def update_ajd(self):
+        """Update AJD representation.
+
+        """
         # AJD parameters
-        self.mat_k0 = mean - sigma**2/2
-        self.mat_k1 = 0
-        self.mat_h0 = sigma**2
-        self.mat_h1 = 0
+        self.mat_k0 = self.mean - self.sigma**2/2
+        self.mat_k1 = 0.
+        self.mat_h0 = self.sigma**2
+        self.mat_h1 = 0.
 
     def get_theta(self):
         """Return vector of parameters.
@@ -79,6 +85,18 @@ class GBMparam(object):
 
         """
         return np.array([self.mean, self.sigma])
+
+    def update(self, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        [self.mean, self.sigma] = theta
+        self.update_ajd()
 
 
 class GBM(SDE):

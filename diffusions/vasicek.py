@@ -12,6 +12,8 @@ Suppose that :math:`r_{t}` evolves according to
 """
 from __future__ import print_function, division
 
+import numpy as np
+
 from .generic_model import SDE
 
 __all__ = ['Vasicek', 'VasicekParam']
@@ -48,13 +50,40 @@ class VasicekParam(object):
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        # Vector of parameters
-        self.theta = [mean, kappa, eta]
+        self.update_ajd()
+
+    def update_ajd(self):
+        """Update AJD representation.
+
+        """
         # AJD parameters
-        self.mat_k0 = kappa * mean
-        self.mat_k1 = -kappa
-        self.mat_h0 = eta**2
+        self.mat_k0 = self.kappa * self.mean
+        self.mat_k1 = -self.kappa
+        self.mat_h0 = self.eta**2
         self.mat_h1 = 0
+
+    def get_theta(self):
+        """Return vector of parameters.
+
+        Returns
+        -------
+        (3, ) array
+            Parameter vector
+
+        """
+        return np.array([self.mean, self.kappa, self.eta])
+
+    def update(self, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        [self.mean, self.kappa, self.eta] = theta
+        self.update_ajd()
 
 
 class Vasicek(SDE):
