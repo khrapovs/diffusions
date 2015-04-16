@@ -1686,11 +1686,11 @@ The drift and diffusion functions are
 \[
 \mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
 r\\
-\kappa_{\sigma}\mu_{\sigma}\\
+0\\
 \kappa_{v}\mu_{v}
 \end{array}\right]+\left[\begin{array}{ccc}
 0 & \lambda-\frac{1}{2} & 0\\
-0 & -\kappa_{\sigma} & 0\\
+0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
 0 & 0 & -\kappa_{v}
 \end{array}\right]\left[\begin{array}{c}
 p_{t}\\
@@ -1738,11 +1738,11 @@ and
 \[
 K_{0}=\left[\begin{array}{c}
 r\\
-\kappa_{\sigma}\mu_{\sigma}\\
+0\\
 \kappa_{v}\mu_{v}
 \end{array}\right],\quad K_{1}=\left[\begin{array}{ccc}
 0 & \lambda-\frac{1}{2} & 0\\
-0 & -\kappa_{\sigma} & 0\\
+0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
 0 & 0 & -\kappa_{v}
 \end{array}\right],
 \]
