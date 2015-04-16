@@ -1637,5 +1637,136 @@ E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\fra
 
 \end_layout
 
+\begin_layout Subsection
+Central Tendency 
+\end_layout
+
+\begin_layout Subsubsection
+The model
+\end_layout
+
+\begin_layout Standard
+Consider
+\begin_inset Formula 
+\begin{align*}
+dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+d\sigma_{t}^{2} & =\kappa_{\sigma}\left(v_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}dW_{t}^{\sigma},\\
+dv_{t}^{2} & =\kappa_{v}\left(\mu-v_{t}^{2}\right)dt+\eta_{v}v_{t}dW_{t}^{v},
+\end{align*}
+
+\end_inset
+
+with 
+\begin_inset Formula $p_{t}=\log S_{t}$
+\end_inset
+
+, and 
+\begin_inset Formula $Corr\left[dW_{s}^{r},dW_{s}^{\sigma}\right]=\rho$
+\end_inset
+
+, or in other words 
+\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$
+\end_inset
+
+.
+ Also let 
+\begin_inset Formula $R\left(Y_{t}\right)=r$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
+The drift and diffusion functions are
+\begin_inset Formula 
+\[
+\mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
+r\\
+\kappa_{\sigma}\mu_{\sigma}\\
+\kappa_{v}\mu_{v}
+\end{array}\right]+\left[\begin{array}{ccc}
+0 & \lambda-\frac{1}{2} & 0\\
+0 & -\kappa_{\sigma} & 0\\
+0 & 0 & -\kappa_{v}
+\end{array}\right]\left[\begin{array}{c}
+p_{t}\\
+\sigma_{t}^{2}\\
+v_{t}^{2}
+\end{array}\right],\quad\sigma\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{ccc}
+\sigma_{t} & 0 & 0\\
+\eta_{\sigma}\rho\sigma_{t} & \eta_{\sigma}\sqrt{1-\rho^{2}}\sigma_{t} & 0\\
+0 & 0 & \eta_{v}v_{t}
+\end{array}\right].
+\]
+
+\end_inset
+
+It follows that
+\begin_inset Formula 
+\[
+\sigma\left(Y_{t},\theta_{0}\right)\sigma\left(Y_{t},\theta_{0}\right)^{\prime}=\left[\begin{array}{ccc}
+\sigma_{t}^{2} & \eta_{\sigma}\rho\sigma_{t}^{2} & 0\\
+\eta_{\sigma}\rho\sigma_{t}^{2} & \eta_{\sigma}^{2}\sigma_{t}^{2} & 0\\
+0 & 0 & \eta_{v}^{2}v_{t}^{2}
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & \eta_{\sigma}\rho & 0\\
+\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
+0 & 0 & 0
+\end{array}\right]\sigma_{t}^{2}+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & \eta_{v}^{2}
+\end{array}\right]v_{t}^{2}.
+\]
+
+\end_inset
+
+So we have
+\begin_inset Formula 
+\[
+\rho_{0}=r,\quad\rho_{1}=\left[0,0,0\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+K_{0}=\left[\begin{array}{c}
+r\\
+\kappa_{\sigma}\mu_{\sigma}\\
+\kappa_{v}\mu_{v}
+\end{array}\right],\quad K_{1}=\left[\begin{array}{ccc}
+0 & \lambda-\frac{1}{2} & 0\\
+0 & -\kappa_{\sigma} & 0\\
+0 & 0 & -\kappa_{v}
+\end{array}\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+H_{0}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,1}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,2}=\left[\begin{array}{ccc}
+1 & \eta_{\sigma}\rho & 0\\
+\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
+0 & 0 & 0
+\end{array}\right],\quad H_{1,3}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & \eta_{v}^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
