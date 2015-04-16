@@ -64,7 +64,14 @@ class SDEParameterTestCase(ut.TestCase):
         param = HestonParam()
         param.update(theta=theta)
         np.testing.assert_array_equal(param.get_theta(), theta)
-        # TODO : test AJD representation
+
+        mat_k0 = [param.riskfree, param.kappa * param.mean_v]
+        mat_k1 = [[0, param.lmbd - .5], [0, -param.kappa]]
+        mat_h0 = np.zeros((2, 2))
+        mat_h1 = [np.zeros((2, 2)), [[1, param.eta*param.rho],
+                  [param.eta*param.rho, param.eta**2]]]
+
+        np.testing.assert_array_equal(param.mat_k0, mat_k0)
 
 
 class HelperFunctionsTestCase(ut.TestCase):

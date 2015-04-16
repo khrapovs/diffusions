@@ -81,14 +81,21 @@ class HestonParam(object):
         self.kappa = kappa
         self.eta = eta
         self.rho = rho
+        self.update_ajd()
         if not self.is_valid():
             warnings.warn('Feller condition is violated!')
+
+    def update_ajd(self):
+        """Update AJD representation.
+
+        """
         # AJD parameters
-        self.mat_k0 = [riskfree, kappa * mean_v]
-        self.mat_k1 = [[0, lmbd - .5], [0, -kappa]]
+        self.mat_k0 = [self.riskfree, self.kappa * self.mean_v]
+        self.mat_k1 = [[0, self.lmbd - .5], [0, -self.kappa]]
         self.mat_h0 = np.zeros((2, 2))
-        self.mat_h1 = [np.zeros((2, 2)),
-                       [[1, eta*rho], [eta*rho, eta**2]]]
+        self.mat_h1 = np.zeros((2, 2, 2))
+        self.mat_h1[1] = [[1, self.eta*self.rho],
+                    [self.eta*self.rho, self.eta**2]]
 
     def is_valid(self):
         """Check Feller condition.
@@ -111,6 +118,7 @@ class HestonParam(object):
 
         """
         [self.lmbd, self.mean_v, self.kappa, self.eta, self.rho] = theta
+        self.update_ajd()
 
     def get_theta(self):
         """Return vector of model parameters.
