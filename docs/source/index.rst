@@ -15,3 +15,4 @@ Affine Diffusion Models
    vasicek
    cir
    heston
+   centtend
