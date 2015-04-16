@@ -73,7 +73,33 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
-    # TODO : test CIR parameters
+    def test_cirparam_class(self):
+        """Test CIR parameter class."""
+
+        mean, kappa, eta = 1.5, 1., .2
+        param = CIRparam(mean, kappa, eta)
+
+        self.assertEqual(param.mean, mean)
+        self.assertEqual(param.kappa, kappa)
+        self.assertEqual(param.eta, eta)
+
+        np.testing.assert_array_equal(param.get_theta(),
+                                      np.array([mean, kappa, eta]))
+
+        theta = np.ones(3)
+        param = CIRparam()
+        param.update(theta=theta)
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        mat_k0 = param.kappa * param.mean
+        mat_k1 = -param.kappa
+        mat_h0 = 0.
+        mat_h1 = param.eta**2
+
+        np.testing.assert_array_equal(param.mat_k0, mat_k0)
+        np.testing.assert_array_equal(param.mat_k1, mat_k1)
+        np.testing.assert_array_equal(param.mat_h0, mat_h0)
+        np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
     def test_hestonparam_class(self):
         """Test Heston parameter class."""
