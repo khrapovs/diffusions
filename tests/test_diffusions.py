@@ -282,6 +282,35 @@ class HelperFunctionsTestCase(ut.TestCase):
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
         np.testing.assert_almost_equal(ajd_drift(state, param), drift)
 
+    def test_ajd_diff_ct(self):
+        """Test AJD diffusion function for CT model."""
+
+        riskfree, lmbd, mean_v = 0., .01, .2
+        kappa_s, kappa_v, eta_s, eta_v, rho = 1.5, .5, .2, .02, -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
+                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+        nvars, nsim = 3, 5
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars))
+        var1 = np.array([[1, eta_s*rho, 0],
+                         [eta_s*rho, eta_s**2, 0],
+                         [0, 0, 0]])
+        var2 = np.zeros((3, 3))
+        var2[-1, -1] = eta_v**2
+
+        var = ((np.ones((nsim, nvars, nvars)) * var1).T * state[:, 1]).T \
+            + ((np.ones((nsim, nvars, nvars)) * var2).T * state[:, 2]).T
+        diff = np.linalg.cholesky(var)
+
+        self.assertEqual(ajd_diff(state, param).shape, diff.shape)
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+class HelperFunctionTestCase(ut.TestCase):
+    """Test helper functions."""
+
     def test_columnwise_prod(self):
         """Test columnwise product."""
         left = np.arange(6).reshape((3, 2))
