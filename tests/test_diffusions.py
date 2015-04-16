@@ -262,6 +262,26 @@ class HelperFunctionsTestCase(ut.TestCase):
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
+    def test_ajd_drift_ct(self):
+        """Test AJD drift function for CT model."""
+
+        riskfree, lmbd, mean_v = 0., .01, .2
+        kappa_s, kappa_v, eta_s, eta_v, rho = 1.5, .5, .2, .02, -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
+                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+        nvars, nsim = 3, 5
+        size = (nsim, nvars)
+        state = np.ones(size)
+        drift = np.ones(size)
+        drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
+        drift_s = kappa_s * (state[:, 2] - state[:, 1])
+        drift_v = kappa_v * (mean_v - state[:, 2])
+        drift = np.vstack([drift_r, drift_s, drift_v]).T
+
+        self.assertEqual(ajd_drift(state, param).shape, drift.shape)
+        np.testing.assert_almost_equal(ajd_drift(state, param), drift)
+
     def test_columnwise_prod(self):
         """Test columnwise product."""
         left = np.arange(6).reshape((3, 2))
