@@ -18,6 +18,34 @@ from diffusions import (nice_errors, ajd_drift, ajd_diff, columnwise_prod,
                         rolling_window)
 
 
+class HelperFunctionTestCase(ut.TestCase):
+    """Test helper functions."""
+
+    def test_columnwise_prod(self):
+        """Test columnwise product."""
+        left = np.arange(6).reshape((3, 2))
+        right = np.arange(9).reshape((3, 3))
+        prod = []
+        for i in range(right.shape[1]):
+            prod.append(left.T * right[:, i])
+        prod = np.vstack(prod).T
+        expected = columnwise_prod(left, right)
+
+        np.testing.assert_array_equal(prod, expected)
+
+    def test_rolling_window(self):
+        """test riolling window apply."""
+
+        mat = rolling_window(np.sum, np.ones(5), window=2)
+
+        np.testing.assert_array_equal(mat, np.ones(4) * 2)
+        mat = np.arange(10).reshape((2,5))
+        mat = rolling_window(np.mean, mat, window=2)
+        expect = np.array([[ 0.5,  1.5,  2.5,  3.5], [ 5.5,  6.5,  7.5,  8.5]])
+
+        np.testing.assert_array_equal(mat, expect)
+
+
 class SDEParameterTestCase(ut.TestCase):
     """Test SDE, GBM classes."""
 
@@ -306,34 +334,6 @@ class HelperFunctionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
-
-
-class HelperFunctionTestCase(ut.TestCase):
-    """Test helper functions."""
-
-    def test_columnwise_prod(self):
-        """Test columnwise product."""
-        left = np.arange(6).reshape((3, 2))
-        right = np.arange(9).reshape((3, 3))
-        prod = []
-        for i in range(right.shape[1]):
-            prod.append(left.T * right[:, i])
-        prod = np.vstack(prod).T
-        expected = columnwise_prod(left, right)
-
-        np.testing.assert_array_equal(prod, expected)
-
-    def test_rolling_window(self):
-        """test riolling window apply."""
-
-        mat = rolling_window(np.sum, np.ones(5), window=2)
-
-        np.testing.assert_array_equal(mat, np.ones(4) * 2)
-        mat = np.arange(10).reshape((2,5))
-        mat = rolling_window(np.mean, mat, window=2)
-        expect = np.array([[ 0.5,  1.5,  2.5,  3.5], [ 5.5,  6.5,  7.5,  8.5]])
-
-        np.testing.assert_array_equal(mat, expect)
 
 
 class SimulationTestCase(ut.TestCase):
