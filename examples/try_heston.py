@@ -93,7 +93,7 @@ def try_integrated_gmm():
     lmbd = .3
     mean_v = .5
     kappa = .1
-    eta = .02**.5
+    eta = .02**.5 # o.1414
     rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
@@ -101,11 +101,13 @@ def try_integrated_gmm():
                              eta=eta, rho=rho)
     heston = Heston(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/80, 1, 1
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 2000, 1/80, 1, 1
     aggh = 10
     data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
+    plot_realized(ret, rvar)
+
     instr_data = np.vstack([rvar, rvar**2])
 
     theta_start = theta_true
@@ -115,7 +117,7 @@ def try_integrated_gmm():
     for lag, method in tasks:
         time_start = time.time()
         res = heston.integrated_gmm(theta_start, data=data, instrlag=lag,
-                                    instr_data=instr_data,
+                                    instr_data=instr_data, aggh=aggh,
                                     instr_choice='var', method=method,
                                     use_jacob=True, exact_jacob=False,
                                     bounds=theta_start.get_bounds(), iter=3)
@@ -130,5 +132,5 @@ if __name__ == '__main__':
     sns.set_context('notebook')
 #    try_simulation()
 #    try_marginal()
-    try_sim_realized()
-#    try_integrated_gmm()
+#    try_sim_realized()
+    try_integrated_gmm()
