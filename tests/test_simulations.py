@@ -16,8 +16,8 @@ from diffusions import Heston, HestonParam
 from diffusions import CentTend, CentTendParam
 
 
-class SimulationTestCase(ut.TestCase):
-    """Test simulation capabilities."""
+class GBMTestCase(ut.TestCase):
+    """Test simupdate."""
 
     def test_gbm_simupdate(self):
         """Test simulation update of the GBM model."""
@@ -114,6 +114,10 @@ class SimulationTestCase(ut.TestCase):
         self.assertEqual(new_state.shape, size)
         np.testing.assert_almost_equal(new_state, new_state_compute)
 
+
+class SimulationTestCase(ut.TestCase):
+    """Test simulation."""
+
     def test_gbm_simulation(self):
         """Test simulation of the GBM model."""
 
@@ -198,6 +202,10 @@ class SimulationTestCase(ut.TestCase):
         fun = lambda: heston.simulate(0, interval, ndiscr, nobs, nsim, diff=0)
 
         self.assertRaises(ValueError, fun)
+
+
+class RealizedSimTestCase(ut.TestCase):
+    """Test Realized data simulation."""
 
     def test_gbm_sim_realized(self):
         """Test simulation of realized values of the GBM model."""

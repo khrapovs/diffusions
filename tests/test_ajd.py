@@ -14,8 +14,8 @@ from diffusions import (GBMparam, VasicekParam, CIRparam,
 from diffusions import ajd_drift, ajd_diff
 
 
-class DiffusionsTestCase(ut.TestCase):
-    """Test helper functions."""
+class GBMTestCase(ut.TestCase):
+    """Test GBM."""
 
     def test_ajd_drift_gbm(self):
         """Test AJD drift function for GBM model."""
@@ -43,6 +43,10 @@ class DiffusionsTestCase(ut.TestCase):
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
+
+class VasicekTestCase(ut.TestCase):
+    """Test Vasicek."""
+
     def test_ajd_drift_vasicek(self):
         """Test AJD drift function for Vasicek model."""
 
@@ -68,6 +72,10 @@ class DiffusionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+class CIRTestCase(ut.TestCase):
+    """Test CIR."""
 
     def test_ajd_drift_cir(self):
         """Test AJD drift function for CIR model."""
@@ -95,6 +103,10 @@ class DiffusionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+class HestonTestCase(ut.TestCase):
+    """Test Heston."""
 
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
@@ -131,6 +143,10 @@ class DiffusionsTestCase(ut.TestCase):
 
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
         np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+class CTTestCase(ut.TestCase):
+    """Test Central Tendency."""
 
     def test_ajd_drift_ct(self):
         """Test AJD drift function for CT model."""
