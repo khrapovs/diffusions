@@ -83,7 +83,7 @@ def nice_errors(errors, sdim):
     return np.concatenate((errors, -errors), axis=sdim)
 
 
-def plot_trajectories(paths, interval):
+def plot_trajectories(paths, interval, names):
     """Plot process realizations.
 
     Parameters
@@ -92,29 +92,45 @@ def plot_trajectories(paths, interval):
         Process realizations. Shape is either (nobs,) or (nobs, nsim)
     interval : float
         Length of unit interval
+    names : str or list of strings
+        Labels
 
     """
-    x = np.arange(0, interval * paths.shape[0], interval)
-    plt.plot(x, paths)
+    if isinstance(paths, list):
+        for path, name in zip(paths, names):
+            x = np.arange(0, interval * path.shape[0], interval)
+            plt.plot(x, path, label=name)
+    else:
+        x = np.arange(0, interval * paths.shape[0], interval)
+        plt.plot(x, paths, label=names)
+
     plt.xlabel('$t$')
     plt.ylabel('$x_t$')
+    plt.legend()
     plt.show()
 
 
-def plot_final_distr(paths):
+def plot_final_distr(paths, names):
     """Plot marginal distribution of the process.
 
     Parameters
     ----------
     paths : array
         Process realizations. Shape is (nobs, nsim)
+    names : str or list of strings
+        Labels
 
     """
-    if paths.ndim != 2:
-        raise ValueError('Simulate more paths!')
-    sns.kdeplot(paths[-1])
+    if isinstance(paths, list):
+        for path, name in zip(paths, names):
+            if path.ndim != 2:
+                raise ValueError('Simulate more paths!')
+            sns.kdeplot(path[-1], label=name)
+    else:
+        sns.kdeplot(paths[-1], label=names)
+
     plt.xlabel('x')
-    plt.ylabel('f')
+    plt.legend()
     plt.show()
 
 

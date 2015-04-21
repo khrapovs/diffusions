@@ -9,11 +9,9 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import GBM, GBMparam
-from diffusions import Vasicek, VasicekParam
-from diffusions import CIR, CIRparam
-from diffusions import Heston, HestonParam
-from diffusions import CentTend, CentTendParam
+from diffusions import (GBM, GBMparam, Vasicek, VasicekParam,
+                        CIR, CIRparam, Heston, HestonParam,
+                        CentTend, CentTendParam)
 
 
 class GBMTestCase(ut.TestCase):
