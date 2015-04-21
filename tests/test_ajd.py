@@ -14,8 +14,8 @@ from diffusions import (GBMparam, VasicekParam, CIRparam,
 from diffusions import ajd_drift, ajd_diff
 
 
-class GBMTestCase(ut.TestCase):
-    """Test GBM."""
+class DriftTestCase(ut.TestCase):
+    """Test Drift function."""
 
     def test_ajd_drift_gbm(self):
         """Test AJD drift function for GBM model."""
@@ -30,23 +30,6 @@ class GBMTestCase(ut.TestCase):
         self.assertEqual(ajd_drift(state, param).shape, size)
         np.testing.assert_array_equal(ajd_drift(state, param), drift)
 
-    def test_ajd_diff_gbm(self):
-        """Test AJD diffusion function for GBM model."""
-
-        mean, sigma = 1.5, .2
-        param = GBMparam(mean, sigma)
-        nvars, nsim = 1, 2
-        size = (nsim, nvars)
-        state = np.ones(size)
-        diff = np.ones((nsim, nvars, nvars)) * sigma
-
-        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
-
-
-class VasicekTestCase(ut.TestCase):
-    """Test Vasicek."""
-
     def test_ajd_drift_vasicek(self):
         """Test AJD drift function for Vasicek model."""
 
@@ -60,23 +43,6 @@ class VasicekTestCase(ut.TestCase):
         self.assertEqual(ajd_drift(state, param).shape, size)
         np.testing.assert_array_equal(ajd_drift(state, param), drift)
 
-    def test_ajd_diff_vasicek(self):
-        """Test AJD diffusion function for Vasicek model."""
-
-        mean, kappa, eta = 1.5, 1, .2
-        param = VasicekParam(mean, kappa, eta)
-        nvars, nsim = 1, 2
-        size = (nsim, nvars)
-        state = np.ones(size)
-        diff = np.ones((nsim, nvars, nvars)) * eta
-
-        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
-
-
-class CIRTestCase(ut.TestCase):
-    """Test CIR."""
-
     def test_ajd_drift_cir(self):
         """Test AJD drift function for CIR model."""
 
@@ -89,24 +55,6 @@ class CIRTestCase(ut.TestCase):
 
         self.assertEqual(ajd_drift(state, param).shape, size)
         np.testing.assert_array_equal(ajd_drift(state, param), drift)
-
-    def test_ajd_diff_cir(self):
-        """Test AJD diffusion function for CIR model."""
-
-        mean, kappa, eta = 1.5, 1, .2
-        param = CIRparam(mean, kappa, eta)
-        nvars, nsim = 1, 2
-        size = (nsim, nvars)
-        state_val = 4
-        state = np.ones(size)*state_val
-        diff = eta * state_val**.5 * np.ones((nsim, nvars, nvars))
-
-        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
-
-
-class HestonTestCase(ut.TestCase):
-    """Test Heston."""
 
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
@@ -125,28 +73,6 @@ class HestonTestCase(ut.TestCase):
 
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
         np.testing.assert_almost_equal(ajd_drift(state, param), drift)
-
-    def test_ajd_diff_heston(self):
-        """Test AJD diffusion function for Heston model."""
-
-        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2, -.0
-        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                            mean_v=mean_v, kappa=kappa,
-                            eta=eta, rho=rho)
-        nvars, nsim = 2, 3
-        size = (nsim, nvars)
-        state = np.ones(size)
-        diff = np.ones((nsim, nvars, nvars))
-        var = np.array([[1, eta*rho], [eta*rho, eta**2]])
-        var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
-        diff = np.linalg.cholesky(var)
-
-        self.assertEqual(ajd_diff(state, param).shape, diff.shape)
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
-
-
-class CTTestCase(ut.TestCase):
-    """Test Central Tendency."""
 
     def test_ajd_drift_ct(self):
         """Test AJD drift function for CT model."""
@@ -167,6 +93,69 @@ class CTTestCase(ut.TestCase):
 
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
         np.testing.assert_almost_equal(ajd_drift(state, param), drift)
+
+
+class DiffusionTestCase(ut.TestCase):
+    """Test Diffusio function."""
+
+    def test_ajd_diff_gbm(self):
+        """Test AJD diffusion function for GBM model."""
+
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars)) * sigma
+
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+    def test_ajd_diff_vasicek(self):
+        """Test AJD diffusion function for Vasicek model."""
+
+        mean, kappa, eta = 1.5, 1, .2
+        param = VasicekParam(mean, kappa, eta)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars)) * eta
+
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+    def test_ajd_diff_cir(self):
+        """Test AJD diffusion function for CIR model."""
+
+        mean, kappa, eta = 1.5, 1, .2
+        param = CIRparam(mean, kappa, eta)
+        nvars, nsim = 1, 2
+        size = (nsim, nvars)
+        state_val = 4
+        state = np.ones(size)*state_val
+        diff = eta * state_val**.5 * np.ones((nsim, nvars, nvars))
+
+        self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+
+
+    def test_ajd_diff_heston(self):
+        """Test AJD diffusion function for Heston model."""
+
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2, -.0
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho)
+        nvars, nsim = 2, 3
+        size = (nsim, nvars)
+        state = np.ones(size)
+        diff = np.ones((nsim, nvars, nvars))
+        var = np.array([[1, eta*rho], [eta*rho, eta**2]])
+        var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
+        diff = np.linalg.cholesky(var)
+
+        self.assertEqual(ajd_diff(state, param).shape, diff.shape)
+        np.testing.assert_array_equal(ajd_diff(state, param), diff)
 
     def test_ajd_diff_ct(self):
         """Test AJD diffusion function for CT model."""
