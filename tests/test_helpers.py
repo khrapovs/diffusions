@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Test suite for diffusions package.
+Test suite for helper functions.
 
 """
 from __future__ import print_function, division
@@ -28,7 +28,7 @@ class HelperFunctionTestCase(ut.TestCase):
         np.testing.assert_array_equal(prod, expected)
 
     def test_rolling_window(self):
-        """test riolling window apply."""
+        """Test rolling window apply."""
 
         mat = rolling_window(np.sum, np.ones(5), window=2)
 
