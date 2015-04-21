@@ -246,6 +246,38 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertRaises(ValueError, fun)
 
+    def test_ct_simulation(self):
+        """Test simulation of the CT model."""
+
+        nvars = 3
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_v = .5
+        eta_s = .1
+        eta_v = .01
+        rho = -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
+                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+        centtend = CentTend(param)
+        start = [1, mean_v, mean_v]
+        nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
+        nobs = int(nperiods / interval)
+        paths = centtend.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        paths = centtend.simulate(start, interval, ndiscr, nobs, nsim)
+
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        fun = lambda: centtend.simulate(0, interval, ndiscr, nobs,
+                                        nsim, diff=0)
+
+        self.assertRaises(ValueError, fun)
+
 
 class RealizedSimTestCase(ut.TestCase):
     """Test Realized data simulation."""
