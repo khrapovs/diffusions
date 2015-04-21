@@ -247,7 +247,7 @@ class SimulationTestCase(ut.TestCase):
         self.assertRaises(ValueError, fun)
 
     def test_ct_simulation(self):
-        """Test simulation of the CT model."""
+        """Test simulation of the Central Tendency model."""
 
         nvars = 3
         riskfree = .01
@@ -340,6 +340,31 @@ class RealizedSimTestCase(ut.TestCase):
         returns, rvol = heston.sim_realized(start, interval=interval,
                                             ndiscr=ndiscr, nperiods=nperiods,
                                             nsim=nsim, aggh=aggh, diff=0)
+
+        self.assertEqual(returns.shape, (nperiods-aggh+1, ))
+        self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
+
+    def test_ct_sim_realized(self):
+        """Test simulation of realized values of the Central Tendency model."""
+
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_v = .5
+        eta_s = .1
+        eta_v = .01
+        rho = -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
+                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+        centtend = CentTend(param)
+        start = [1, mean_v, mean_v]
+        nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
+        aggh = 2
+        returns, rvol = centtend.sim_realized(start, interval=interval,
+                                              ndiscr=ndiscr, nperiods=nperiods,
+                                              nsim=nsim, aggh=aggh, diff=0)
 
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
