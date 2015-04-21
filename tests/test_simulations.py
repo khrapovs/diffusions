@@ -114,6 +114,49 @@ class GBMTestCase(ut.TestCase):
         self.assertEqual(new_state.shape, size)
         np.testing.assert_almost_equal(new_state, new_state_compute)
 
+    def test_ct_simupdate(self):
+        """Test simulation update of the Central Tendency model."""
+
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_v = .5
+        eta_s = .1
+        eta_v = .01
+        rho = -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
+                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+        centend = CentTend(param)
+        centend.ndiscr, centend.interval = 2, .5
+        nvars, nsim = 3, 3
+        size = (nsim, nvars)
+        state = np.ones(size)
+        error = np.vstack([np.zeros(nsim), np.ones(nsim), np.ones(nsim)]).T
+
+        new_state = centend.update(state, error)
+        drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
+        drift_s = kappa_s * (state[:, 2] - state[:, 1])
+        drift_v = kappa_v * (mean_v - state[:, 2])
+        loc = np.vstack([drift_r, drift_s, drift_v]).T
+
+        var_s = np.zeros((3, 3))
+        var_s[:2, :2] = np.array([[1, eta_s*rho], [eta_s*rho, eta_s**2]])
+        var_v = np.zeros((3, 3))
+        var_v[2, 2] = eta_v**2
+        var = ((np.ones((nsim, nvars, nvars)) * var_s).T * state[:, 1]).T \
+            + ((np.ones((nsim, nvars, nvars)) * var_v).T * state[:, 2]).T
+        scale = np.linalg.cholesky(var)
+
+        delta = centend.interval / centend.ndiscr
+        new_state_compute = loc * delta
+        for i in range(nsim):
+            new_state_compute[i] += (scale[i] * error[i]).sum(1) * delta**.5
+
+        self.assertEqual(new_state.shape, size)
+        np.testing.assert_almost_equal(new_state, new_state_compute)
+
 
 class SimulationTestCase(ut.TestCase):
     """Test simulation."""
