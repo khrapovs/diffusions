@@ -538,7 +538,15 @@ RV_{t,H}^{2}
 
 \end_inset
 
+Here we used the fact that 
+\begin_inset Formula $V_{t}\left[\mathcal{V}_{t,H}\right]=0$
+\end_inset
 
+ and 
+\begin_inset Formula $\left(E_{t}\left[\mathcal{V}_{t,H}\right]\right)^{2}=\sigma^{4}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
