@@ -3,7 +3,18 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+%\newrefformat{sec}{Section \ref{#1}}
+% no hyphens
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+\end_preamble
 \use_default_options true
+\begin_modules
+eqs-within-sections
+\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -28,6 +39,7 @@
 \paperfontsize 11
 \spacing onehalf
 \use_hyperref true
+\pdf_title "Affine Diffusion Models"
 \pdf_author "Stanislav Khrapov"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
@@ -143,7 +155,7 @@ Affine Diffusion
 \end_layout
 
 \begin_layout Standard
-A jump-diffusion process is a Markov process solving the stochastic differential
+A diffusion process is a Markov process solving the stochastic differential
  equation
 \begin_inset Formula 
 \[
@@ -152,16 +164,11 @@ dY_{t}=\mu\left(Y_{t},\theta_{0}\right)dt+\sigma\left(Y_{t},\theta_{0}\right)dW_
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Discounting is an integral part of pricing so we first introduce a discount-rate
- function 
+A discount-rate function 
 \begin_inset Formula $R:D\to\mathbb{R}$
 \end_inset
 
- that is an affine function of the state
+ is an affine function of the state
 \begin_inset Formula 
 \[
 R\left(Y\right)=\rho_{0}+\rho_{1}\cdot Y,
@@ -216,10 +223,6 @@ Here
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 A characteristic 
 \begin_inset Formula $\chi=\left(K,H,\rho\right)$
 \end_inset
@@ -231,11 +234,57 @@ A characteristic
  as well as the effects of any discounting.
 \end_layout
 
+\begin_layout Standard
+Suppose we have 
+\begin_inset Quotes eld
+\end_inset
+
+intraday
+\begin_inset Quotes erd
+\end_inset
+
+ observations 
+\begin_inset Formula $Y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}$
+\end_inset
+
+ for 
+\begin_inset Formula $j=1,\ldots,n$
+\end_inset
+
+.
+ These observations can be used to compute realized variance (RV) that approxima
+tes true integrated variance better than just squared 
+\begin_inset Quotes eld
+\end_inset
+
+daily
+\begin_inset Quotes erd
+\end_inset
+
+ observations 
+\begin_inset Formula $Y_{t,t+h}^{2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+RV_{t,h}\equiv\frac{1}{h}\sum_{j=1}^{n}Y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\frac{1}{h}\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
 \begin_layout Subsection
 Discretization and moments
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 We can discretize the model as
 \begin_inset Formula 
 \[
@@ -287,30 +336,7 @@ E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
 
 \end_layout
 
-\begin_layout Standard
-Suppose we also have ``intraday'' observations 
-\begin_inset Formula $y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}$
-\end_inset
-
- for 
-\begin_inset Formula $j=1,\ldots,n$
-\end_inset
-
-.
- These observations can be used to compute realized variance (RV) that approxima
-tes true integrated variance better than just squared ``daily'' observations
- 
-\begin_inset Formula $y_{t,t+h}^{2}$
-\end_inset
-
-:
-\begin_inset Formula 
-\[
-RV_{t,h}\equiv\frac{1}{h}\sum_{j=1}^{n}y_{t+\frac{j-1}{n}h,t+\frac{j}{n}h}^{2}\overset{a.s.}{\longrightarrow}\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds=\frac{1}{h}\int_{t}^{t+h}d\left[Y,Y\right]_{s}\equiv\mathcal{V}_{t,h}.
-\]
-
-\end_inset
-
+\begin_layout Plain Layout
 Then, we can replace the second moment condition with the one corresponding
  to RV:
 \begin_inset Formula 
@@ -328,6 +354,11 @@ y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
 RV_{t,h}-\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
 \end{array}\right].
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -493,28 +524,7 @@ Integrated moments
 \end_layout
 
 \begin_layout Standard
-Suppose we also have available 
-\begin_inset Quotes eld
-\end_inset
-
-intraday
-\begin_inset Quotes erd
-\end_inset
-
- observations 
-\begin_inset Formula $y_{t+\frac{j-1}{n}H,t+\frac{j}{n}H}$
-\end_inset
-
- for 
-\begin_inset Formula $j=1,\ldots,n$
-\end_inset
-
- and are able to compute realized volatility 
-\begin_inset Formula $RV_{t,H}$
-\end_inset
-
-.
- It is trivial to deduce that the integrated variance is constant
+It is trivial to deduce that the integrated variance is constant
 \begin_inset Formula 
 \[
 \mathcal{V}_{t,H}=\sigma^{2}.
@@ -705,33 +715,6 @@ r_{t+h}=r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right)+\sigma\int_{t}^{t+h}e
 
 \end_layout
 
-\begin_layout Subsubsection
-Moments
-\end_layout
-
-\begin_layout Standard
-This implies that
-\begin_inset Formula 
-\begin{eqnarray*}
-E_{t}\left[r_{t+h}\right] & = & r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\\
-V_{t}\left[r_{t+h}\right] & = & \frac{\sigma^{2}}{\kappa}r_{t}e^{-\kappa h}\left(1-e^{-\kappa h}\right)+\frac{\sigma^{2}}{2\kappa}\mu\left(1-e^{-\kappa h}\right)^{2},
-\end{eqnarray*}
-
-\end_inset
-
-since
-\begin_inset Formula 
-\[
-\begin{aligned}V_{t}\left[r_{t+h}\right]= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}E_{t}\left[r_{u}\right]du\\
-= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}\left(r_{t}e^{-\kappa\left(u-t\right)}+\mu\left(1-e^{-\kappa\left(u-t\right)}\right)\right)du.
-\end{aligned}
-\]
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 It can be shown that the transition density is known in closed form:
 \begin_inset Formula 
@@ -788,6 +771,33 @@ which is a noncentral
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsubsection
+Moments
+\end_layout
+
+\begin_layout Standard
+This implies that
+\begin_inset Formula 
+\begin{eqnarray*}
+E_{t}\left[r_{t+h}\right] & = & r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\\
+V_{t}\left[r_{t+h}\right] & = & \frac{\sigma^{2}}{\kappa}r_{t}e^{-\kappa h}\left(1-e^{-\kappa h}\right)+\frac{\sigma^{2}}{2\kappa}\mu\left(1-e^{-\kappa h}\right)^{2},
+\end{eqnarray*}
+
+\end_inset
+
+since
+\begin_inset Formula 
+\[
+\begin{aligned}V_{t}\left[r_{t+h}\right]= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}E_{t}\left[r_{u}\right]du\\
+= & \sigma^{2}\int_{t}^{t+h}e^{-2\kappa\left(t+h-u\right)}\left(r_{t}e^{-\kappa\left(u-t\right)}+\mu\left(1-e^{-\kappa\left(u-t\right)}\right)\right)du.
+\end{aligned}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1039,6 +1049,295 @@ E_{t}\left[\left(h\mathcal{V}_{t,h}-E_{t}\left[h\mathcal{V}_{t,h}\right]\right)^
 
 \begin_layout Subsubsection
 Integrated moments
+\end_layout
+
+\begin_layout Standard
+Define average excess return as
+\begin_inset Formula 
+\[
+\tilde{r}_{t,H}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given observations on average excess returns 
+\begin_inset Formula $\tilde{r}_{t,H}$
+\end_inset
+
+ and realized volatility 
+\begin_inset Formula $RV_{t,H}$
+\end_inset
+
+ we have the following four integrated moments (the proof is given in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Integrated-moments-Heston"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{align*}
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{2},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
+\end{align*}
+
+\end_inset
+
+or in matrix notation
+\begin_inset Formula 
+\[
+E_{t-2h}\left[\left(\begin{array}{cccc}
+L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2} & \cdot & \cdot\\
+\cdot & \left(1-A_{h}L\right)L & \cdot & \cdot\\
+\cdot & \cdot & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right) & \cdot\\
+\cdot & \cdot & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
+\end{array}\right)\left(\begin{array}{c}
+\tilde{r}_{t,H}\\
+\mathcal{V}_{t,H}\\
+\mathcal{V}_{t,H}^{2}\\
+\tilde{r}_{t,H}\mathcal{V}_{t,H}
+\end{array}\right)\right]=C.
+\]
+
+\end_inset
+
+Define the data vector as 
+\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
+\end_inset
+
+.
+ Then, the moment conditions can be written more compactly as 
+\begin_inset Formula 
+\[
+E_{t-2h}\left[A\left(L\right)X_{t,H}\right]=C,
+\]
+
+\end_inset
+
+with the lag polynomial
+\begin_inset Formula 
+\[
+A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2},
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+A_{0}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & 1 & \cdot\\
+\cdot & \cdot & \cdot & \cdot
+\end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & 1 & \cdot & \cdot\\
+\cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
+\cdot & \cdot & \frac{1}{2}-\lambda & 1
+\end{array}\right),\quad A_{2}=\left(\begin{array}{cccc}
+1 & \frac{1}{2}-\lambda & \cdot & \cdot\\
+\cdot & -A_{h} & \cdot & \cdot\\
+\cdot & \cdot & A_{h}^{3} & \cdot\\
+\cdot & \cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & -A_{h}
+\end{array}\right).
+\]
+
+\end_inset
+
+To make this one single matrix product, we can write
+\begin_inset Formula 
+\[
+E_{t-2h}\left[\left(\begin{array}{ccc}
+A_{0} & A_{1} & A_{2}\end{array}\right)\left(\begin{array}{c}
+X_{t,H}\\
+LX_{t,H}\\
+L^{2}X_{t,H}
+\end{array}\right)\right]=C,
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,H}\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray*}
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda-\frac{1}{2}\right)\mu,\\
+E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
+E\left[\mathcal{V}_{t,H}^{2}\right] & = & \frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2},\\
+E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Central Tendency 
+\end_layout
+
+\begin_layout Subsubsection
+The model
+\end_layout
+
+\begin_layout Standard
+Consider
+\begin_inset Formula 
+\begin{align*}
+dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+d\sigma_{t}^{2} & =\kappa_{\sigma}\left(v_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}dW_{t}^{\sigma},\\
+dv_{t}^{2} & =\kappa_{v}\left(\mu-v_{t}^{2}\right)dt+\eta_{v}v_{t}dW_{t}^{v},
+\end{align*}
+
+\end_inset
+
+with 
+\begin_inset Formula $p_{t}=\log S_{t}$
+\end_inset
+
+, and 
+\begin_inset Formula $Corr\left[dW_{s}^{r},dW_{s}^{\sigma}\right]=\rho$
+\end_inset
+
+, or in other words 
+\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$
+\end_inset
+
+.
+ Also let 
+\begin_inset Formula $R\left(Y_{t}\right)=r$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+AJD representation
+\end_layout
+
+\begin_layout Standard
+The drift and diffusion functions are
+\begin_inset Formula 
+\[
+\mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
+r\\
+0\\
+\kappa_{v}\mu_{v}
+\end{array}\right]+\left[\begin{array}{ccc}
+0 & \lambda-\frac{1}{2} & 0\\
+0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
+0 & 0 & -\kappa_{v}
+\end{array}\right]\left[\begin{array}{c}
+p_{t}\\
+\sigma_{t}^{2}\\
+v_{t}^{2}
+\end{array}\right],\quad\sigma\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{ccc}
+\sigma_{t} & 0 & 0\\
+\eta_{\sigma}\rho\sigma_{t} & \eta_{\sigma}\sqrt{1-\rho^{2}}\sigma_{t} & 0\\
+0 & 0 & \eta_{v}v_{t}
+\end{array}\right].
+\]
+
+\end_inset
+
+It follows that
+\begin_inset Formula 
+\[
+\sigma\left(Y_{t},\theta_{0}\right)\sigma\left(Y_{t},\theta_{0}\right)^{\prime}=\left[\begin{array}{ccc}
+\sigma_{t}^{2} & \eta_{\sigma}\rho\sigma_{t}^{2} & 0\\
+\eta_{\sigma}\rho\sigma_{t}^{2} & \eta_{\sigma}^{2}\sigma_{t}^{2} & 0\\
+0 & 0 & \eta_{v}^{2}v_{t}^{2}
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & \eta_{\sigma}\rho & 0\\
+\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
+0 & 0 & 0
+\end{array}\right]\sigma_{t}^{2}+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & \eta_{v}^{2}
+\end{array}\right]v_{t}^{2}.
+\]
+
+\end_inset
+
+So we have
+\begin_inset Formula 
+\[
+\rho_{0}=r,\quad\rho_{1}=\left[0,0,0\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+K_{0}=\left[\begin{array}{c}
+r\\
+0\\
+\kappa_{v}\mu_{v}
+\end{array}\right],\quad K_{1}=\left[\begin{array}{ccc}
+0 & \lambda-\frac{1}{2} & 0\\
+0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
+0 & 0 & -\kappa_{v}
+\end{array}\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+H_{0}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,1}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,2}=\left[\begin{array}{ccc}
+1 & \eta_{\sigma}\rho & 0\\
+\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
+0 & 0 & 0
+\end{array}\right],\quad H_{1,3}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & \eta_{v}^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+\start_of_appendix
+Appendix
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Integrated-moments-Heston"
+
+\end_inset
+
+Integrated moments for Heston model
 \end_layout
 
 \begin_layout Standard
@@ -1522,254 +1821,6 @@ Multiply conditional cross-moment by
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-All in all, this gives us the following four integrated moments:
-\begin_inset Formula 
-\begin{align*}
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{2},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{3},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
-\end{align*}
-
-\end_inset
-
-or in matrix notation
-\begin_inset Formula 
-\[
-E_{t-2h}\left[\left(\begin{array}{cccc}
-L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2}\\
- & \left(1-A_{h}L\right)L\\
- &  & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\\
- &  & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
-\end{array}\right)\left(\begin{array}{c}
-\tilde{r}_{t,H}\\
-\mathcal{V}_{t,H}\\
-\mathcal{V}_{t,H}^{2}\\
-\tilde{r}_{t,H}\mathcal{V}_{t,H}
-\end{array}\right)\right]=C.
-\]
-
-\end_inset
-
-Define the data vector as 
-\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
-\end_inset
-
-.
- Then, the moment conditions can be written more compactly as 
-\begin_inset Formula 
-\[
-E_{t-2h}\left[A\left(L\right)X_{t,H}\right]=C,
-\]
-
-\end_inset
-
-with the lag polynomial
-\begin_inset Formula 
-\[
-A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2},
-\]
-
-\end_inset
-
-and
-\begin_inset Formula 
-\[
-A_{0}=\left(\begin{array}{cccc}
-\cdot & \cdot & \cdot & \cdot\\
-\cdot & \cdot & \cdot & \cdot\\
-\cdot & \cdot & 1 & \cdot\\
-\cdot & \cdot & \cdot & \cdot
-\end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
-\cdot & \cdot & \cdot & \cdot\\
-\cdot & 1 & \cdot & \cdot\\
-\cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
-\cdot & \cdot & \frac{1}{2}-\lambda & 1
-\end{array}\right),
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-A_{2}=\left(\begin{array}{cccc}
-1 & \frac{1}{2}-\lambda & \cdot & \cdot\\
-\cdot & -A_{h} & \cdot & \cdot\\
-\cdot & \cdot & A_{h}^{3} & \cdot\\
-\cdot & \cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & -A_{h}
-\end{array}\right).
-\]
-
-\end_inset
-
-To make this one single matrix product, we can write
-\begin_inset Formula 
-\[
-E_{t-2h}\left[\left(\begin{array}{ccc}
-A_{0} & A_{1} & A_{2}\end{array}\right)\left(\begin{array}{c}
-X_{t,H}\\
-LX_{t,H}\\
-L^{2}X_{t,H}
-\end{array}\right)\right]=C,
-\]
-
-\end_inset
-
-where
-\begin_inset Formula 
-\[
-C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,H}\right],
-\]
-
-\end_inset
-
-and
-\begin_inset Formula 
-\begin{eqnarray*}
-E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda-\frac{1}{2}\right)\mu,\\
-E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
-E\left[\mathcal{V}_{t,H}^{2}\right] & = & \frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2},\\
-E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
-\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Central Tendency 
-\end_layout
-
-\begin_layout Subsubsection
-The model
-\end_layout
-
-\begin_layout Standard
-Consider
-\begin_inset Formula 
-\begin{align*}
-dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
-d\sigma_{t}^{2} & =\kappa_{\sigma}\left(v_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}dW_{t}^{\sigma},\\
-dv_{t}^{2} & =\kappa_{v}\left(\mu-v_{t}^{2}\right)dt+\eta_{v}v_{t}dW_{t}^{v},
-\end{align*}
-
-\end_inset
-
-with 
-\begin_inset Formula $p_{t}=\log S_{t}$
-\end_inset
-
-, and 
-\begin_inset Formula $Corr\left[dW_{s}^{r},dW_{s}^{\sigma}\right]=\rho$
-\end_inset
-
-, or in other words 
-\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$
-\end_inset
-
-.
- Also let 
-\begin_inset Formula $R\left(Y_{t}\right)=r$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsubsection
-AJD representation
-\end_layout
-
-\begin_layout Standard
-The drift and diffusion functions are
-\begin_inset Formula 
-\[
-\mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
-r\\
-0\\
-\kappa_{v}\mu_{v}
-\end{array}\right]+\left[\begin{array}{ccc}
-0 & \lambda-\frac{1}{2} & 0\\
-0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
-0 & 0 & -\kappa_{v}
-\end{array}\right]\left[\begin{array}{c}
-p_{t}\\
-\sigma_{t}^{2}\\
-v_{t}^{2}
-\end{array}\right],\quad\sigma\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{ccc}
-\sigma_{t} & 0 & 0\\
-\eta_{\sigma}\rho\sigma_{t} & \eta_{\sigma}\sqrt{1-\rho^{2}}\sigma_{t} & 0\\
-0 & 0 & \eta_{v}v_{t}
-\end{array}\right].
-\]
-
-\end_inset
-
-It follows that
-\begin_inset Formula 
-\[
-\sigma\left(Y_{t},\theta_{0}\right)\sigma\left(Y_{t},\theta_{0}\right)^{\prime}=\left[\begin{array}{ccc}
-\sigma_{t}^{2} & \eta_{\sigma}\rho\sigma_{t}^{2} & 0\\
-\eta_{\sigma}\rho\sigma_{t}^{2} & \eta_{\sigma}^{2}\sigma_{t}^{2} & 0\\
-0 & 0 & \eta_{v}^{2}v_{t}^{2}
-\end{array}\right]=\left[\begin{array}{ccc}
-1 & \eta_{\sigma}\rho & 0\\
-\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
-0 & 0 & 0
-\end{array}\right]\sigma_{t}^{2}+\left[\begin{array}{ccc}
-0 & 0 & 0\\
-0 & 0 & 0\\
-0 & 0 & \eta_{v}^{2}
-\end{array}\right]v_{t}^{2}.
-\]
-
-\end_inset
-
-So we have
-\begin_inset Formula 
-\[
-\rho_{0}=r,\quad\rho_{1}=\left[0,0,0\right],
-\]
-
-\end_inset
-
-and
-\begin_inset Formula 
-\[
-K_{0}=\left[\begin{array}{c}
-r\\
-0\\
-\kappa_{v}\mu_{v}
-\end{array}\right],\quad K_{1}=\left[\begin{array}{ccc}
-0 & \lambda-\frac{1}{2} & 0\\
-0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
-0 & 0 & -\kappa_{v}
-\end{array}\right],
-\]
-
-\end_inset
-
-and
-\begin_inset Formula 
-\[
-H_{0}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,1}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,2}=\left[\begin{array}{ccc}
-1 & \eta_{\sigma}\rho & 0\\
-\eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
-0 & 0 & 0
-\end{array}\right],\quad H_{1,3}=\left[\begin{array}{ccc}
-0 & 0 & 0\\
-0 & 0 & 0\\
-0 & 0 & \eta_{v}^{2}
-\end{array}\right].
-\]
 
 \end_inset
 
