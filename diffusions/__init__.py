@@ -1,6 +1,7 @@
 from .generic_model import *
 from .helper_functions import *
 from .gbm import *
+from .gbm_param import *
 from .vasicek import *
 from .cir import *
 from .heston import *
