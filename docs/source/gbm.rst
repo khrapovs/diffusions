@@ -1,6 +1,6 @@
 .. automodule:: diffusions.gbm
 
-.. autoclass:: diffusions.gbm.GBMparam
+.. autoclass:: diffusions.gbm_param.GBMparam
 	:members:
 
 .. autoclass:: diffusions.gbm.GBM
