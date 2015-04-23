@@ -147,7 +147,7 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.mat_a1(param, aggh).shape, (4, 4))
         self.assertEqual(heston.mat_a2(param, aggh).shape, (4, 4))
 
-        self.assertEqual(heston.mat_a(param, aggh).shape, (4, 3*4))
+        self.assertEqual(heston.mat_a(param).shape, (4, 3*4))
 
         self.assertEqual(heston.realized_const(param, aggh).shape, (4, ))
         self.assertEqual(heston.realized_const(param, aggh)[2], 0)

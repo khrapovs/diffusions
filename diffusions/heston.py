@@ -156,7 +156,7 @@ class Heston(SDE):
 
         return np.array([mean_vol, mean_vol2, mean_ret, mean_cross])
 
-    def realized_const(self, param, aggh):
+    def realized_const(self, param, aggh, subset=None):
         """Intercept in the realized moment conditions.
 
         Parameters
@@ -175,7 +175,7 @@ class Heston(SDE):
         return ((self.mat_a0(param, 1)
             + self.mat_a1(param, 1)
             + self.mat_a2(param, 1))
-            * self.depvar_unc_mean(param, aggh)).sum(1)
+            * self.depvar_unc_mean(param, aggh)).sum(1)[subset].squeeze()
 
     def mat_a0(self, param, aggh):
         """Matrix A_0 in integrated moments.
@@ -240,15 +240,15 @@ class Heston(SDE):
         mat_a[3, 1] = (param.lmbd - .5) * self.coef_big_a(param, 1)
         return mat_a
 
-    def mat_a(self, param, aggh):
+    def mat_a(self, param, subset=None):
         """Matrix A in integrated moments.
 
         Parameters
         ----------
         param : parameter instance
             Model parameters
-        aggh : float
-            Interval length
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -259,9 +259,9 @@ class Heston(SDE):
         mat_a = (self.mat_a0(param, 1),
                  self.mat_a1(param, 1),
                  self.mat_a2(param, 1))
-        return np.hstack(mat_a)
+        return np.hstack(mat_a)[subset].squeeze()
 
-    def diff_mat_a(self, param, aggh):
+    def diff_mat_a(self, param, aggh, subset=None):
         """Derivative of Matrix A in integrated moments.
 
         Parameters
@@ -278,14 +278,14 @@ class Heston(SDE):
 
         """
         diff = []
-        for i in range(self.mat_a(param, aggh).shape[0]):
+        for i in range(self.mat_a(param, subset).shape[0]):
             # (3*nmoms, nparams)
             with np.errstate(divide='ignore'):
                 diff.append(nd.Jacobian(lambda x:
-                    self.mat_a(convert(x), aggh)[i])(param.get_theta()))
+                    self.mat_a(convert(x), subset)[i])(param.get_theta()))
         return diff
 
-    def drealized_const(self, param, aggh):
+    def drealized_const(self, param, aggh, subset=None):
         """Intercept in the realized moment conditions.
 
         Parameters
@@ -303,9 +303,9 @@ class Heston(SDE):
         """
         with np.errstate(divide='ignore'):
             return nd.Jacobian(lambda x:
-                self.realized_const(convert(x), aggh))(param.get_theta())
+                self.realized_const(convert(x), aggh, subset))(param.get_theta())
 
-    def realized_depvar(self, data):
+    def realized_depvar(self, data, subset=None):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -313,6 +313,8 @@ class Heston(SDE):
         ----------
         data : (2, nobs) array
             Returns and realized variance
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -321,7 +323,7 @@ class Heston(SDE):
 
         """
         ret, rvar = data
-        var = np.vstack([rvar, rvar**2, ret, ret * rvar])
+        var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=2, original='in')
 
     def instruments(self, data=None, instrlag=0, nobs=None):
@@ -348,7 +350,7 @@ class Heston(SDE):
             return np.pad(instr, width, mode='constant', constant_values=1)
 
     def integrated_mom(self, theta, data=None, instr_data=None,
-                       instr_choice='const', aggh=1,
+                       instr_choice='const', aggh=1, subset='all',
                        instrlag=1., exact_jacob=False, **kwargs):
         """Integrated moment function.
 
@@ -368,6 +370,8 @@ class Heston(SDE):
                 - 'var' : lags of instrument data
         aggh : int
             Number of intervals (days) to aggregate over using rolling mean
+        subset : str
+            Which parameters to estimate. Belongs to ['all', 'vol']
         exact_jacob : bool
             Whether to use exactly derived Jacobian (True)
             or numerical approximation (False)
@@ -380,6 +384,10 @@ class Heston(SDE):
             Average derivative of the moment restrictions
 
         """
+        subset_sl = None
+        if subset == 'vol':
+            subset_sl = slice(2)
+
         param = HestonParam()
         param.update(theta=theta)
 
@@ -387,10 +395,10 @@ class Heston(SDE):
         lag = 2
         self.aggh = aggh
         # self.realized_depvar(data): (nobs, 3*nmoms)
-        depvar = self.realized_depvar(data)[lag:]
+        depvar = self.realized_depvar(data, subset_sl)[lag:]
         # (nobs - lag, 4) array
-        error = depvar.dot(self.mat_a(param, aggh).T) \
-            - self.realized_const(param, aggh)
+        error = depvar.dot(self.mat_a(param, subset_sl).T) \
+            - self.realized_const(param, aggh, subset_sl)
 
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
@@ -403,8 +411,8 @@ class Heston(SDE):
 
         if exact_jacob:
             # (nmoms, nparams)
-            dconst = self.drealized_const(param, aggh)
-            dmat_a = self.diff_mat_a(param, aggh)
+            dconst = self.drealized_const(param, aggh, subset_sl)
+            dmat_a = self.diff_mat_a(param, aggh, subset_sl)
 
             dmoms = []
             for i in range(instr.shape[1]):
