@@ -3,6 +3,7 @@ from .helper_functions import *
 from .gbm import *
 from .gbm_param import *
 from .vasicek import *
+from .vasicek_param import *
 from .cir import *
 from .cir_param import *
 from .heston import *
