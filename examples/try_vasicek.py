@@ -22,7 +22,7 @@ def try_simulation():
     paths = vasicek.simulate(x0, interval, ndiscr, npoints, nsim)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval)
+    plot_trajectories(data, interval, 'returns')
 
 
 def try_marginal():
@@ -35,7 +35,7 @@ def try_marginal():
     paths = vasicek.simulate(x0, interval, ndiscr, nobs, nsim)
     data = paths[:, :, 0]
 
-    plot_final_distr(data)
+    plot_final_distr(data, 'returns')
 
 
 def try_sim_realized():
@@ -55,6 +55,6 @@ def try_sim_realized():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_marginal()
-#    try_simulation()
+    try_marginal()
+    try_simulation()
     try_sim_realized()
