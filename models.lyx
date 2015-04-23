@@ -812,7 +812,7 @@ The model
 Consider
 \begin_inset Formula 
 \begin{align*}
-dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+dp_{t} & =\left(r+\left(\lambda_{r}-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
 d\sigma_{t}^{2} & =\kappa\left(\mu-\sigma_{t}^{2}\right)dt+\eta\sigma_{t}dW_{t}^{\sigma},
 \end{align*}
 
@@ -850,7 +850,7 @@ The drift and diffusion functions are
 r\\
 \kappa\mu
 \end{array}\right]+\left[\begin{array}{cc}
-0 & \lambda-\frac{1}{2}\\
+0 & \lambda_{r}-\frac{1}{2}\\
 0 & -\kappa
 \end{array}\right]\left[\begin{array}{c}
 p_{t}\\
@@ -892,7 +892,7 @@ K_{0}=\left[\begin{array}{c}
 r\\
 \kappa\mu
 \end{array}\right],\quad K_{1}=\left[\begin{array}{cc}
-0 & \lambda-\frac{1}{2}\\
+0 & \lambda_{r}-\frac{1}{2}\\
 0 & -\kappa
 \end{array}\right],
 \]
@@ -1082,7 +1082,7 @@ reference "sec:Integrated-moments-Heston"
 ):
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
 E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{2},\\
 E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{3},\\
 E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
@@ -1094,7 +1094,7 @@ or in matrix notation
 \begin_inset Formula 
 \[
 E_{t-2h}\left[\left(\begin{array}{cccc}
-L^{2} & -\left(\lambda-\frac{1}{2}\right)L^{2} & \cdot & \cdot\\
+L^{2} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{2} & \cdot & \cdot\\
 \cdot & \left(1-A_{h}L\right)L & \cdot & \cdot\\
 \cdot & \cdot & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right) & \cdot\\
 \cdot & \cdot & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
@@ -1141,9 +1141,9 @@ A_{0}=\left(\begin{array}{cccc}
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & 1 & \cdot & \cdot\\
 \cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
-\cdot & \cdot & \frac{1}{2}-\lambda & 1
+\cdot & \cdot & \frac{1}{2}-\lambda_{r} & 1
 \end{array}\right),\quad A_{2}=\left(\begin{array}{cccc}
-1 & \frac{1}{2}-\lambda & \cdot & \cdot\\
+1 & \frac{1}{2}-\lambda_{r} & \cdot & \cdot\\
 \cdot & -A_{h} & \cdot & \cdot\\
 \cdot & \cdot & A_{h}^{3} & \cdot\\
 \cdot & \cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & -A_{h}
@@ -1176,10 +1176,10 @@ C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,H}\right],
 and
 \begin_inset Formula 
 \begin{eqnarray*}
-E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda-\frac{1}{2}\right)\mu,\\
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
 E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
 E\left[\mathcal{V}_{t,H}^{2}\right] & = & \frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2},\\
-E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda_{r}-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
 \end{eqnarray*}
 
 \end_inset
@@ -1199,9 +1199,9 @@ The model
 Consider
 \begin_inset Formula 
 \begin{align*}
-dp_{t} & =\left(r+\left(\lambda-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
-d\sigma_{t}^{2} & =\kappa_{\sigma}\left(v_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}dW_{t}^{\sigma},\\
-dv_{t}^{2} & =\kappa_{v}\left(\mu-v_{t}^{2}\right)dt+\eta_{v}v_{t}dW_{t}^{v},
+dp_{t} & =\left(r+\left(\lambda_{r}-\frac{1}{2}\right)\sigma_{t}^{2}\right)dt+\sigma_{t}dW_{t}^{r},\\
+d\sigma_{t}^{2} & =\kappa_{\sigma}\left(y_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}dW_{t}^{\sigma},\\
+dy_{t}^{2} & =\kappa_{y}\left(\mu-y_{t}^{2}\right)dt+\eta_{y}v_{t}dW_{t}^{y},
 \end{align*}
 
 \end_inset
@@ -1215,7 +1215,7 @@ with
 \end_inset
 
 , or in other words 
-\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$
+\begin_inset Formula $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{y}$
 \end_inset
 
 .
@@ -1237,19 +1237,19 @@ The drift and diffusion functions are
 \mu\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{c}
 r\\
 0\\
-\kappa_{v}\mu_{v}
+\kappa_{y}\mu_{y}
 \end{array}\right]+\left[\begin{array}{ccc}
-0 & \lambda-\frac{1}{2} & 0\\
+0 & \lambda_{r}-\frac{1}{2} & 0\\
 0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
-0 & 0 & -\kappa_{v}
+0 & 0 & -\kappa_{y}
 \end{array}\right]\left[\begin{array}{c}
 p_{t}\\
 \sigma_{t}^{2}\\
-v_{t}^{2}
+y_{t}^{2}
 \end{array}\right],\quad\sigma\left(Y_{t},\theta_{0}\right)=\left[\begin{array}{ccc}
 \sigma_{t} & 0 & 0\\
 \eta_{\sigma}\rho\sigma_{t} & \eta_{\sigma}\sqrt{1-\rho^{2}}\sigma_{t} & 0\\
-0 & 0 & \eta_{v}v_{t}
+0 & 0 & \eta_{y}y_{t}
 \end{array}\right].
 \]
 
@@ -1261,7 +1261,7 @@ It follows that
 \sigma\left(Y_{t},\theta_{0}\right)\sigma\left(Y_{t},\theta_{0}\right)^{\prime}=\left[\begin{array}{ccc}
 \sigma_{t}^{2} & \eta_{\sigma}\rho\sigma_{t}^{2} & 0\\
 \eta_{\sigma}\rho\sigma_{t}^{2} & \eta_{\sigma}^{2}\sigma_{t}^{2} & 0\\
-0 & 0 & \eta_{v}^{2}v_{t}^{2}
+0 & 0 & \eta_{y}^{2}y_{t}^{2}
 \end{array}\right]=\left[\begin{array}{ccc}
 1 & \eta_{\sigma}\rho & 0\\
 \eta_{\sigma}\rho & \eta_{\sigma}^{2} & 0\\
@@ -1269,8 +1269,8 @@ It follows that
 \end{array}\right]\sigma_{t}^{2}+\left[\begin{array}{ccc}
 0 & 0 & 0\\
 0 & 0 & 0\\
-0 & 0 & \eta_{v}^{2}
-\end{array}\right]v_{t}^{2}.
+0 & 0 & \eta_{y}^{2}
+\end{array}\right]y_{t}^{2}.
 \]
 
 \end_inset
@@ -1289,11 +1289,11 @@ and
 K_{0}=\left[\begin{array}{c}
 r\\
 0\\
-\kappa_{v}\mu_{v}
+\kappa_{y}\mu_{y}
 \end{array}\right],\quad K_{1}=\left[\begin{array}{ccc}
-0 & \lambda-\frac{1}{2} & 0\\
+0 & \lambda_{r}-\frac{1}{2} & 0\\
 0 & -\kappa_{\sigma} & \kappa_{\sigma}\\
-0 & 0 & -\kappa_{v}
+0 & 0 & -\kappa_{y}
 \end{array}\right],
 \]
 
@@ -1309,9 +1309,153 @@ H_{0}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,1}=\left[\mathbf{0}_{3\times
 \end{array}\right],\quad H_{1,3}=\left[\begin{array}{ccc}
 0 & 0 & 0\\
 0 & 0 & 0\\
-0 & 0 & \eta_{v}^{2}
+0 & 0 & \eta_{y}^{2}
 \end{array}\right].
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Integrated moments
+\end_layout
+
+\begin_layout Standard
+Define average excess return as
+\begin_inset Formula 
+\[
+\tilde{r}_{t,H}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given observations on average excess returns 
+\begin_inset Formula $\tilde{r}_{t,H}$
+\end_inset
+
+ and realized volatility 
+\begin_inset Formula $RV_{t,H}$
+\end_inset
+
+ we have the following four integrated moments (the proof is given in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Integrated-moments-CT"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{align*}
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
+E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right] & =C_{2},\\
+E_{t}\left[\left(1-A_{2h}^{\sigma}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
+\end{align*}
+
+\end_inset
+
+or in matrix notation
+\begin_inset Formula 
+\[
+E_{t-5h}\left[\left(\begin{array}{cccc}
+L^{5} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{5} & \cdot & \cdot\\
+\cdot & A_{2,2} & \cdot & \cdot\\
+\cdot & \cdot & A_{3,3} & \cdot\\
+\cdot & \cdot & A_{4,3} & A_{4,4}
+\end{array}\right)\left(\begin{array}{c}
+\tilde{r}_{t,H}\\
+\mathcal{V}_{t,H}\\
+\mathcal{V}_{t,H}^{2}\\
+\tilde{r}_{t,H}\mathcal{V}_{t,H}
+\end{array}\right)\right]=C,
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{3,3} & = & \left(1-A_{2h}^{\sigma}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right),\\
+A_{4,3} & = & -\left(\lambda-\frac{1}{2}\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)L^{3},\\
+A_{4,4}=A_{2,2} & = & \left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)L^{3}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+f=(1-a1*x)*(1-a2*x)*(1-a1**2*x)*(1-a2**2*x)*(1-a1*a2*x)
+\end_layout
+
+\begin_layout Plain Layout
+sp.Poly(f,x).all_coeffs()
+\end_layout
+
+\end_inset
+
+Define the data vector as 
+\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
+\end_inset
+
+.
+ Then, the moment conditions can be written more compactly as 
+\begin_inset Formula 
+\[
+E_{t-5h}\left[A\left(L\right)X_{t,H}\right]=C,
+\]
+
+\end_inset
+
+with the lag polynomial
+\begin_inset Formula 
+\[
+A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2}+A_{3}L^{3}+A_{4}L^{4}+A_{5}L^{5}.
+\]
+
+\end_inset
+
+To make this one single matrix product, we can write
+\begin_inset Formula 
+\[
+E_{t-2h}\left[\left(\begin{array}{cccccc}
+A_{0} & A_{1} & A_{2} & A_{3} & A_{4} & A_{5}\end{array}\right)\left(\begin{array}{c}
+X_{t,H}\\
+LX_{t,H}\\
+L^{2}X_{t,H}\\
+L^{3}X_{t,H}\\
+L^{4}X_{t,H}\\
+L^{5}X_{t,H}
+\end{array}\right)\right]=C,
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+C=\left(A_{0}+A_{1}+A_{2}+A_{3}+A_{4}+A_{5}\right)E\left[X_{t,H}\right],
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{eqnarray*}
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
+E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
+E\left[\mathcal{V}_{t,H}^{2}\right] & = & \mu^{2}+\left(a_{H}^{\sigma}\right)^{2}V\left[\sigma_{t}^{2}\right]+\left(b_{H}^{\sigma}\right)^{2}V\left[y_{t}^{2}\right]+V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right],\\
+E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda_{r}-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+\end{eqnarray*}
 
 \end_inset
 
@@ -1362,9 +1506,45 @@ E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\ma
 \end_inset
 
 or
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\backslash
+frac{
+\backslash
+kappa_{
+\backslash
+sigma}}{
+\backslash
+kappa_{
+\backslash
+sigma}-
+\backslash
+kappa_{y}}
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
 \begin_inset Formula 
 \[
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=0.
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{1}=0.
 \]
 
 \end_inset
@@ -1821,6 +2001,448 @@ Multiply conditional cross-moment by
 
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Integrated-moments-CT"
+
+\end_inset
+
+Integrated moments for Central Tendency model
+\end_layout
+
+\begin_layout Standard
+The return equation can be integrated on 
+\begin_inset Formula $\left[t,t+H\right]$
+\end_inset
+
+ to obtain
+\begin_inset Formula 
+\[
+\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
+\]
+
+\end_inset
+
+The return first conditional moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{1}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The volaitlity processes can be discretized to obtain
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\sigma_{t+h}^{2} & = & A_{h}^{\sigma}\sigma_{t}^{2}+B_{h}^{\sigma}y_{t}^{2}+C_{h}^{\sigma}+\epsilon_{t,h}^{\sigma},\\
+y_{t+h}^{2} & = & A_{h}^{y}y_{t}^{2}+C_{h}^{y}+\epsilon_{t,h}^{y}.
+\end{aligned}
+\label{eq:sigma_y_var}
+\end{equation}
+
+\end_inset
+
+with
+\begin_inset Formula 
+\[
+A_{h}^{\sigma}=\exp\left(-\kappa_{\sigma}h\right),\quad B_{h}^{\sigma}=\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\left(A_{h}^{y}-A_{h}^{\sigma}\right),\quad C_{h}^{\sigma}=\mu\left(1-A_{h}^{\sigma}-B_{h}^{\sigma}\right),
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+A_{h}^{y}=\exp\left(-\kappa_{y}h\right),\quad C_{h}^{y}=\mu\left(1-A_{h}^{y}\right).
+\]
+
+\end_inset
+
+The same system can be written using lag operators as
+\begin_inset Formula 
+\[
+\begin{aligned}\left(1-A_{h}^{\sigma}L\right)\sigma_{t+h}^{2} & = & B_{h}^{\sigma}y_{t}^{2}+C_{h}^{\sigma}+\epsilon_{t,h}^{\sigma},\\
+\left(1-A_{h}^{y}L\right)y_{t+h}^{2} & = & C_{h}^{y}+\epsilon_{t,h}^{y}.
+\end{aligned}
+\]
+
+\end_inset
+
+Note that 
+\begin_inset Formula $A_{h}^{y}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{h}^{\sigma}$
+\end_inset
+
+ are multiplicative functions of time interval, that is 
+\begin_inset Formula $A_{h_{1}}^{y}A_{h_{2}}^{y}=A_{h_{1}+h_{2}}^{y}$
+\end_inset
+
+.The error structure is represented by 
+\begin_inset Formula 
+\begin{eqnarray*}
+\epsilon_{t,h}^{\sigma} & = & \eta_{\sigma}\int_{t}^{t+h}\sigma_{u}A_{t+h-u}^{\sigma}dW_{u}^{\sigma}+\eta_{y}\int_{t}^{t+h}y_{u}B_{t+h-u}^{\sigma}dW_{u}^{y},\\
+\epsilon_{t,h}^{v} & = & \eta_{y}\int_{t}^{t+h}y_{u}A_{t+h-u}^{y}dW_{u}^{y}.
+\end{eqnarray*}
+
+\end_inset
+
+Clearly, 
+\begin_inset Formula $E_{t}^{P}\left[\epsilon_{t,t+h}^{\sigma}\right]=0$
+\end_inset
+
+, and 
+\begin_inset Formula $E_{t}^{P}\left[\epsilon_{t,t+h}^{y}\right]=0$
+\end_inset
+
+.
+ Note that the same processes may be represented as infinite stochastic
+ integrals with respect to Brownian motion only:
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}y_{t}^{2} & =\mu+\eta_{y}\int_{-\infty}^{t}y_{u}A_{t-u}^{y}dW_{u}^{y},\\
+\sigma_{t}^{2} & =\mu+\eta_{y}\int_{-\infty}^{t}y_{u}B_{t-u}^{\sigma}dW_{u}^{y}+\eta_{\sigma}\int_{-\infty}^{t}\sigma_{u}A_{t-u}^{\sigma}dW_{u}^{\sigma}.
+\end{aligned}
+\label{eq:infinite-rep}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next I define integrated variance and central tendency as
+\begin_inset Formula 
+\begin{equation}
+\mathcal{V}_{t,H}\equiv\frac{1}{H}\int_{t}^{t+H}\sigma_{u}^{2}du,\quad\mathcal{Y}_{t,H}\equiv\frac{1}{H}\int_{t}^{t+H}y_{u}^{2}du,\label{eq:integrated_values}
+\end{equation}
+
+\end_inset
+
+where the first subscripted value denotes the beginning of the time interval,
+ and the second denotes the length of this interval.
+\end_layout
+
+\begin_layout Standard
+In order to move from instantaneous vector 
+\begin_inset Formula $\left(\sigma_{t}^{2},y_{t}\right)$
+\end_inset
+
+ to integrated analog 
+\begin_inset Formula $\left(\mathcal{V}_{t,H},\mathcal{Y}_{t,H}\right)$
+\end_inset
+
+, I integrate the linear system in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:sigma_y_var"
+
+\end_inset
+
+ over 
+\begin_inset Formula $t$
+\end_inset
+
+ as a dummy of the integration in the interval 
+\begin_inset Formula $\left[0,H\right]$
+\end_inset
+
+ with the following result
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\mathcal{V}_{t+h,H} & = & A_{h}^{\sigma}\mathcal{V}_{t,H}+B_{h}^{\sigma}\mathcal{Y}_{t,H}+C_{h}^{\sigma}+\frac{1}{H}\int_{0}^{H}\epsilon_{t+s,h}^{\sigma}ds,\\
+\mathcal{Y}_{t+h,H} & = & A_{h}^{y}\mathcal{Y}_{t,H}+C_{h}^{y}+\frac{1}{H}\int_{0}^{H}\epsilon_{t+s,h}^{y}ds.
+\end{aligned}
+\label{eq:integrated-var-objective}
+\end{equation}
+
+\end_inset
+
+Using the lag operator 
+\begin_inset Formula $L$
+\end_inset
+
+ and taking the conditional expectation, this system may be written as
+\begin_inset Formula 
+\[
+\begin{aligned}E_{t}^{P}\left[\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+h,H}\right] & = & B_{h}^{\sigma}E_{t}^{P}\left[\mathcal{Y}_{t,H}\right]+C_{h}^{\sigma},\\
+E_{t}^{P}\left[\left(1-A_{h}^{y}L\right)\mathcal{Y}_{t+h,H}\right] & = & C_{h}^{y}.
+\end{aligned}
+\]
+
+\end_inset
+
+Multiply the first equation by 
+\begin_inset Formula $\left(1-A_{h}^{y}L\right)$
+\end_inset
+
+, shift the time by 
+\begin_inset Formula $h$
+\end_inset
+
+, and make a substitution from the second equation to obtain
+\begin_inset Formula 
+\[
+E_{t}^{P}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right]=C_{2},
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+C_{2}=\left(1-A_{h}^{y}\right)\left(1-A_{h}^{\sigma}\right)E^{P}\left[\mathcal{V}_{t,H}\right]=\left(1-A_{h}^{y}\right)\left(1-A_{h}^{\sigma}\right)\mu.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:sigma_y_var"
+
+\end_inset
+
+ replace 
+\begin_inset Formula $h$
+\end_inset
+
+ by another time indicator 
+\begin_inset Formula $s$
+\end_inset
+
+ and integrate from 0 to 
+\begin_inset Formula $H$
+\end_inset
+
+ which leads to the following expression for integrated volatility in terms
+ of spot variables 
+\begin_inset Formula 
+\[
+\mathcal{V}_{t,H}=c_{H}^{\sigma}+a_{H}^{\sigma}\sigma_{t}^{2}+b_{H}^{\sigma}y_{t}^{2}+\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds,
+\]
+
+\end_inset
+
+where I denote
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{H}^{\sigma} & = & \frac{1}{H}\int_{0}^{H}A_{s}^{\sigma}ds=\frac{1}{\kappa_{\sigma}H}\left(1-A_{H}^{\sigma}\right),\\
+b_{H}^{\sigma} & = & \frac{1}{H}\int_{0}^{H}B_{s}^{\sigma}ds=\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\frac{1}{H}\int_{0}^{H}\left(A_{s}^{y}-A_{s}^{\sigma}\right)ds=\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\left(a_{H}^{y}-a_{H}^{\sigma}\right),\\
+c_{H}^{\sigma} & = & \mu\left(1-a_{H}^{\sigma}-b_{H}^{\sigma}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Clearly, the second moment of 
+\begin_inset Formula $\mathcal{V}_{t,H}$
+\end_inset
+
+ will be a function of 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{t}^{2}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{t}^{4}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{t}^{4}$
+\end_inset
+
+, and 
+\begin_inset Formula $\sigma_{t}^{2}y_{t}^{2}$
+\end_inset
+
+.
+ In order to eliminate the first two, we will need to apply 
+\begin_inset Formula $\left(1-A_{h}^{\sigma}L\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\left(1-A_{h}^{y}L\right)$
+\end_inset
+
+.
+ The squared central tendency 
+\begin_inset Formula $y_{t}^{4}$
+\end_inset
+
+ is a function of itself in the past and itself squared, so it can be eliminated
+ using 
+\begin_inset Formula $\left(1-A_{h}^{y}L\right)\left(1-\left(A_{h}^{y}\right)^{2}L\right)$
+\end_inset
+
+.
+ The square volaitlity will be a function of all the above and can be eliminated
+ using 
+\begin_inset Formula $\left(1-\left(A_{h}^{\sigma}\right)^{2}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-\left(A_{h}^{y}\right)^{2}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)$
+\end_inset
+
+.
+ Hence,
+\begin_inset Formula 
+\[
+E_{t}^{P}\left[\left(1-\left(A_{h}^{\sigma}\right)^{2}L\right)\left(1-\left(A_{h}^{y}\right)^{2}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right]=C_{3},
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+C_{3}=\left(1-\left(A_{h}^{\sigma}\right)^{2}\right)\left(1-A_{h}^{\sigma}A_{h}^{y}\right)\left(1-\left(A_{h}^{y}\right)^{2}\right)\left(1-A_{h}^{y}\right)\left(1-A_{h}^{\sigma}\right)E^{P}\left[\mathcal{V}_{t,H}^{2}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The unconditional variance of integrated volatility is
+\begin_inset Formula 
+\[
+V\left[\mathcal{V}_{t,H}\right]=\left(a_{H}^{\sigma}\right)^{2}V\left[\sigma_{t}^{2}\right]+\left(b_{H}^{\sigma}\right)^{2}V\left[y_{t}^{2}\right]+V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right].
+\]
+
+\end_inset
+
+Directly from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite-rep"
+
+\end_inset
+
+ we see that
+\begin_inset Formula 
+\[
+\begin{aligned}V\left[y_{t}^{2}\right]= & \mu^{2}+E\left[y_{t}^{4}\right]=\mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{y}\right)^{2}du\\
+= & \mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}e^{-2\kappa_{y}\left(t-u\right)}du=\mu^{2}+\frac{\mu\eta_{y}^{2}}{2\kappa_{y}},
+\end{aligned}
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+\begin{aligned}V\left[\sigma_{t}^{2}\right]= & \mu^{2}+E\left[\sigma_{t}^{4}\right]\\
+= & \mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}\left(B_{t-u}^{\sigma}\right)^{2}du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{\sigma}\right)^{2}du\\
+= & \mu^{2}+\mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\int_{-\infty}^{t}\left(A_{2\left(t-u\right)}^{y}-2A_{t-u}^{y}A_{t-u}^{\sigma}+A_{2\left(t-u\right)}^{\sigma}\right)du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}A_{2\left(t-u\right)}^{\sigma}du\\
+= & \mu^{2}+\mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\left(\frac{1}{2\kappa_{y}}-\frac{2}{\kappa_{y}+\kappa_{\sigma}}+\frac{1}{2\kappa_{\sigma}}\right)+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}\\
+= & \mu^{2}+\frac{\mu\eta_{y}^{2}}{2\kappa_{y}}\frac{\kappa_{\sigma}}{\kappa_{y}+\kappa_{\sigma}}+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}.
+\end{aligned}
+\]
+
+\end_inset
+
+Rewrite the error:
+\begin_inset Formula 
+\[
+\begin{aligned}\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds= & \eta_{\sigma}\frac{1}{H}\int_{0}^{H}\int_{t}^{t+s}\sigma_{u}A_{t+s-u}^{\sigma}dW_{u}^{\sigma}ds+\eta_{y}\frac{1}{H}\int_{0}^{H}\int_{t}^{t+s}y_{u}B_{t+s-u}^{\sigma}dW_{u}^{y}ds\\
+= & \eta_{\sigma}\int_{t}^{t+H}\sigma_{u}a_{t+H-u}^{\sigma}dW_{u}^{\sigma}+\eta_{y}\int_{t}^{t+H}y_{u}b_{t+H-u}^{\sigma}dW_{u}^{y}\\
+= & \eta_{\sigma}\int_{0}^{H}\sigma_{u}a_{H-u}^{\sigma}dW_{u}^{\sigma}+\eta_{y}\int_{0}^{H}y_{u}b_{H-u}^{\sigma}dW_{u}^{y}.
+\end{aligned}
+\]
+
+\end_inset
+
+Hence,
+\begin_inset Formula 
+\[
+\begin{aligned}V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]= & \mu\eta_{\sigma}^{2}\int_{0}^{H}\left(a_{H-u}^{\sigma}\right)^{2}du+\mu\eta_{y}^{2}\int_{0}^{H}\left(b_{H-u}^{\sigma}\right)^{2}du\\
+= & \frac{\mu\eta_{\sigma}^{2}}{\kappa_{\sigma}^{2}H^{2}}\int_{0}^{H}\left(1-A_{H-u}^{\sigma}\right)^{2}du\\
+ & +\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\frac{\mu\eta_{y}^{2}}{H^{2}}\int_{0}^{H}\left(\frac{1}{\kappa_{y}}\left(1-A_{H-u}^{y}\right)-\frac{1}{\kappa_{\sigma}}\left(1-A_{H-u}^{\sigma}\right)\right)^{2}du\\
+= & \frac{\mu\eta_{\sigma}^{2}}{\kappa_{\sigma}^{2}H^{2}}\int_{0}^{H}\left(1-2A_{H-u}^{\sigma}+A_{2\left(H-u\right)}^{\sigma}\right)du\\
+ & +\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\frac{\mu\eta_{y}^{2}}{H^{2}}\left[\frac{1}{\kappa_{y}^{2}}\int_{0}^{H}\left(1-A_{H-u}^{y}\right)^{2}du+\frac{1}{\kappa_{\sigma}^{2}}\int_{0}^{H}\left(1-A_{H-u}^{\sigma}\right)^{2}du\right.\\
+ & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\int_{0}^{H}\left(1-A_{H-u}^{y}\right)\left(1-A_{H-u}^{\sigma}\right)du\right]\\
+= & \frac{\mu\eta_{\sigma}^{2}}{\kappa_{\sigma}^{2}H^{2}}\left(H-\frac{2}{\kappa_{\sigma}}\left(1-A_{H}^{\sigma}\right)+\frac{1}{2\kappa_{\sigma}}\left(1-A_{2H}^{\sigma}\right)\right)\\
+ & +\left[\frac{1}{\kappa_{y}^{2}}\int_{0}^{H}\left(1-A_{H-u}^{y}\right)^{2}du+\frac{1}{\kappa_{\sigma}^{2}}\int_{0}^{H}\left(1-A_{H-u}^{\sigma}\right)^{2}du\right.\\
+ & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\int_{0}^{H}\left(1-A_{H-u}^{y}-A_{H-u}^{\sigma}+A_{H-u}^{y}A_{H-u}^{\sigma}\right)du\right]\\
+= & \frac{\mu\eta_{\sigma}^{2}}{\kappa_{\sigma}^{2}H^{2}}\left(H-\frac{2}{\kappa_{\sigma}}\left(1-A_{H}^{\sigma}\right)+\frac{1}{2\kappa_{\sigma}}\left(1-A_{2H}^{\sigma}\right)\right)\\
+ & +\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\frac{\mu\eta_{y}^{2}}{H^{2}}\left[\frac{1}{\kappa_{y}^{2}}\left(H-\frac{2}{\kappa_{y}}\left(1-A_{H}^{y}\right)+\frac{1}{2\kappa_{y}}\left(1-A_{2H}^{y}\right)\right)\right.\\
+ & +\frac{1}{\kappa_{\sigma}^{2}}\left(H-\frac{2}{\kappa_{\sigma}}\left(1-A_{H}^{\sigma}\right)+\frac{1}{2\kappa_{\sigma}}\left(1-A_{2H}^{\sigma}\right)\right)\\
+ & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\left(H-\frac{1}{\kappa_{y}}\left(1-A_{H}^{y}\right)-\frac{1}{\kappa_{\sigma}}\left(1-A_{H}^{\sigma}\right)+\frac{1}{\kappa_{y}+\kappa_{\sigma}}A_{H}^{\sigma}A_{H}^{y}\right)\right].\\
+= & \frac{\mu\eta_{\sigma}^{2}}{\kappa_{\sigma}^{2}H}\left(1-2a_{H}^{\sigma}+a_{2H}^{\sigma}\right)\\
+ & +\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\frac{\mu\eta_{y}^{2}}{H}\left[\frac{1}{\kappa_{y}^{2}}\left(1-2a_{H}^{y}+a_{2H}^{y}\right)+\frac{1}{\kappa_{\sigma}^{2}}\left(1-2a_{H}^{\sigma}+a_{2H}^{\sigma}\right)\right.\\
+ & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\left(1-a_{H}^{y}-a_{H}^{\sigma}+\frac{1}{\left(\kappa_{y}+\kappa_{\sigma}\right)H}A_{H}^{\sigma}A_{H}^{y}\right)\right].
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now multiply return by integrated volatility and take the expectation:
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}^{2}\right]=E_{t}\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right].
+\]
+
+\end_inset
+
+We can guess that
+\begin_inset Formula 
+\[
+E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\left(\tilde{r}_{t,H}\mathcal{V}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}^{2}\right)\right]=C_{4},
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+C_{4}=\left(1-A_{h}^{y}\right)\left(1-A_{h}^{\sigma}\right)E\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right].
+\]
+
+\end_inset
+
+The last term is
+\begin_inset Formula 
+\[
+\begin{aligned}E^{P}\left[\mathcal{V}_{t,H}\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right]= & \frac{1}{H^{2}}E^{P}\left[\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right]\\
+= & \eta_{\sigma}\frac{1}{H^{2}}E^{P}\left[\left(\int_{0}^{H}\int_{t}^{t+s}\sigma_{u}A_{t+s-u}^{\sigma}dW_{u}^{\sigma}ds\right)\left(\int_{t}^{t+H}\sigma_{s}dW_{s}^{r}\right)\right]\\
+= & \eta_{\sigma}\frac{1}{H^{2}}E^{P}\left[\left(\int_{t}^{t+H}\sigma_{u}\left(\int_{u-t}^{h}A_{t+s-u}^{\sigma}ds\right)dW_{u}^{\sigma}\right)\left(\int_{t}^{t+H}\sigma_{u}dW_{u}^{r}\right)\right]\\
+= & \rho\frac{\eta_{\sigma}}{\kappa_{\sigma}}\frac{1}{H^{2}}E^{P}\left[\int_{t}^{t+H}\sigma_{u}^{2}\left(1-A_{t+H-u}^{\sigma}\right)du\right]\\
+= & \rho\frac{\mu\eta_{\sigma}}{\kappa_{\sigma}}\frac{1}{H^{2}}\int_{0}^{H}\left(1-A_{H-u}^{\sigma}\right)du\\
+= & \rho\frac{\mu\eta_{\sigma}}{\kappa_{\sigma}}\frac{1}{H^{2}}\left(H-\frac{1}{\kappa^{\sigma}}\left(1-A_{H}^{\sigma}\right)\right)\\
+= & \rho\frac{\mu\eta_{\sigma}}{\kappa_{\sigma}}\frac{1-a_{H}^{\sigma}}{H}.
+\end{aligned}
+\]
 
 \end_inset
 
