@@ -1082,9 +1082,9 @@ reference "sec:Integrated-moments-Heston"
 ):
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
-E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{2},\\
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}L\right)\mathcal{V}_{t+h,H}\right] & =C_{1},\\
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right] & =C_{2},\\
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{3}=0,\\
 E_{t}\left[\left(1-A_{h}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
 \end{align*}
 
@@ -1094,14 +1094,14 @@ or in matrix notation
 \begin_inset Formula 
 \[
 E_{t-2h}\left[\left(\begin{array}{cccc}
-L^{2} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{2} & \cdot & \cdot\\
-\cdot & \left(1-A_{h}L\right)L & \cdot & \cdot\\
-\cdot & \cdot & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right) & \cdot\\
-\cdot & \cdot & -\left(1-A_{h}L\right)\left(\lambda-\frac{1}{2}\right)L & \left(1-A_{h}L\right)L
+\left(1-A_{h}L\right)L & \cdot & \cdot & \cdot\\
+\cdot & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right) & \cdot & \cdot\\
+\left(\frac{1}{2}-\lambda_{r}\right)L^{2} & \cdot & L^{2} & \cdot\\
+\cdot & \left(1-A_{h}L\right)\left(\frac{1}{2}-\lambda_{r}\right)L & \cdot & \left(1-A_{h}L\right)L
 \end{array}\right)\left(\begin{array}{c}
-\tilde{r}_{t,H}\\
 \mathcal{V}_{t,H}\\
 \mathcal{V}_{t,H}^{2}\\
+\tilde{r}_{t,H}\\
 \tilde{r}_{t,H}\mathcal{V}_{t,H}
 \end{array}\right)\right]=C.
 \]
@@ -1109,7 +1109,7 @@ L^{2} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{2} & \cdot & \cdot\\
 \end_inset
 
 Define the data vector as 
-\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
+\begin_inset Formula $X_{t,H}=\left[\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
 \end_inset
 
 .
@@ -1134,19 +1134,19 @@ and
 \[
 A_{0}=\left(\begin{array}{cccc}
 \cdot & \cdot & \cdot & \cdot\\
+\cdot & 1 & \cdot & \cdot\\
 \cdot & \cdot & \cdot & \cdot\\
-\cdot & \cdot & 1 & \cdot\\
 \cdot & \cdot & \cdot & \cdot
 \end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
+1 & \cdot & \cdot & \cdot\\
+\cdot & -A_{h}\left(1+A_{h}\right) & \cdot & \cdot\\
 \cdot & \cdot & \cdot & \cdot\\
-\cdot & 1 & \cdot & \cdot\\
-\cdot & \cdot & -A_{h}\left(1+A_{h}\right) & \cdot\\
-\cdot & \cdot & \frac{1}{2}-\lambda_{r} & 1
+\cdot & \frac{1}{2}-\lambda_{r} & \cdot & 1
 \end{array}\right),\quad A_{2}=\left(\begin{array}{cccc}
-1 & \frac{1}{2}-\lambda_{r} & \cdot & \cdot\\
-\cdot & -A_{h} & \cdot & \cdot\\
-\cdot & \cdot & A_{h}^{3} & \cdot\\
-\cdot & \cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & -A_{h}
+-A_{h} & \cdot & \cdot & \cdot\\
+\cdot & A_{h}^{3} & \cdot & \cdot\\
+\frac{1}{2}-\lambda_{r} & \cdot & 1 & \cdot\\
+\cdot & \left(\lambda-\frac{1}{2}\right)A_{h} & \cdot & -A_{h}
 \end{array}\right).
 \]
 
@@ -1176,9 +1176,9 @@ C=\left(A_{0}+A_{1}+A_{2}\right)E\left[X_{t,H}\right],
 and
 \begin_inset Formula 
 \begin{eqnarray*}
-E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
 E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
 E\left[\mathcal{V}_{t,H}^{2}\right] & = & \frac{\eta^{2}}{\kappa^{2}}\frac{c_{H}}{H}+\mu^{2},\\
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
 E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda_{r}-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
 \end{eqnarray*}
 

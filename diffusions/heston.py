@@ -142,19 +142,19 @@ class Heston(SDE):
             Dependend variables
 
         """
-        mean_ret = (param.lmbd - .5) * param.mean_v
-
         mean_vol = param.mean_v
 
         mean_vol2 = ((param.eta / param.kappa)**2
                      * self.coef_small_c(param, aggh) / aggh
                      + param.mean_v**2)
 
+        mean_ret = (param.lmbd - .5) * param.mean_v
+
         mean_cross = ((param.lmbd - .5) * mean_vol2
                       + param.rho * param.eta / param.kappa
                       * self.coef_small_c(param, aggh) / aggh)
 
-        return np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
+        return np.array([mean_vol, mean_vol2, mean_ret, mean_cross])
 
     def realized_const(self, param, aggh):
         """Intercept in the realized moment conditions.
@@ -172,7 +172,8 @@ class Heston(SDE):
             Intercept
 
         """
-        return ((self.mat_a0(param, 1) + self.mat_a1(param, 1)
+        return ((self.mat_a0(param, 1)
+            + self.mat_a1(param, 1)
             + self.mat_a2(param, 1))
             * self.depvar_unc_mean(param, aggh)).sum(1)
 
@@ -192,7 +193,7 @@ class Heston(SDE):
             Matrix A_0
 
         """
-        return np.diag([0, 0, 1, 0]).astype(float)
+        return np.diag([0, 1, 0, 0]).astype(float)
 
     def mat_a1(self, param, aggh):
         """Matrix A_1 in integrated moments.
@@ -210,10 +211,10 @@ class Heston(SDE):
             Matrix A_1
 
         """
-        mat_a = np.diag([0, 1, 0, 1]).astype(float)
-        mat_a[2, 2] = -self.coef_big_a(param, aggh) \
+        mat_a = np.diag([1, 0, 0, 1]).astype(float)
+        mat_a[1, 1] = -self.coef_big_a(param, 1) \
             * (1 + self.coef_big_a(param, 1))
-        mat_a[3, 2] = .5 - param.lmbd
+        mat_a[3, 1] = .5 - param.lmbd
         return mat_a
 
     def mat_a2(self, param, aggh):
@@ -232,11 +233,11 @@ class Heston(SDE):
             Matrix A_2
 
         """
-        mat_a = np.diag([1, -self.coef_big_a(param, 1),
-                         self.coef_big_a(param, 1)**3,
+        mat_a = np.diag([-self.coef_big_a(param, 1),
+                         self.coef_big_a(param, 1)**3, 1,
                          -self.coef_big_a(param, 1)])
-        mat_a[0, 1] = .5 - param.lmbd
-        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(param, 1)
+        mat_a[2, 0] = .5 - param.lmbd
+        mat_a[3, 1] = (param.lmbd - .5) * self.coef_big_a(param, 1)
         return mat_a
 
     def mat_a(self, param, aggh):
@@ -255,7 +256,8 @@ class Heston(SDE):
             Matrix A
 
         """
-        mat_a = (self.mat_a0(param, 1), self.mat_a1(param, 1),
+        mat_a = (self.mat_a0(param, 1),
+                 self.mat_a1(param, 1),
                  self.mat_a2(param, 1))
         return np.hstack(mat_a)
 
@@ -319,7 +321,7 @@ class Heston(SDE):
 
         """
         ret, rvar = data
-        var = np.vstack([ret, rvar, rvar**2, ret * rvar])
+        var = np.vstack([rvar, rvar**2, ret, ret * rvar])
         return lagmat(var.T, maxlag=2, original='in')
 
     def instruments(self, data=None, instrlag=0, nobs=None):

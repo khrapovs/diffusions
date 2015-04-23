@@ -150,20 +150,20 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.mat_a(param, aggh).shape, (4, 3*4))
 
         self.assertEqual(heston.realized_const(param, aggh).shape, (4, ))
-        self.assertEqual(heston.realized_const(param, aggh)[0], 0)
+        self.assertEqual(heston.realized_const(param, aggh)[2], 0)
 
-        res = heston.depvar_unc_mean(param, aggh)[1] \
+        res = heston.depvar_unc_mean(param, aggh)[0] \
             * (1 - heston.coef_big_a(param, 1))
 
-        self.assertEqual(heston.realized_const(param, aggh)[1], res)
+        self.assertEqual(heston.realized_const(param, aggh)[0], res)
 
-        res = heston.depvar_unc_mean(param, aggh)[2] \
+        res = heston.depvar_unc_mean(param, aggh)[1] \
             * (1 - heston.coef_big_a(param, 1)) \
             * (1 - heston.coef_big_a(param, 1)**2)
 
-        self.assertEqual(heston.realized_const(param, aggh)[2], res)
+        self.assertEqual(heston.realized_const(param, aggh)[1], res)
 
-        res = (heston.depvar_unc_mean(param, aggh)[2] * (.5 - param.lmbd) \
+        res = (heston.depvar_unc_mean(param, aggh)[1] * (.5 - param.lmbd) \
             + heston.depvar_unc_mean(param, aggh)[3]) \
             * (1 - heston.coef_big_a(param, 1))
 

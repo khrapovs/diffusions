@@ -33,31 +33,31 @@ class HestonParam(object):
 
     """
 
-    def __init__(self, riskfree=.0, lmbd = .1,
-                 mean_v=.5, kappa=1.5, eta=.1, rho=-.5):
+    def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1,
+                 lmbd = .1, rho=-.5):
         """Initialize class.
 
         Parameters
         ----------
         riskfree : float
             Risk-free rate of return
-        lmbd : float
-            Equity risk premium
         mean_v : float
             Mean of the volatility process
         kappa : float
             Mean reversion speed
         eta : float
             Instantaneous standard deviation of volatility
+        lmbd : float
+            Equity risk premium
         rho : float
             Correlation
 
         """
         self.riskfree = riskfree
-        self.lmbd = lmbd
         self.mean_v = mean_v
         self.kappa = kappa
         self.eta = eta
+        self.lmbd = lmbd
         self.rho = rho
         self.update_ajd()
         if not self.is_valid():
@@ -98,7 +98,7 @@ class HestonParam(object):
 
         """
         if subset == 'all':
-            [self.lmbd, self.mean_v, self.kappa, self.eta, self.rho] = theta
+            [self.mean_v, self.kappa, self.eta, self.lmbd, self.rho] = theta
         elif subset == 'vol':
             [self.mean_v, self.kappa, self.eta] = theta
         else:
@@ -120,8 +120,8 @@ class HestonParam(object):
 
         """
         if subset == 'all':
-            return np.array([self.lmbd, self.mean_v,
-                             self.kappa, self.eta, self.rho])
+            return np.array([self.mean_v, self.kappa, self.eta,
+                             self.lmbd, self.rho])
         elif subset == 'vol':
             return np.array([self.mean_v, self.kappa, self.eta])
         else:
@@ -140,11 +140,11 @@ class HestonParam(object):
         sequence of (min, max) tuples
 
         """
-        lb = [None, 1e-5, 1e-5, 1e-5, -1]
+        lb = [1e-5, 1e-5, 1e-5, None, -1]
         ub = [None, None, None, None, 1]
         if subset == 'all':
             return list(zip(lb, ub))
         elif subset == 'vol':
-            return list(zip(lb, ub))[1:4]
+            return list(zip(lb, ub))[:3]
         else:
             raise ValueError(subset + ' keyword variable is not supported!')

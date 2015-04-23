@@ -90,10 +90,10 @@ def try_sim_realized():
 def try_integrated_gmm():
     riskfree = .0
 
-    lmbd = .3
     mean_v = .5
     kappa = .1
     eta = .02**.5 # 0.1414
+    lmbd = .3
     rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
