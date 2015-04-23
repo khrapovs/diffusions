@@ -23,7 +23,7 @@ def try_simulation():
     paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval)
+    plot_trajectories(data, interval, 'returns')
 
 
 def try_marginal():
@@ -36,7 +36,7 @@ def try_marginal():
     paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, :, 0]
 
-    plot_final_distr(data/interval)
+    plot_final_distr(data/interval, 'returns')
 
 
 def try_gmm():
@@ -49,7 +49,7 @@ def try_gmm():
     paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval)
+    plot_trajectories(data, interval, 'returns')
 
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
@@ -66,7 +66,7 @@ def try_sim_realized():
     aggh = 10
     returns, rvar = gbm.sim_realized(start, interval=interval, ndiscr=ndiscr,
                                      aggh=aggh, nperiods=nperiods,
-nsim=nsim, diff=0)
+                                     nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
 
@@ -90,8 +90,6 @@ def try_integrated_gmm():
     res = gbm.integrated_gmm(theta_start, data=data, instrlag=2)
     res.print_results()
 
-    return returns, rvar
-
 
 if __name__ == '__main__':
 
@@ -100,4 +98,4 @@ if __name__ == '__main__':
 #    try_marginal()
 #    try_sim_realized()
 #    try_gmm()
-    returns, rvar = try_integrated_gmm()
+    try_integrated_gmm()

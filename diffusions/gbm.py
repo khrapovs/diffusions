@@ -106,8 +106,9 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        theta = GBMparam(mean=theta[0], sigma=theta[1])
-        loc = float(self.exact_loc(0, theta))
+        param = GBMparam()
+        param.update(theta=theta)
+        loc = float(self.exact_loc(0, param))
         return np.array([loc, 0], dtype=float)
 
     def gammamat(self, theta):
@@ -124,9 +125,10 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        theta = GBMparam(mean=theta[0], sigma=theta[1])
-        loc = float(self.exact_loc(0, theta))
-        scale = float(self.exact_scale(0, theta))
+        param = GBMparam()
+        param.update(theta=theta)
+        loc = float(self.exact_loc(0, param))
+        scale = float(self.exact_scale(0, param))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
     def dbetamat(self, theta):
@@ -143,7 +145,8 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        return nd.Jacobian(self.betamat)(theta)
+        with np.errstate(divide='ignore'):
+            return nd.Jacobian(self.betamat)(theta)
 
     def dgammamat(self, theta):
         """Derivative of the second moment coefficients (numerical).
@@ -159,7 +162,8 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        return nd.Jacobian(self.gammamat)(theta)
+        with np.errstate(divide='ignore'):
+            return nd.Jacobian(self.gammamat)(theta)
 
     def dbetamat_exact(self, theta):
         """Derivative of the first moment coefficients (exact).
