@@ -138,43 +138,43 @@ class RealizedMomentsTestCase(ut.TestCase):
         nmoms = 4
         aggh = 2
 
-        self.assertIsInstance(heston.coef_big_a(theta, aggh), float)
-        self.assertIsInstance(heston.coef_small_a(theta, aggh), float)
-        self.assertIsInstance(heston.coef_big_c(theta, aggh), float)
-        self.assertIsInstance(heston.coef_small_c(theta, aggh), float)
+        self.assertIsInstance(heston.coef_big_a(param, aggh), float)
+        self.assertIsInstance(heston.coef_small_a(param, aggh), float)
+        self.assertIsInstance(heston.coef_big_c(param, aggh), float)
+        self.assertIsInstance(heston.coef_small_c(param, aggh), float)
 
-        self.assertEqual(heston.mat_a0(theta, aggh).shape, (4, 4))
-        self.assertEqual(heston.mat_a1(theta, aggh).shape, (4, 4))
-        self.assertEqual(heston.mat_a2(theta, aggh).shape, (4, 4))
+        self.assertEqual(heston.mat_a0(param, aggh).shape, (4, 4))
+        self.assertEqual(heston.mat_a1(param, aggh).shape, (4, 4))
+        self.assertEqual(heston.mat_a2(param, aggh).shape, (4, 4))
 
-        self.assertEqual(heston.mat_a(theta, aggh).shape, (4, 3*4))
+        self.assertEqual(heston.mat_a(param, aggh).shape, (4, 3*4))
 
-        self.assertEqual(heston.realized_const(theta, aggh).shape, (4, ))
-        self.assertEqual(heston.realized_const(theta, aggh)[0], 0)
+        self.assertEqual(heston.realized_const(param, aggh).shape, (4, ))
+        self.assertEqual(heston.realized_const(param, aggh)[0], 0)
 
-        res = heston.depvar_unc_mean(theta, aggh)[1] \
-            * (1 - heston.coef_big_a(theta, 1))
+        res = heston.depvar_unc_mean(param, aggh)[1] \
+            * (1 - heston.coef_big_a(param, 1))
 
-        self.assertEqual(heston.realized_const(theta, aggh)[1], res)
+        self.assertEqual(heston.realized_const(param, aggh)[1], res)
 
-        res = heston.depvar_unc_mean(theta, aggh)[2] \
-            * (1 - heston.coef_big_a(theta, 1)) \
-            * (1 - heston.coef_big_a(theta, 1)**2)
+        res = heston.depvar_unc_mean(param, aggh)[2] \
+            * (1 - heston.coef_big_a(param, 1)) \
+            * (1 - heston.coef_big_a(param, 1)**2)
 
-        self.assertEqual(heston.realized_const(theta, aggh)[2], res)
+        self.assertEqual(heston.realized_const(param, aggh)[2], res)
 
-        res = (heston.depvar_unc_mean(theta, aggh)[2] * (.5 - param.lmbd) \
-            + heston.depvar_unc_mean(theta, aggh)[3]) \
-            * (1 - heston.coef_big_a(theta, 1))
+        res = (heston.depvar_unc_mean(param, aggh)[2] * (.5 - param.lmbd) \
+            + heston.depvar_unc_mean(param, aggh)[3]) \
+            * (1 - heston.coef_big_a(param, 1))
 
-        self.assertAlmostEqual(heston.realized_const(theta, aggh)[3], res)
+        self.assertAlmostEqual(heston.realized_const(param, aggh)[3], res)
 
-        dconst = heston.drealized_const(param.get_theta(), aggh)
+        dconst = heston.drealized_const(param, aggh)
 
         # Test derivative of intercept
         self.assertEqual(dconst.shape, (nmoms, nparams))
 
-        dmat_a = heston.diff_mat_a(param.get_theta(), aggh)
+        dmat_a = heston.diff_mat_a(param, aggh)
 
         # Test derivative of matrix A
         self.assertEqual(len(dmat_a), nmoms)

@@ -53,13 +53,13 @@ class Heston(SDE):
         """
         super(Heston, self).__init__(theta_true)
 
-    def coef_big_a(self, theta, aggh):
+    def coef_big_a(self, param, aggh):
         """Coefficient A_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -69,17 +69,15 @@ class Heston(SDE):
             Coefficient A_h
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
         return np.exp(-param.kappa * aggh)
 
-    def coef_big_c(self, theta, aggh):
+    def coef_big_c(self, param, aggh):
         """Coefficient C_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -89,17 +87,15 @@ class Heston(SDE):
             Coefficient C_h
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.mean_v * (1 - self.coef_big_a(theta, aggh))
+        return param.mean_v * (1 - self.coef_big_a(param, aggh))
 
-    def coef_small_a(self, theta, aggh):
+    def coef_small_a(self, param, aggh):
         """Coefficient a_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -109,17 +105,15 @@ class Heston(SDE):
             Coefficient a_h
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        return (1 - self.coef_big_a(theta, aggh)) / param.kappa / aggh
+        return (1 - self.coef_big_a(param, aggh)) / param.kappa / aggh
 
-    def coef_small_c(self, theta, aggh):
+    def coef_small_c(self, param, aggh):
         """Coefficient c_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -129,18 +123,16 @@ class Heston(SDE):
             Coefficient c_h
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        return param.mean_v * (1 - self.coef_small_a(theta, aggh))
+        return param.mean_v * (1 - self.coef_small_a(param, aggh))
 
-    def depvar_unc_mean(self, theta, aggh):
+    def depvar_unc_mean(self, param, aggh):
         """Array of the left-hand side variables
         in realized moment conditions.
 
         Parameters
         ----------
-        data : (2, nobs) array
-            Returns and realized variance
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -150,30 +142,27 @@ class Heston(SDE):
             Dependend variables
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-
         mean_ret = (param.lmbd - .5) * param.mean_v
 
         mean_vol = param.mean_v
 
         mean_vol2 = ((param.eta / param.kappa)**2
-                     * self.coef_small_c(theta, aggh) / aggh
+                     * self.coef_small_c(param, aggh) / aggh
                      + param.mean_v**2)
 
         mean_cross = ((param.lmbd - .5) * mean_vol2
                       + param.rho * param.eta / param.kappa
-                      * self.coef_small_c(theta, aggh) / aggh)
+                      * self.coef_small_c(param, aggh) / aggh)
 
         return np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
 
-    def realized_const(self, theta, aggh):
+    def realized_const(self, param, aggh):
         """Intercept in the realized moment conditions.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -183,19 +172,17 @@ class Heston(SDE):
             Intercept
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        return ((self.mat_a0(theta, 1) + self.mat_a1(theta, 1)
-            + self.mat_a2(theta, 1))
-            * self.depvar_unc_mean(theta, aggh)).sum(1)
+        return ((self.mat_a0(param, 1) + self.mat_a1(param, 1)
+            + self.mat_a2(param, 1))
+            * self.depvar_unc_mean(param, aggh)).sum(1)
 
-    def mat_a0(self, theta, aggh):
+    def mat_a0(self, param, aggh):
         """Matrix A_0 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -205,17 +192,15 @@ class Heston(SDE):
             Matrix A_0
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
         return np.diag([0, 0, 1, 0]).astype(float)
 
-    def mat_a1(self, theta, aggh):
+    def mat_a1(self, param, aggh):
         """Matrix A_1 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -225,21 +210,19 @@ class Heston(SDE):
             Matrix A_1
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
         mat_a = np.diag([0, 1, 0, 1]).astype(float)
-        mat_a[2, 2] = -self.coef_big_a(theta, aggh) \
-            * (1 + self.coef_big_a(theta, 1))
+        mat_a[2, 2] = -self.coef_big_a(param, aggh) \
+            * (1 + self.coef_big_a(param, 1))
         mat_a[3, 2] = .5 - param.lmbd
         return mat_a
 
-    def mat_a2(self, theta, aggh):
+    def mat_a2(self, param, aggh):
         """Matrix A_2 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -249,22 +232,20 @@ class Heston(SDE):
             Matrix A_2
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        mat_a = np.diag([1, -self.coef_big_a(theta, 1),
-                         self.coef_big_a(theta, 1)**3,
-                         -self.coef_big_a(theta, 1)])
+        mat_a = np.diag([1, -self.coef_big_a(param, 1),
+                         self.coef_big_a(param, 1)**3,
+                         -self.coef_big_a(param, 1)])
         mat_a[0, 1] = .5 - param.lmbd
-        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(theta, 1)
+        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(param, 1)
         return mat_a
 
-    def mat_a(self, theta, aggh):
+    def mat_a(self, param, aggh):
         """Matrix A in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -274,19 +255,17 @@ class Heston(SDE):
             Matrix A
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
-        mat_a = (self.mat_a0(theta, 1), self.mat_a1(theta, 1),
-                 self.mat_a2(theta, 1))
+        mat_a = (self.mat_a0(param, 1), self.mat_a1(param, 1),
+                 self.mat_a2(param, 1))
         return np.hstack(mat_a)
 
-    def diff_mat_a(self, theta, aggh):
+    def diff_mat_a(self, param, aggh):
         """Derivative of Matrix A in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -296,23 +275,21 @@ class Heston(SDE):
             Matrix A
 
         """
-        param = HestonParam()
-        param.update(theta=theta)
         diff = []
-        for i in range(self.mat_a(theta, aggh).shape[0]):
+        for i in range(self.mat_a(param, aggh).shape[0]):
             # (3*nmoms, nparams)
             with np.errstate(divide='ignore'):
-                fun = lambda x: self.mat_a(x, aggh)[i]
-                diff.append(nd.Jacobian(fun)(theta))
+                diff.append(nd.Jacobian(lambda x:
+                    self.mat_a(convert(x), aggh)[i])(param.get_theta()))
         return diff
 
-    def drealized_const(self, theta, aggh):
+    def drealized_const(self, param, aggh):
         """Intercept in the realized moment conditions.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -323,7 +300,8 @@ class Heston(SDE):
 
         """
         with np.errstate(divide='ignore'):
-            return nd.Jacobian(lambda x: self.realized_const(x, aggh))(theta)
+            return nd.Jacobian(lambda x:
+                self.realized_const(convert(x), aggh))(param.get_theta())
 
     def realized_depvar(self, data):
         """Array of the left-hand side variables
@@ -400,14 +378,17 @@ class Heston(SDE):
             Average derivative of the moment restrictions
 
         """
+        param = HestonParam()
+        param.update(theta=theta)
+
         ret, rvar = data
         lag = 2
         self.aggh = aggh
         # self.realized_depvar(data): (nobs, 3*nmoms)
         depvar = self.realized_depvar(data)[lag:]
         # (nobs - lag, 4) array
-        error = depvar.dot(self.mat_a(theta, aggh).T) \
-            - self.realized_const(theta, aggh)
+        error = depvar.dot(self.mat_a(param, aggh).T) \
+            - self.realized_const(param, aggh)
 
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
@@ -420,8 +401,8 @@ class Heston(SDE):
 
         if exact_jacob:
             # (nmoms, nparams)
-            dconst = self.drealized_const(theta, aggh)
-            dmat_a = self.diff_mat_a(theta, aggh)
+            dconst = self.drealized_const(param, aggh)
+            dmat_a = self.diff_mat_a(param, aggh)
 
             dmoms = []
             for i in range(instr.shape[1]):
@@ -433,6 +414,25 @@ class Heston(SDE):
             dmoms = None
 
         return moms, dmoms
+
+
+def convert(theta):
+    """Convert parameter vector to parameter instance.
+
+    Parameters
+    ----------
+    theta : array
+        Model parameters
+
+    Returns
+    -------
+    param : parameter instance
+        Model parameters
+
+    """
+    param = HestonParam()
+    param.update(theta=theta)
+    return param
 
 
 if __name__ == '__main__':

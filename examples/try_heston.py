@@ -93,7 +93,7 @@ def try_integrated_gmm():
     lmbd = .3
     mean_v = .5
     kappa = .1
-    eta = .02**.5 # o.1414
+    eta = .02**.5 # 0.1414
     rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
-    try_simulation()
+#    try_simulation()
 #    try_marginal()
 #    try_sim_realized()
-#    try_integrated_gmm()
+    try_integrated_gmm()
