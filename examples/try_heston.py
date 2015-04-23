@@ -36,8 +36,8 @@ def try_simulation():
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
-    plot_trajectories(returns, interval)
-    plot_trajectories(volatility, interval)
+    plot_trajectories(returns, interval, 'returns')
+    plot_trajectories(volatility, interval, 'volatility')
 
 
 def try_marginal():
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
-#    try_simulation()
+    try_simulation()
 #    try_marginal()
 #    try_sim_realized()
-    try_integrated_gmm()
+#    try_integrated_gmm()
