@@ -123,12 +123,16 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertTrue(param.is_valid())
 
         theta = np.array([lmbd, mean_v, kappa, eta, rho])
+        theta_vol = theta[1:4]
         np.testing.assert_array_equal(param.get_theta(), theta)
+        np.testing.assert_array_equal(param.get_theta(subset='vol'), theta_vol)
 
         theta = np.ones(5)
         param = HestonParam()
         param.update(theta=theta)
         np.testing.assert_array_equal(param.get_theta(), theta)
+        np.testing.assert_array_equal(param.get_theta(subset='vol'),
+                                      theta[1:4])
 
         mat_k0 = [param.riskfree, param.kappa * param.mean_v]
         mat_k1 = [[0, param.lmbd - .5], [0, -param.kappa]]
@@ -147,6 +151,9 @@ class SDEParameterTestCase(ut.TestCase):
         param.update(theta=theta_vol, subset='vol')
         theta[1:4] = theta_vol
         np.testing.assert_array_equal(param.get_theta(), theta)
+
+        self.assertEqual(len(param.get_bounds()), 5)
+        self.assertEqual(len(param.get_bounds(subset='vol')), 3)
 
 
     def test_centtendparam_class(self):

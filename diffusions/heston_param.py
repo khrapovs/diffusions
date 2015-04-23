@@ -105,8 +105,13 @@ class HestonParam(object):
             raise ValueError(subset + ' keyword variable is not supported!')
         self.update_ajd()
 
-    def get_theta(self):
+    def get_theta(self, subset='all'):
         """Return vector of model parameters.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         Returns
         -------
@@ -114,11 +119,21 @@ class HestonParam(object):
             Parameter vector
 
         """
-        return np.array([self.lmbd, self.mean_v,
-                         self.kappa, self.eta, self.rho])
+        if subset == 'all':
+            return np.array([self.lmbd, self.mean_v,
+                             self.kappa, self.eta, self.rho])
+        elif subset == 'vol':
+            return np.array([self.mean_v, self.kappa, self.eta])
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
 
-    def get_bounds(self):
+    def get_bounds(self, subset='all'):
         """Bounds on parameters.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         Returns
         -------
@@ -127,4 +142,9 @@ class HestonParam(object):
         """
         lb = [None, 1e-5, 1e-5, 1e-5, -1]
         ub = [None, None, None, None, 1]
-        return list(zip(lb, ub))
+        if subset == 'all':
+            return list(zip(lb, ub))
+        elif subset == 'vol':
+            return list(zip(lb, ub))[1:4]
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
