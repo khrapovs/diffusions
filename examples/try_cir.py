@@ -24,7 +24,7 @@ def try_simulation():
     paths = cir.simulate(x0, interval, ndiscr, npoints, nsim)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval)
+    plot_trajectories(data, interval, 'rates')
 
 
 def try_marginal():
@@ -39,7 +39,7 @@ def try_marginal():
     paths = cir.simulate(x0, interval, ndiscr, nobs, nsim)
     data = paths[:, :, 0]
 
-    plot_final_distr(data)
+    plot_final_distr(data, 'rates')
 
 
 def try_sim_realized():
@@ -59,6 +59,6 @@ def try_sim_realized():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_simulation()
-#    try_marginal()
+    try_simulation()
+    try_marginal()
     try_sim_realized()
