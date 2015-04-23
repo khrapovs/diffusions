@@ -86,16 +86,23 @@ class HestonParam(object):
         """
         return 2 * self.kappa * self.mean_v - self.eta**2 > 0
 
-    def update(self, theta):
+    def update(self, theta, subset='all'):
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         """
-        [self.lmbd, self.mean_v, self.kappa, self.eta, self.rho] = theta
+        if subset == 'all':
+            [self.lmbd, self.mean_v, self.kappa, self.eta, self.rho] = theta
+        elif subset == 'vol':
+            [self.mean_v, self.kappa, self.eta] = theta
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
         self.update_ajd()
 
     def get_theta(self):

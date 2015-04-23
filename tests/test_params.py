@@ -141,6 +141,14 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
+        theta = np.arange(5)
+        param.update(theta=theta)
+        theta_vol = np.ones(3) * 2
+        param.update(theta=theta_vol, subset='vol')
+        theta[1:4] = theta_vol
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+
     def test_centtendparam_class(self):
         """Test CT parameter class."""
 
