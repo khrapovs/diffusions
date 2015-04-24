@@ -83,7 +83,6 @@ class RealizedMomentsTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         heston.interval = .5
-        nparams = param.get_theta().size
         nmoms = 4
 
         nperiods = 5
@@ -109,11 +108,6 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
-        dmom_shape = (nmoms_all, nparams)
-
-        # Test the shape of the Jacobian
-        self.assertEqual(dmom.shape, dmom_shape)
-
         mom, dmom = heston.integrated_mom(param.get_theta(),
                                           instr_choice='const',
                                           data=data, instrlag=instrlag)
@@ -133,9 +127,6 @@ class RealizedMomentsTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         heston.interval = .1
-        theta = param.get_theta()
-        nparams = theta.size
-        nmoms = 4
         aggh = 2
 
         self.assertIsInstance(heston.coef_big_a(param, aggh), float)
@@ -168,18 +159,6 @@ class RealizedMomentsTestCase(ut.TestCase):
             * (1 - heston.coef_big_a(param, 1))
 
         self.assertAlmostEqual(heston.realized_const(param, aggh)[3], res)
-
-        dconst = heston.drealized_const(param, aggh)
-
-        # Test derivative of intercept
-        self.assertEqual(dconst.shape, (nmoms, nparams))
-
-        dmat_a = heston.diff_mat_a(param, aggh)
-
-        # Test derivative of matrix A
-        self.assertEqual(len(dmat_a), nmoms)
-        for mat in dmat_a:
-            self.assertEqual(mat.shape, (3*nmoms, nparams))
 
 
 if __name__ == '__main__':

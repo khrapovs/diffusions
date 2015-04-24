@@ -26,7 +26,6 @@ from __future__ import print_function, division
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
-import numdifftools as nd
 
 from .generic_model import SDE
 from .heston_param import HestonParam
@@ -165,6 +164,8 @@ class Heston(SDE):
             Model parameters
         aggh : float
             Interval length
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -261,50 +262,6 @@ class Heston(SDE):
                  self.mat_a2(param, 1))
         return np.hstack(mat_a)[subset].squeeze()
 
-    def diff_mat_a(self, param, aggh, subset=None):
-        """Derivative of Matrix A in integrated moments.
-
-        Parameters
-        ----------
-        param : parameter instance
-            Model parameters
-        aggh : float
-            Interval length
-
-        Returns
-        -------
-        list of nmoms (3*nmoms, nparams) arrays
-            Matrix A
-
-        """
-        diff = []
-        for i in range(self.mat_a(param, subset).shape[0]):
-            # (3*nmoms, nparams)
-            with np.errstate(divide='ignore'):
-                diff.append(nd.Jacobian(lambda x:
-                    self.mat_a(convert(x), subset)[i])(param.get_theta()))
-        return diff
-
-    def drealized_const(self, param, aggh, subset=None):
-        """Intercept in the realized moment conditions.
-
-        Parameters
-        ----------
-        param : parameter instance
-            Model parameters
-        aggh : float
-            Interval length
-
-        Returns
-        -------
-        (nmoms, nparams) array
-            Intercept
-
-        """
-        with np.errstate(divide='ignore'):
-            return nd.Jacobian(lambda x:
-                self.realized_const(convert(x), aggh, subset))(param.get_theta())
-
     def realized_depvar(self, data, subset=None):
         """Array of the left-hand side variables
         in realized moment conditions.
@@ -389,13 +346,13 @@ class Heston(SDE):
             subset_sl = slice(2)
 
         param = HestonParam()
-        param.update(theta=theta)
+        param.update(theta=theta, subset=subset)
 
         ret, rvar = data
         lag = 2
         self.aggh = aggh
         # self.realized_depvar(data): (nobs, 3*nmoms)
-        depvar = self.realized_depvar(data, subset_sl)[lag:]
+        depvar = self.realized_depvar(data)[lag:]
         # (nobs - lag, 4) array
         error = depvar.dot(self.mat_a(param, subset_sl).T) \
             - self.realized_const(param, aggh, subset_sl)
@@ -409,40 +366,7 @@ class Heston(SDE):
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
 
-        if exact_jacob:
-            # (nmoms, nparams)
-            dconst = self.drealized_const(param, aggh, subset_sl)
-            dmat_a = self.diff_mat_a(param, aggh, subset_sl)
-
-            dmoms = []
-            for i in range(instr.shape[1]):
-                for mat_a, mat_c in zip(dmat_a, dconst):
-                    left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
-                    dmoms.append(left - mat_c)
-            dmoms = np.vstack(dmoms)
-        else:
-            dmoms = None
-
-        return moms, dmoms
-
-
-def convert(theta):
-    """Convert parameter vector to parameter instance.
-
-    Parameters
-    ----------
-    theta : array
-        Model parameters
-
-    Returns
-    -------
-    param : parameter instance
-        Model parameters
-
-    """
-    param = HestonParam()
-    param.update(theta=theta)
-    return param
+        return moms, None
 
 
 if __name__ == '__main__':

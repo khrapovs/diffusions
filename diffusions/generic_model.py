@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
-Introduction
-============
-
 Affine Diffusion
-~~~~~~~~~~~~~~~~
+================
 
 A jump-diffusion process is a Markov process solving the stochastic
 differential equationd
@@ -14,8 +11,7 @@ differential equationd
     Y_{t}=\mu\left(Y_{t},\theta_{0}\right)dt
         +\sigma\left(Y_{t},\theta_{0}\right)dW_{t}.
 
-Discounting is an integral part of pricing so we first introduce a discount-
-rate function :math:`R:D\to\mathbb{R}` that is an affine function of the
+A discount-rate function :math:`R:D\to\mathbb{R}` is an affine function of the
 state
 
 .. math::
@@ -46,57 +42,6 @@ Here
 A characteristic :math:`\chi=\left(K,H,\rho\right)`
 captures both the distribution
 of :math:`Y` as well as the effects of any discounting.
-
-
-Discretization and moments
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Given the generic continuous-time diffusion model
-
-.. math::
-    dY_{t}=\mu\left(Y_{t},\theta_{0}\right)dt
-        +\sigma\left(Y_{t},\theta_{0}\right)dW_{t}
-
-we can discretize it as
-
-.. math::
-    Y_{t+h}\approx Y_{t}+\mu\left(Y_{t},\theta_{0}\right)h
-        +\sigma\left(Y_{t},\theta_{0}\right)\sqrt{h}\varepsilon_{t}.
-
-To be more precise, we can integrate the diffusion on the interval
-:math:`\left[t,t+h\right]`:
-
-.. math::
-
-    y_{t,t+h}=Y_{t+h}-Y_{t}=\int_{t}^{t+h}dY_{s}
-        =\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds
-        +\int_{t}^{t+h}\sigma\left(Y_{s},\theta_{0}\right)dW_{s}.
-
-Conditional mean and variance are thus
-
-.. math::
-
-    E_{t}\left[y_{t,t+h}\right] &=
-    E_{t}\left[\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right],\\
-    V_{t}\left[y_{t,t+h}\right] &=
-    E_{t}\left[\int_{t}^{t+h}\sigma^{2}
-    \left(Y_{s},\theta_{0}\right)ds\right].
-
-Hence, the moment function is
-
-.. math::
-
-    g\left(y_{t,t+h};\theta\right)=\left[\begin{array}{c}
-    y_{t,t+h}-\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\\
-    y_{t,t+h}^{2}-\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
-    -\left(\int_{t}^{t+h}\mu\left(Y_{s},\theta_{0}\right)ds\right)^{2}
-    \end{array}\right],
-
-with
-
-.. math::
-
-    E_{t}\left[g\left(y_{t,t+h};\theta\right)\right]=0.
 
 """
 from __future__ import print_function, division
@@ -360,7 +305,7 @@ class SDE(object):
 
         """
         estimator = GMM(self.integrated_mom)
-        return estimator.gmmest(theta_start.get_theta(), **kwargs)
+        return estimator.gmmest(theta_start, **kwargs)
 
 
 if __name__ == '__main__':
