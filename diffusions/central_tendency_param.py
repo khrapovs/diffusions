@@ -30,7 +30,7 @@ class CentTendParam(object):
         Mean reversion speed of central tendency
     eta_s : float
         Instantaneous standard deviation of volatility
-    eta_s : float
+    eta_y : float
         Instantaneous standard deviation of central tendency
     lmbd : float
         Equity risk premium
@@ -40,8 +40,8 @@ class CentTendParam(object):
     """
 
     def __init__(self, riskfree=.0, lmbd = .1,
-                 mean_v=.5, kappa_s=1.5, kappa_v=.5,
-                 eta_s=.1, eta_v=.01, rho=-.5):
+                 mean_v=.5, kappa_s=1.5, kappa_y=.5,
+                 eta_s=.1, eta_y=.01, rho=-.5):
         """Initialize class.
 
         Parameters
@@ -56,7 +56,7 @@ class CentTendParam(object):
             Mean reversion speed of central tendency
         eta_s : float
             Instantaneous standard deviation of volatility
-        eta_s : float
+        eta_y : float
             Instantaneous standard deviation of central tendency
         lmbd : float
             Equity risk premium
@@ -68,9 +68,9 @@ class CentTendParam(object):
 
         self.mean_v = mean_v
         self.kappa_s = kappa_s
-        self.kappa_v = kappa_v
+        self.kappa_y = kappa_y
         self.eta_s = eta_s
-        self.eta_v = eta_v
+        self.eta_y = eta_y
         self.lmbd = lmbd
         self.rho = rho
 
@@ -83,15 +83,15 @@ class CentTendParam(object):
 
         """
         # AJD parameters
-        self.mat_k0 = [self.riskfree, 0., self.kappa_v * self.mean_v]
+        self.mat_k0 = [self.riskfree, 0., self.kappa_y * self.mean_v]
         self.mat_k1 = [[0, self.lmbd - .5, 0],
                        [0, -self.kappa_s, self.kappa_s],
-                       [0, 0, -self.kappa_v]]
+                       [0, 0, -self.kappa_y]]
         self.mat_h0 = np.zeros((3, 3))
         self.mat_h1 = np.zeros((3, 3, 3))
         self.mat_h1[1, 0] = [1, self.eta_s*self.rho, 0]
         self.mat_h1[1, 1] = [self.eta_s*self.rho, self.eta_s**2, 0]
-        self.mat_h1[2, 2, 2] = self.eta_v**2
+        self.mat_h1[2, 2, 2] = self.eta_y**2
 
     def is_valid(self):
         """Check Feller condition.
@@ -102,7 +102,7 @@ class CentTendParam(object):
             True for valid parameters, False for invalid
 
         """
-        return 2 * self.kappa_v * self.mean_v - self.eta_v**2 > 0
+        return 2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0
 
     def update(self, theta, subset='all'):
         """Update attributes from parameter vector.
@@ -116,11 +116,11 @@ class CentTendParam(object):
 
         """
         if subset == 'all':
-            [self.mean_v, self.kappa_s, self.kappa_v,
-                 self.eta_s, self.eta_v, self.lmbd, self.rho] = theta
+            [self.mean_v, self.kappa_s, self.kappa_y,
+                 self.eta_s, self.eta_y, self.lmbd, self.rho] = theta
         elif subset == 'vol':
-            [self.mean_v, self.kappa_s, self.kappa_v,
-                 self.eta_s, self.eta_v] = theta
+            [self.mean_v, self.kappa_s, self.kappa_y,
+                 self.eta_s, self.eta_y] = theta
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
         self.update_ajd()
@@ -139,8 +139,8 @@ class CentTendParam(object):
             Parameter vector
 
         """
-        theta = np.array([self.mean_v, self.kappa_s, self.kappa_v,
-                          self.eta_s, self.eta_v, self.lmbd, self.rho])
+        theta = np.array([self.mean_v, self.kappa_s, self.kappa_y,
+                          self.eta_s, self.eta_y, self.lmbd, self.rho])
         if subset == 'all':
             return theta
         elif subset == 'vol':

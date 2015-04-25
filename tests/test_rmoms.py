@@ -133,6 +133,61 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         self.assertAlmostEqual(heston.realized_const(param, aggh)[3], res)
 
+    def test_ct_coefs(self):
+        """Test coefficients in descretization of CT model.
+
+        """
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_y = .5
+        eta_s = .1
+        eta_y = .01
+        rho = -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+
+        centtend = CentTend(param)
+        centtend.interval = .1
+        aggh = 2
+
+        self.assertIsInstance(centtend.coef_big_as(param, aggh), float)
+        self.assertIsInstance(centtend.coef_big_bs(param, aggh), float)
+        self.assertIsInstance(centtend.coef_big_cs(param, aggh), float)
+        self.assertIsInstance(centtend.coef_big_ay(param, aggh), float)
+        self.assertIsInstance(centtend.coef_big_cy(param, aggh), float)
+        self.assertIsInstance(centtend.coef_small_as(param, aggh), float)
+        self.assertIsInstance(centtend.coef_small_bs(param, aggh), float)
+        self.assertIsInstance(centtend.coef_small_cs(param, aggh), float)
+
+#        self.assertEqual(centtend.mat_a0(param, aggh).shape, (4, 4))
+#        self.assertEqual(centtend.mat_a1(param, aggh).shape, (4, 4))
+#        self.assertEqual(centtend.mat_a2(param, aggh).shape, (4, 4))
+#
+#        self.assertEqual(centtend.mat_a(param).shape, (4, 3*4))
+#
+#        self.assertEqual(centtend.realized_const(param, aggh).shape, (4, ))
+#        self.assertEqual(centtend.realized_const(param, aggh)[2], 0)
+#
+#        res = centtend.depvar_unc_mean(param, aggh)[0] \
+#            * (1 - centtend.coef_big_a(param, 1))
+#
+#        self.assertEqual(centtend.realized_const(param, aggh)[0], res)
+#
+#        res = centtend.depvar_unc_mean(param, aggh)[1] \
+#            * (1 - centtend.coef_big_a(param, 1)) \
+#            * (1 - centtend.coef_big_a(param, 1)**2)
+#
+#        self.assertEqual(centtend.realized_const(param, aggh)[1], res)
+#
+#        res = (centtend.depvar_unc_mean(param, aggh)[1] * (.5 - param.lmbd) \
+#            + centtend.depvar_unc_mean(param, aggh)[3]) \
+#            * (1 - centtend.coef_big_a(param, 1))
+#
+#        self.assertAlmostEqual(centtend.realized_const(param, aggh)[3], res)
+
 
 if __name__ == '__main__':
     ut.main()

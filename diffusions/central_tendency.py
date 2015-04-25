@@ -27,7 +27,6 @@ import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
-from .helper_functions import columnwise_prod
 from .central_tendency_param import CentTendParam
 
 __all__ = ['CentTend']
@@ -107,7 +106,7 @@ class CentTend(SDE):
         return param.mean_v * (1 - self.coef_big_as(param, aggh)
             - self.coef_big_bs(param, aggh))
 
-    def coef_big_av(self, param, aggh):
+    def coef_big_ay(self, param, aggh):
         """Coefficient A^v_h in exact discretization of volatility.
 
         Parameters
@@ -120,10 +119,9 @@ class CentTend(SDE):
         Returns
         -------
         float
-            Coefficient A^v_h
 
         """
-        return np.exp(-param.kappa_v * aggh)
+        return np.exp(-param.kappa_y * aggh)
 
     def coef_big_cy(self, param, aggh):
         """Coefficient C^y_h in exact discretization of volatility.
@@ -159,7 +157,7 @@ class CentTend(SDE):
             Coefficient a^s_h
 
         """
-        return (1 - self.coef_big_a(param, aggh)) / param.kappa_s / aggh
+        return (1 - self.coef_big_as(param, aggh)) / param.kappa_s / aggh
 
     def coef_small_bs(self, param, aggh):
         """Coefficient b^s_h in exact discretization of volatility.
@@ -199,6 +197,23 @@ class CentTend(SDE):
         """
         return param.mean_v * (1 - self.coef_small_as(param, aggh)
             - self.coef_small_bs(param, aggh))
+
+    def coef_small_ay(self, param, aggh):
+        """Coefficient a^v_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return (1 - self.coef_big_ay(param, aggh)) / param.kappa_y / aggh
 
     def depvar_unc_mean(self, param, aggh):
         """Array of the left-hand side variables

@@ -162,25 +162,25 @@ class SDEParameterTestCase(ut.TestCase):
         lmbd = .01
         mean_v = .5
         kappa_s = 1.5
-        kappa_v = .5
+        kappa_y = .5
         eta_s = .1
-        eta_v = .01
+        eta_y = .01
         rho = -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, lmbd)
         self.assertEqual(param.mean_v, mean_v)
         self.assertEqual(param.kappa_s, kappa_s)
-        self.assertEqual(param.kappa_v, kappa_v)
+        self.assertEqual(param.kappa_y, kappa_y)
         self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_v, eta_v)
+        self.assertEqual(param.eta_y, eta_y)
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
-        theta = np.array([mean_v, kappa_s, kappa_v, eta_s, eta_v, lmbd, rho])
+        theta = np.array([mean_v, kappa_s, kappa_y, eta_s, eta_y, lmbd, rho])
         np.testing.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(7)
@@ -188,15 +188,15 @@ class SDEParameterTestCase(ut.TestCase):
         param.update(theta=theta)
         np.testing.assert_array_equal(param.get_theta(), theta)
 
-        mat_k0 = [param.riskfree, 0., param.kappa_v * param.mean_v]
+        mat_k0 = [param.riskfree, 0., param.kappa_y * param.mean_v]
         mat_k1 = [[0, param.lmbd - .5, 0],
                   [0, -param.kappa_s, param.kappa_s],
-                  [0, 0, -param.kappa_v]]
+                  [0, 0, -param.kappa_y]]
         mat_h0 = np.zeros((3, 3))
         mat_h1 = np.zeros((3, 3, 3))
         mat_h1[1, 0] = [1, param.eta_s*param.rho, 0]
         mat_h1[1, 1] = [param.eta_s*param.rho, param.eta_s**2, 0]
-        mat_h1[2, 2, 2] = param.eta_v**2
+        mat_h1[2, 2, 2] = param.eta_y**2
 
         np.testing.assert_array_equal(param.mat_k0, mat_k0)
         np.testing.assert_array_equal(param.mat_k1, mat_k1)
