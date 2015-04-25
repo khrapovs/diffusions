@@ -2392,9 +2392,7 @@ reference "eq:infinite-rep"
  we see that
 \begin_inset Formula 
 \[
-\begin{aligned}V\left[y_{t}^{2}\right]= & \mu^{2}+E\left[y_{t}^{4}\right]=\mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{y}\right)^{2}du\\
-= & \mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}e^{-2\kappa_{y}\left(t-u\right)}du=\mu^{2}+\frac{\mu\eta_{y}^{2}}{2\kappa_{y}},
-\end{aligned}
+E\left[y_{t}^{4}\right]=\mu\eta_{y}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{y}\right)^{2}du=\mu\eta_{y}^{2}\int_{-\infty}^{t}e^{-2\kappa_{y}\left(t-u\right)}du=\frac{\mu\eta_{y}^{2}}{2\kappa_{y}},
 \]
 
 \end_inset
@@ -2402,11 +2400,11 @@ reference "eq:infinite-rep"
 and
 \begin_inset Formula 
 \[
-\begin{aligned}V\left[\sigma_{t}^{2}\right]= & \mu^{2}+E\left[\sigma_{t}^{4}\right]\\
-= & \mu^{2}+\mu\eta_{y}^{2}\int_{-\infty}^{t}\left(B_{t-u}^{\sigma}\right)^{2}du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{\sigma}\right)^{2}du\\
-= & \mu^{2}+\mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\int_{-\infty}^{t}\left(A_{2\left(t-u\right)}^{y}-2A_{t-u}^{y}A_{t-u}^{\sigma}+A_{2\left(t-u\right)}^{\sigma}\right)du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}A_{2\left(t-u\right)}^{\sigma}du\\
-= & \mu^{2}+\mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\left(\frac{1}{2\kappa_{y}}-\frac{2}{\kappa_{y}+\kappa_{\sigma}}+\frac{1}{2\kappa_{\sigma}}\right)+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}\\
-= & \mu^{2}+\frac{\mu\eta_{y}^{2}}{2\kappa_{y}}\frac{\kappa_{\sigma}}{\kappa_{y}+\kappa_{\sigma}}+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}.
+\begin{aligned}E\left[\sigma_{t}^{4}\right]= & \mu\eta_{y}^{2}\int_{-\infty}^{t}\left(B_{t-u}^{\sigma}\right)^{2}du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}\left(A_{t-u}^{\sigma}\right)^{2}du\\
+= & \mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\int_{-\infty}^{t}\left(A_{2\left(t-u\right)}^{y}-2A_{t-u}^{y}A_{t-u}^{\sigma}+A_{2\left(t-u\right)}^{\sigma}\right)du+\mu\eta_{\sigma}^{2}\int_{-\infty}^{t}A_{2\left(t-u\right)}^{\sigma}du\\
+= & \mu\eta_{y}^{2}\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\left(\frac{1}{2\kappa_{y}}-\frac{2}{\kappa_{y}+\kappa_{\sigma}}+\frac{1}{2\kappa_{\sigma}}\right)+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}\\
+= & \frac{\mu\eta_{y}^{2}}{2\kappa_{y}}\frac{\kappa_{\sigma}}{\kappa_{y}+\kappa_{\sigma}}+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}\\
+= & E\left[y_{t}^{4}\right]\frac{\kappa_{\sigma}}{\kappa_{y}+\kappa_{\sigma}}+\frac{\mu\eta_{\sigma}^{2}}{2\kappa_{\sigma}}.
 \end{aligned}
 \]
 
@@ -2424,6 +2422,21 @@ Rewrite the error:
 \end_inset
 
 Hence,
+\begin_inset Formula 
+\[
+V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]=\mu\eta_{\sigma}^{2}\int_{0}^{H}\left(a_{H-u}^{\sigma}\right)^{2}du+\mu\eta_{y}^{2}\int_{0}^{H}\left(b_{H-u}^{\sigma}\right)^{2}du
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \begin{aligned}V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]= & \mu\eta_{\sigma}^{2}\int_{0}^{H}\left(a_{H-u}^{\sigma}\right)^{2}du+\mu\eta_{y}^{2}\int_{0}^{H}\left(b_{H-u}^{\sigma}\right)^{2}du\\
@@ -2444,6 +2457,11 @@ Hence,
  & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\left(1-a_{H}^{y}-a_{H}^{\sigma}+\frac{1}{\left(\kappa_{y}+\kappa_{\sigma}\right)H}A_{H}^{\sigma}A_{H}^{y}\right)\right].
 \end{aligned}
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
