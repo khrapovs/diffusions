@@ -29,7 +29,6 @@ from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
 from .heston_param import HestonParam
-from .helper_functions import columnwise_prod
 
 __all__ = ['Heston']
 
@@ -282,29 +281,6 @@ class Heston(SDE):
         ret, rvar = data
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=2, original='in')
-
-    def instruments(self, data=None, instrlag=0, nobs=None):
-        """Create an array of instruments.
-
-        Parameters
-        ----------
-        data : (ninstr, nobs) array
-            Returns and realized variance
-        instrlag : int
-            Number of lags for the instruments
-
-        Returns
-        -------
-        (nobs, ninstr*instrlag + 1) array
-            Instrument array
-
-        """
-        if data is None:
-            return np.ones((nobs, 1))
-        else:
-            instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
-            width = ((0, 0), (1, 0))
-            return np.pad(instr, width, mode='constant', constant_values=1)
 
     def convert(self, theta, subset):
         """Convert parameter vector to instance.

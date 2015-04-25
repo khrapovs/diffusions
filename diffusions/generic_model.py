@@ -50,7 +50,7 @@ import numpy as np
 
 from diffusions.mygmm import GMM
 from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
-                               rolling_window, columnwise_prod)
+                               rolling_window, columnwise_prod, instruments)
 
 __all__ = ['SDE']
 
@@ -353,10 +353,8 @@ class SDE(object):
 
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
-        if instr_choice == 'const':
-            instr = self.instruments(nobs=rvar.size)[:-lag]
-        else:
-            instr = self.instruments(instr_data, instrlag=instrlag)[:-lag]
+        instr = instruments(instr_data, nobs=rvar.size, instrlag=instrlag,
+                            instr_choice=instr_choice)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
 

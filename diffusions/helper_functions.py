@@ -10,10 +10,11 @@ import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 import itertools as it
+from statsmodels.tsa.tsatools import lagmat
 
 __all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
            'plot_trajectories', 'plot_final_distr', 'plot_realized',
-           'columnwise_prod', 'rolling_window', 'poly_coef']
+           'columnwise_prod', 'rolling_window', 'poly_coef', 'instruments']
 
 
 def ajd_drift(state, theta):
@@ -263,6 +264,39 @@ def poly_coef(roots):
         temp = [np.prod(roots[[x]]) for x in comb]
         coefs.append((-1)**(power+1) * np.sum(temp))
     return coefs
+
+
+def instruments(data=None, instrlag=0, nobs=None, instr_choice='const'):
+    """Create an array of instruments.
+
+    Parameters
+    ----------
+    data : (ninstr, nobs) array
+        Returns and realized variance
+    instrlag : int
+        Number of lags for the instruments
+    nobs : int
+        Number of observations in the data to match
+    instr_choice : str {'const', 'var'}
+        Choice of instruments.
+            - 'const' : just a constant (unconditional moments)
+            - 'var' : lags of instrument data
+
+    Returns
+    -------
+    (nobs, ninstr*instrlag + 1) array
+        Instrument array
+
+    """
+    if nobs is None:
+        raise ValueError('Specify nobs!')
+
+    if instr_choice == 'const' or data is None:
+        return np.ones((nobs, 1))
+    else:
+        instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
+        width = ((0, 0), (1, 0))
+        return np.pad(instr, width, mode='constant', constant_values=1)
 
 
 if __name__ == "__main__":

@@ -48,33 +48,6 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
         self.assertEqual(drmom.shape, (nmoms, np.size(param.get_theta())))
 
-    def test_heston_instruments(self):
-        """Test realized moments of Heston model."""
-        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                            mean_v=mean_v, kappa=kappa,
-                            eta=eta, rho=rho)
-        heston = Heston(param)
-        heston.interval = .5
-
-        nperiods = 10
-        data = np.ones((2, nperiods))
-        instrlag = 2
-
-        instruments = heston.instruments(data[0], instrlag=instrlag)
-        ninstr = 1
-        shape = (nperiods, ninstr*instrlag + 1)
-
-        # Test the shape of instruments
-        self.assertEqual(instruments.shape, shape)
-
-        instruments = heston.instruments(nobs=nperiods)
-        ninstr = 0
-        shape = (nperiods, ninstr*instrlag + 1)
-
-        # Test the shape of instruments
-        self.assertEqual(instruments.shape, shape)
-
     def test_heston_relized_mom(self):
         """Test realized moments of Heston model."""
         riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5

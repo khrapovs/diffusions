@@ -9,7 +9,8 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import columnwise_prod, rolling_window, nice_errors, poly_coef
+from diffusions import (columnwise_prod, rolling_window, nice_errors,
+                        poly_coef, instruments)
 
 
 class HelperFunctionTestCase(ut.TestCase):
@@ -67,6 +68,25 @@ class HelperFunctionTestCase(ut.TestCase):
         coefs[2] = np.prod(roots[:2]) + np.prod(roots[1:]) \
             + np.prod(roots[[0, 2]])
         self.assertEqual(poly_coef(roots), coefs)
+
+    def test_instruments(self):
+        """Test instruments."""
+        nperiods = 10
+        data = np.ones((2, nperiods))
+        instrlag = 2
+
+        instrmnts = instruments(data[0], instrlag=instrlag, nobs=nperiods,
+                                instr_choice='var')
+        ninstr = 1
+        shape = (nperiods, ninstr*instrlag + 1)
+        # Test the shape of instruments
+        self.assertEqual(instrmnts.shape, shape)
+
+        instrmnts = instruments(nobs=nperiods)
+        ninstr = 0
+        shape = (nperiods, ninstr*instrlag + 1)
+        # Test the shape of instruments
+        self.assertEqual(instrmnts.shape, shape)
 
 
 if __name__ == '__main__':
