@@ -49,7 +49,8 @@ from __future__ import print_function, division
 import numpy as np
 
 from diffusions.mygmm import GMM
-from .helper_functions import nice_errors, ajd_drift, ajd_diff, rolling_window
+from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
+                               rolling_window, columnwise_prod)
 
 __all__ = ['SDE']
 
@@ -306,6 +307,60 @@ class SDE(object):
         """
         estimator = GMM(self.integrated_mom)
         return estimator.gmmest(theta_start, **kwargs)
+
+    def integrated_mom(self, theta, data=None, instr_data=None,
+                       instr_choice='const', aggh=1, subset='all',
+                       instrlag=1., **kwargs):
+        """Integrated moment function.
+
+        Parameters
+        ----------
+        theta : array
+            Model parameters
+        data : (2, nobs) array
+            Returns and realized variance
+        instr_data : (ninstr, nobs) array
+            Instruments (no lags)
+        instrlag : int
+            Number of lags for the instruments
+        instr_choice : str {'const', 'var'}
+            Choice of instruments.
+                - 'const' : just a constant (unconditional moments)
+                - 'var' : lags of instrument data
+        aggh : int
+            Number of intervals (days) to aggregate over using rolling mean
+        subset : str
+            Which parameters to estimate. Belongs to ['all', 'vol']
+
+        Returns
+        -------
+        moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
+            Moment restrictions
+        dmoments : (nmoms, nparams) array
+            Average derivative of the moment restrictions
+
+        """
+        param, subset_sl = self.convert(theta, subset)
+
+        ret, rvar = data
+        lag = 2
+        self.aggh = aggh
+        # self.realized_depvar(data): (nobs, 3*nmoms)
+        depvar = self.realized_depvar(data)[lag:]
+        # (nobs - lag, 4) array
+        error = depvar.dot(self.mat_a(param, subset_sl).T) \
+            - self.realized_const(param, aggh, subset_sl)
+
+        # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
+        # (nobs-lag, ninstr*instrlag+1)
+        if instr_choice == 'const':
+            instr = self.instruments(nobs=rvar.size)[:-lag]
+        else:
+            instr = self.instruments(instr_data, instrlag=instrlag)[:-lag]
+        # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
+        moms = columnwise_prod(error, instr)
+
+        return moms, None
 
 
 if __name__ == '__main__':

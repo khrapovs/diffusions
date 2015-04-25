@@ -306,67 +306,30 @@ class Heston(SDE):
             width = ((0, 0), (1, 0))
             return np.pad(instr, width, mode='constant', constant_values=1)
 
-    def integrated_mom(self, theta, data=None, instr_data=None,
-                       instr_choice='const', aggh=1, subset='all',
-                       instrlag=1., exact_jacob=False, **kwargs):
-        """Integrated moment function.
+    def convert(self, theta, subset):
+        """Convert parameter vector to instance.
 
         Parameters
         ----------
         theta : array
             Model parameters
-        data : (2, nobs) array
-            Returns and realized variance
-        instr_data : (ninstr, nobs) array
-            Instruments (no lags)
-        instrlag : int
-            Number of lags for the instruments
-        instr_choice : str {'const', 'var'}
-            Choice of instruments.
-                - 'const' : just a constant (unconditional moments)
-                - 'var' : lags of instrument data
-        aggh : int
-            Number of intervals (days) to aggregate over using rolling mean
         subset : str
             Which parameters to estimate. Belongs to ['all', 'vol']
-        exact_jacob : bool
-            Whether to use exactly derived Jacobian (True)
-            or numerical approximation (False)
 
         Returns
         -------
-        moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
-            Moment restrictions
-        dmoments : (nmoms, nparams) array
-            Average derivative of the moment restrictions
+        param : HestonParam instance
+            Model parameters
+        subset_sl : slice
+            Which moments to use
 
         """
+        param = HestonParam()
+        param.update(theta=theta, subset=subset)
         subset_sl = None
         if subset == 'vol':
             subset_sl = slice(2)
-
-        param = HestonParam()
-        param.update(theta=theta, subset=subset)
-
-        ret, rvar = data
-        lag = 2
-        self.aggh = aggh
-        # self.realized_depvar(data): (nobs, 3*nmoms)
-        depvar = self.realized_depvar(data)[lag:]
-        # (nobs - lag, 4) array
-        error = depvar.dot(self.mat_a(param, subset_sl).T) \
-            - self.realized_const(param, aggh, subset_sl)
-
-        # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
-        # (nobs-lag, ninstr*instrlag+1)
-        if instr_choice == 'const':
-            instr = self.instruments(nobs=rvar.size)[:-lag]
-        else:
-            instr = self.instruments(instr_data, instrlag=instrlag)[:-lag]
-        # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
-        moms = columnwise_prod(error, instr)
-
-        return moms, None
+        return param, subset_sl
 
 
 if __name__ == '__main__':
