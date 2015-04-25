@@ -59,12 +59,12 @@ class CentTendParam(object):
 
         """
         self.riskfree = riskfree
-        self.lmbd = lmbd
         self.mean_v = mean_v
         self.kappa_s = kappa_s
         self.kappa_v = kappa_v
         self.eta_s = eta_s
         self.eta_v = eta_v
+        self.lmbd = lmbd
         self.rho = rho
         self.update_ajd()
         if not self.is_valid():
@@ -96,21 +96,34 @@ class CentTendParam(object):
         """
         return 2 * self.kappa_v * self.mean_v - self.eta_v**2 > 0
 
-    def update(self, theta):
+    def update(self, theta, subset='all'):
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         """
-        [self.lmbd, self.mean_v, self.kappa_s, self.kappa_v,
-         self.eta_s, self.eta_v, self.rho] = theta
+        if subset == 'all':
+            [self.mean_v, self.kappa_s, self.kappa_v,
+                 self.eta_s, self.eta_v, self.lmbd, self.rho] = theta
+        elif subset == 'vol':
+            [self.mean_v, self.kappa_s, self.kappa_v,
+                 self.eta_s, self.eta_v] = theta
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
         self.update_ajd()
 
-    def get_theta(self):
+    def get_theta(self, subset='all'):
         """Return vector of model parameters.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         Returns
         -------
@@ -118,20 +131,37 @@ class CentTendParam(object):
             Parameter vector
 
         """
-        return np.array([self.lmbd, self.mean_v, self.kappa_s, self.kappa_v,
-                         self.eta_s, self.eta_v, self.rho])
+        theta = np.array([self.mean_v, self.kappa_s, self.kappa_v,
+                          self.eta_s, self.eta_v, self.lmbd, self.rho])
+        if subset == 'all':
+            return theta
+        elif subset == 'vol':
+            return theta[:5]
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
 
-    def get_bounds(self):
+
+    def get_bounds(self, subset='all'):
         """Bounds on parameters.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
 
         Returns
         -------
         sequence of (min, max) tuples
 
         """
-        lb = [None, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, -1]
+        lb = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, None, -1]
         ub = [None, None, None, None, None, None, 1]
-        return list(zip(lb, ub))
+        if subset == 'all':
+            return list(zip(lb, ub))
+        elif subset == 'vol':
+            return list(zip(lb, ub))[:5]
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
 
 
 if __name__ == '__main__':

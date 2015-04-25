@@ -119,11 +119,12 @@ class HestonParam(object):
             Parameter vector
 
         """
+        theta = np.array([self.mean_v, self.kappa, self.eta,
+                          self.lmbd, self.rho])
         if subset == 'all':
-            return np.array([self.mean_v, self.kappa, self.eta,
-                             self.lmbd, self.rho])
+            return theta
         elif subset == 'vol':
-            return np.array([self.mean_v, self.kappa, self.eta])
+            return theta[:3]
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
 

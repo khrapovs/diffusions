@@ -180,7 +180,7 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
-        theta = np.array([lmbd, mean_v, kappa_s, kappa_v, eta_s, eta_v, rho])
+        theta = np.array([mean_v, kappa_s, kappa_v, eta_s, eta_v, lmbd, rho])
         np.testing.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(7)
@@ -202,6 +202,16 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_k1, mat_k1)
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
+
+        theta = np.arange(7)
+        param.update(theta=theta)
+        theta_vol = np.ones(5) * 2
+        param.update(theta=theta_vol, subset='vol')
+        theta[:5] = theta_vol
+        np.testing.assert_array_equal(param.get_theta(), theta)
+
+        self.assertEqual(len(param.get_bounds()), 7)
+        self.assertEqual(len(param.get_bounds(subset='vol')), 5)
 
 
 if __name__ == '__main__':
