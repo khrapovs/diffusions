@@ -64,7 +64,6 @@ class Heston(SDE):
         Returns
         -------
         float
-            Coefficient A_h
 
         """
         return np.exp(-param.kappa * aggh)
@@ -82,7 +81,6 @@ class Heston(SDE):
         Returns
         -------
         float
-            Coefficient C_h
 
         """
         return param.mean_v * (1 - self.coef_big_a(param, aggh))
@@ -100,7 +98,6 @@ class Heston(SDE):
         Returns
         -------
         float
-            Coefficient a_h
 
         """
         return (1 - self.coef_big_a(param, aggh)) / param.kappa / aggh
@@ -110,15 +107,14 @@ class Heston(SDE):
 
         Parameters
         ----------
-        param : parameter instance
-            Model parameters
+        theta : (nparams, ) array
+            Parameter vector
         aggh : float
             Interval length
 
         Returns
         -------
         float
-            Coefficient c_h
 
         """
         return param.mean_v * (1 - self.coef_small_a(param, aggh))
