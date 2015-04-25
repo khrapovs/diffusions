@@ -50,85 +50,154 @@ class CentTend(SDE):
         """
         super(CentTend, self).__init__(theta_true)
 
-    def coef_big_a(self, theta, aggh):
-        """Coefficient A_h in exact discretization of volatility.
+    def coef_big_as(self, param, aggh):
+        """Coefficient A^\sigma_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
         Returns
         -------
         float
-            Coefficient A_h
+            Coefficient A^\sigma_h
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return np.exp(-param.kappa * aggh)
+        return np.exp(-param.kappa_s * aggh)
 
-    def coef_big_c(self, theta, aggh):
-        """Coefficient C_h in exact discretization of volatility.
+    def coef_big_bs(self, param, aggh):
+        """Coefficient B^\sigma_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
         Returns
         -------
         float
-            Coefficient C_h
+            Coefficient B^\sigma_h
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return param.mean_v * (1 - self.coef_big_a(theta, aggh))
+        return param.kappa_s / (param.kappa_s - param.kappa_y) \
+            * (self.coef_big_ay(param, aggh) - self.coef_big_as(param, aggh))
 
-    def coef_small_a(self, theta, aggh):
-        """Coefficient a_h in exact discretization of volatility.
+    def coef_big_cs(self, param, aggh):
+        """Coefficient C^s_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
         Returns
         -------
         float
-            Coefficient a_h
+            Coefficient C^s_h
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return (1 - self.coef_big_a(theta, aggh)) / param.kappa / aggh
+        return param.mean_v * (1 - self.coef_big_as(param, aggh)
+            - self.coef_big_bs(param, aggh))
 
-    def coef_small_c(self, theta, aggh):
-        """Coefficient c_h in exact discretization of volatility.
+    def coef_big_av(self, param, aggh):
+        """Coefficient A^v_h in exact discretization of volatility.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
         Returns
         -------
         float
-            Coefficient c_h
+            Coefficient A^v_h
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return param.mean_v * (1 - self.coef_small_a(theta, aggh))
+        return np.exp(-param.kappa_v * aggh)
+
+    def coef_big_cy(self, param, aggh):
+        """Coefficient C^y_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+            Coefficient C^y_h
+
+        """
+        return param.mean_v * (1 - self.coef_big_ay(param, aggh))
+
+    def coef_small_as(self, param, aggh):
+        """Coefficient a^s_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+            Coefficient a^s_h
+
+        """
+        return (1 - self.coef_big_a(param, aggh)) / param.kappa_s / aggh
+
+    def coef_small_bs(self, param, aggh):
+        """Coefficient b^s_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+            Coefficient b^s_h
+
+        """
+        return param.kappa_s / (param.kappa_s - param.kappa_y) \
+            * (self.coef_small_ay(param, aggh)
+                - self.coef_small_as(param, aggh))
+
+    def coef_small_cs(self, param, aggh):
+        """Coefficient c^s_h in exact discretization of volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+            Coefficient c^s_h
+
+        """
+        return param.mean_v * (1 - self.coef_small_as(param, aggh)
+            - self.coef_small_bs(param, aggh))
 
     def depvar_unc_mean(self, theta, aggh):
         """Array of the left-hand side variables
@@ -371,6 +440,89 @@ class CentTend(SDE):
         moms = columnwise_prod(error, instr)
 
         return moms, None
+
+
+def unc_mean_ct2(param):
+    """Unconditional second moment of CT, E[y_t**4].
+
+    Parameters
+    ----------
+    param : parameter instance
+        Model parameters
+
+    Returns
+    -------
+    float
+
+    """
+    return param.mean_v * param.eta_v**2 / param.kappa_v / 2
+
+
+def unc_mean_sigma2(param):
+    """Unconditional second moment of volatility, E[\sigma_t**4].
+
+    Parameters
+    ----------
+    param : parameter instance
+        Model parameters
+
+    Returns
+    -------
+    float
+
+    """
+    return unc_mean_ct2(param) * param.kappa_s \
+        / (param.kappa_s + param.kappa_y) \
+        + param.mean_v * param.eta_s**2 / param.kappa_s / 2
+
+
+def unc_var_ct(param):
+    """Unconditional variance of CT, V[y_t**2].
+
+    Parameters
+    ----------
+    param : parameter instance
+        Model parameters
+
+    Returns
+    -------
+    float
+
+    """
+    return param.mean_v**2 + unc_mean_ct2(param)
+
+
+def unc_var_sigma(param):
+    """Unconditional variance of volatility, V[\sigma_t**2].
+
+    Parameters
+    ----------
+    param : parameter instance
+        Model parameters
+
+    Returns
+    -------
+    float
+
+    """
+    return param.mean_v**2 + unc_mean_sigma2(param)
+
+
+def unc_var_error(param):
+    """Unconditional variance of aggregated volatility error,
+    :math:`V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]`
+
+    Parameters
+    ----------
+    param : parameter instance
+        Model parameters
+
+    Returns
+    -------
+    float
+
+    """
+    return param.mean_v**2 + unc_mean_sigma2(param)
 
 
 if __name__ == '__main__':
