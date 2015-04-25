@@ -147,11 +147,7 @@ type "mailto:"
 \end_layout
 
 \begin_layout Section
-Introduction
-\end_layout
-
-\begin_layout Subsection
-Affine Diffusion
+Affine Diffusions
 \end_layout
 
 \begin_layout Standard
@@ -1097,7 +1093,7 @@ E_{t-2h}\left[\left(\begin{array}{cccc}
 \left(1-A_{h}L\right)L & \cdot & \cdot & \cdot\\
 \cdot & \left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right) & \cdot & \cdot\\
 \left(\frac{1}{2}-\lambda_{r}\right)L^{2} & \cdot & L^{2} & \cdot\\
-\cdot & \left(1-A_{h}L\right)\left(\frac{1}{2}-\lambda_{r}\right)L & \cdot & \left(1-A_{h}L\right)L
+\cdot & \left(\frac{1}{2}-\lambda_{r}\right)\left(1-A_{h}L\right)L & \cdot & \left(1-A_{h}L\right)L
 \end{array}\right)\left(\begin{array}{c}
 \mathcal{V}_{t,H}\\
 \mathcal{V}_{t,H}^{2}\\
@@ -1353,9 +1349,9 @@ reference "sec:Integrated-moments-CT"
 ):
 \begin_inset Formula 
 \begin{align*}
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{1}=0,\\
-E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right] & =C_{2},\\
-E_{t}\left[\left(1-A_{2h}^{\sigma}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right] & =C_{3},\\
+E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right] & =C_{1},\\
+E_{t}\left[\left(1-A_{2h}^{\sigma}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right] & =C_{2},\\
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right] & =C_{3}=0,\\
 E_{t}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\left(\tilde{r}_{t+h,H}\mathcal{V}_{t+h,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t+h,H}^{2}\right)\right] & =C_{4},
 \end{align*}
 
@@ -1365,14 +1361,14 @@ or in matrix notation
 \begin_inset Formula 
 \[
 E_{t-5h}\left[\left(\begin{array}{cccc}
-L^{5} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{5} & \cdot & \cdot\\
-\cdot & A_{2,2} & \cdot & \cdot\\
-\cdot & \cdot & A_{3,3} & \cdot\\
-\cdot & \cdot & A_{4,3} & A_{4,4}
+M_{1}L^{3} & \cdot & \cdot & \cdot\\
+\cdot & M_{2} & \cdot & \cdot\\
+\left(\frac{1}{2}-\lambda_{r}\right)L^{5} & \cdot & L^{5} & \cdot\\
+\cdot & \left(\frac{1}{2}-\lambda_{r}\right)M_{1} & \cdot & M_{1}L^{3}
 \end{array}\right)\left(\begin{array}{c}
-\tilde{r}_{t,H}\\
 \mathcal{V}_{t,H}\\
 \mathcal{V}_{t,H}^{2}\\
+\tilde{r}_{t,H}\\
 \tilde{r}_{t,H}\mathcal{V}_{t,H}
 \end{array}\right)\right]=C,
 \]
@@ -1382,9 +1378,8 @@ L^{5} & -\left(\lambda_{r}-\frac{1}{2}\right)L^{5} & \cdot & \cdot\\
 where
 \begin_inset Formula 
 \begin{eqnarray*}
-A_{3,3} & = & \left(1-A_{2h}^{\sigma}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right),\\
-A_{4,3} & = & -\left(\lambda-\frac{1}{2}\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)L^{3},\\
-A_{4,4}=A_{2,2} & = & \left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)L^{3}.
+M_{1} & = & \left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right),\\
+M_{2} & = & M_{1}\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{2h}^{y}L\right)\left(1-A_{2h}^{\sigma}L\right),
 \end{eqnarray*}
 
 \end_inset
@@ -1401,10 +1396,14 @@ f=(1-a1*x)*(1-a2*x)*(1-a1**2*x)*(1-a2**2*x)*(1-a1*a2*x)
 sp.Poly(f,x).all_coeffs()
 \end_layout
 
+\begin_layout Plain Layout
+np.sum([np.prod(np.arange(5)[[x]]) for x in combinations(range(5),2)])
+\end_layout
+
 \end_inset
 
 Define the data vector as 
-\begin_inset Formula $X_{t,H}=\left[\tilde{r}_{t,H},\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
+\begin_inset Formula $X_{t,H}=\left[\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
 \end_inset
 
 .
@@ -1451,10 +1450,10 @@ C=\left(A_{0}+A_{1}+A_{2}+A_{3}+A_{4}+A_{5}\right)E\left[X_{t,H}\right],
 and
 \begin_inset Formula 
 \begin{eqnarray*}
-E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
 E\left[\mathcal{V}_{t,H}\right] & = & \mu,\\
 E\left[\mathcal{V}_{t,H}^{2}\right] & = & \mu^{2}+\left(a_{H}^{\sigma}\right)^{2}V\left[\sigma_{t}^{2}\right]+\left(b_{H}^{\sigma}\right)^{2}V\left[y_{t}^{2}\right]+V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right],\\
-E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\frac{c_{H}}{H}+\left(\lambda_{r}-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+E\left[\tilde{r}_{t,H}\right] & = & \left(\lambda_{r}-\frac{1}{2}\right)\mu,\\
+E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\mu\eta_{\sigma}}{\kappa_{\sigma}}\frac{1-a_{H}^{\sigma}}{H}+\left(\lambda_{r}-\frac{1}{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
 \end{eqnarray*}
 
 \end_inset
@@ -1482,74 +1481,6 @@ name "sec:Integrated-moments-Heston"
 \end_inset
 
 Integrated moments for Heston model
-\end_layout
-
-\begin_layout Standard
-The return equation can be integrated on 
-\begin_inset Formula $\left[t,t+H\right]$
-\end_inset
-
- to obtain
-\begin_inset Formula 
-\[
-\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
-\]
-
-\end_inset
-
-The return first conditional moment is
-\begin_inset Formula 
-\[
-E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
-\]
-
-\end_inset
-
-or
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\backslash
-frac{
-\backslash
-kappa_{
-\backslash
-sigma}}{
-\backslash
-kappa_{
-\backslash
-sigma}-
-\backslash
-kappa_{y}}
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
-
-\begin_inset Formula 
-\[
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{1}=0.
-\]
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1616,7 +1547,7 @@ Given the above definitions it is also not hard to guess that
  is autoregressive:
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\sigma_{t+2h}^{4}\right]=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\sigma_{t}^{4}\right]
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\sigma_{t+2h}^{4}\right]=C_{1}=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\sigma_{t}^{4}\right]
 \]
 
 \end_inset
@@ -1783,7 +1714,7 @@ The error term may be simplified:
 From this we can guess that
 \begin_inset Formula 
 \[
-E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right]=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
+E_{t}\left[\left(1-A_{h}L\right)\left(1-A_{h}^{2}L\right)\mathcal{V}_{t+2h,H}^{2}\right]=C_{2}=\left(1-A_{h}\right)\left(1-A_{h}^{2}\right)E\left[\mathcal{V}_{t,H}^{2}\right].
 \]
 
 \end_inset
@@ -1907,6 +1838,74 @@ Multiply this by
 \end_layout
 
 \begin_layout Standard
+The return equation can be integrated on 
+\begin_inset Formula $\left[t,t+H\right]$
+\end_inset
+
+ to obtain
+\begin_inset Formula 
+\[
+\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
+\]
+
+\end_inset
+
+The return first conditional moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
+\]
+
+\end_inset
+
+or
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\backslash
+frac{
+\backslash
+kappa_{
+\backslash
+sigma}}{
+\backslash
+kappa_{
+\backslash
+sigma}-
+\backslash
+kappa_{y}}
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{3}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Now multiply return by integrated volatility and take the expectation:
 \begin_inset Formula 
 \[
@@ -2015,38 +2014,6 @@ name "sec:Integrated-moments-CT"
 \end_inset
 
 Integrated moments for Central Tendency model
-\end_layout
-
-\begin_layout Standard
-The return equation can be integrated on 
-\begin_inset Formula $\left[t,t+H\right]$
-\end_inset
-
- to obtain
-\begin_inset Formula 
-\[
-\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
-\]
-
-\end_inset
-
-The return first conditional moment is
-\begin_inset Formula 
-\[
-E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
-\]
-
-\end_inset
-
-or
-\begin_inset Formula 
-\[
-E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{1}=0.
-\]
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -2205,7 +2172,7 @@ Multiply the first equation by
 , and make a substitution from the second equation to obtain
 \begin_inset Formula 
 \[
-E_{t}^{P}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right]=C_{2},
+E_{t}^{P}\left[\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+2h,H}\right]=C_{1},
 \]
 
 \end_inset
@@ -2313,7 +2280,7 @@ Clearly, the second moment of
  Hence,
 \begin_inset Formula 
 \[
-E_{t}^{P}\left[\left(1-\left(A_{h}^{\sigma}\right)^{2}L\right)\left(1-\left(A_{h}^{y}\right)^{2}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right]=C_{3},
+E_{t}^{P}\left[\left(1-\left(A_{h}^{\sigma}\right)^{2}L\right)\left(1-\left(A_{h}^{y}\right)^{2}L\right)\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{h}^{y}L\right)\left(1-A_{h}^{\sigma}L\right)\mathcal{V}_{t+5h,H}^{2}\right]=C_{2},
 \]
 
 \end_inset
@@ -2399,6 +2366,38 @@ Hence,
  & +\left(\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\kappa_{y}}\right)^{2}\frac{\mu\eta_{y}^{2}}{H}\left[\frac{1}{\kappa_{y}^{2}}\left(1-2a_{H}^{y}+a_{2H}^{y}\right)+\frac{1}{\kappa_{\sigma}^{2}}\left(1-2a_{H}^{\sigma}+a_{2H}^{\sigma}\right)\right.\\
  & \left.-\frac{2}{\kappa_{y}\kappa_{\sigma}}\left(1-a_{H}^{y}-a_{H}^{\sigma}+\frac{1}{\left(\kappa_{y}+\kappa_{\sigma}\right)H}A_{H}^{\sigma}A_{H}^{y}\right)\right].
 \end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The return equation can be integrated on 
+\begin_inset Formula $\left[t,t+H\right]$
+\end_inset
+
+ to obtain
+\begin_inset Formula 
+\[
+\tilde{r}_{t,h}\equiv\frac{1}{H}\int_{t}^{t+H}dp_{s}-r=\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}+\frac{1}{H}\int_{t}^{t+H}\sigma_{s}dW_{s}^{r},
+\]
+
+\end_inset
+
+The return first conditional moment is
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}\right]=\left(\lambda-\frac{1}{2}\right)E_{t}\left[\mathcal{V}_{t,H}\right],
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+E_{t}\left[\tilde{r}_{t,H}-\left(\lambda_{r}-\frac{1}{2}\right)\mathcal{V}_{t,H}\right]=C_{3}=0.
 \]
 
 \end_inset

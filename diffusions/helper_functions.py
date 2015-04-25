@@ -9,10 +9,11 @@ from __future__ import print_function, division
 import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
+import itertools as it
 
 __all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
            'plot_trajectories', 'plot_final_distr', 'plot_realized',
-           'columnwise_prod', 'rolling_window']
+           'columnwise_prod', 'rolling_window', 'poly_coef']
 
 
 def ajd_drift(state, theta):
@@ -168,20 +169,22 @@ def columnwise_prod(left, right):
 
     Example
     -------
-    >>> left = np.arange(6).reshape((3,2))
-    >>> left
-    array([[0, 1],
-           [2, 3],
-           [4, 5]])
-    >>> right = np.arange(9).reshape((3,3))
-    >>> right
-    array([[0, 1, 2],
-           [3, 4, 5],
-           [6, 7, 8]])
-    >>> columnwise_prod(left, right)
-    array([[ 0,  0,  0,  1,  0,  2],
-           [ 6,  9,  8, 12, 10, 15],
-           [24, 30, 28, 35, 32, 40]])
+    .. doctest::
+
+        >>> left = np.arange(6).reshape((3,2))
+        >>> left
+        array([[0, 1],
+               [2, 3],
+               [4, 5]])
+        >>> right = np.arange(9).reshape((3,3))
+        >>> right
+        array([[0, 1, 2],
+               [3, 4, 5],
+               [6, 7, 8]])
+        >>> columnwise_prod(left, right)
+        array([[ 0,  0,  0,  1,  0,  2],
+               [ 6,  9,  8, 12, 10, 15],
+               [24, 30, 28, 35, 32, 40]])
 
     """
     prod = left[:, np.newaxis, :] * right[:, :, np.newaxis]
@@ -225,3 +228,43 @@ def rolling_window(fun, mat, window=1):
     strides = mat.strides + (mat.strides[-1],)
     mat = np.lib.stride_tricks.as_strided(mat, shape=shape, strides=strides)
     return np.apply_along_axis(fun, -1, mat)
+
+
+def poly_coef(roots):
+    """Ploynomial coefficients.
+
+    Parameters
+    ----------
+    roots : list of floats
+        Roots of the polynomial, i.e. [a0, a1] for (1 - a0 * x) * (1 - a1 * x)
+
+    Returns
+    -------
+    coefs : list of floats
+        List of all polynomial coefficients, i.e. [p0, p1, p2]
+        with p0 = 1, p1 = - a0 - a1, p2 = a0*a1
+
+    Examples
+    --------
+    .. doctest::
+
+        >>> poly_coef([2, 3])
+        [1, -5, 6]
+
+        >>> poly_coef([2, 3, 4])
+        [1, -9, 26, -24]
+
+    """
+    roots = np.array(roots)
+    nroots = roots.size
+    coefs = [1]
+    for power in range(nroots):
+        comb = it.combinations(range(nroots), power+1)
+        temp = [np.prod(roots[[x]]) for x in comb]
+        coefs.append((-1)**(power+1) * np.sum(temp))
+    return coefs
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

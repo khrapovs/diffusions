@@ -9,7 +9,7 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import columnwise_prod, rolling_window, nice_errors
+from diffusions import columnwise_prod, rolling_window, nice_errors, poly_coef
 
 
 class HelperFunctionTestCase(ut.TestCase):
@@ -53,6 +53,20 @@ class HelperFunctionTestCase(ut.TestCase):
         np.testing.assert_almost_equal(treated_errors.mean(sim), 0)
         np.testing.assert_almost_equal(treated_errors.std(sim),
                                        np.ones((nobs, nvars)))
+
+    def test_poly_coef(self):
+        """Test polynomial coefficients."""
+
+        roots = [2, 3]
+        coefs = [1, -np.sum(roots), np.prod(roots)]
+        self.assertEqual(poly_coef(roots), coefs)
+
+        roots = np.array([2, 3, 4])
+
+        coefs = [1, -np.sum(roots), 0, -np.prod(roots)]
+        coefs[2] = np.prod(roots[:2]) + np.prod(roots[1:]) \
+            + np.prod(roots[[0, 2]])
+        self.assertEqual(poly_coef(roots), coefs)
 
 
 if __name__ == '__main__':

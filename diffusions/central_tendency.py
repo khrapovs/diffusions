@@ -22,136 +22,14 @@ Also let :math:`R\left(Y_{t}\right)=r`.
 """
 from __future__ import print_function, division
 
-import warnings
-
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
-import numdifftools as nd
 
 from .generic_model import SDE
 from .helper_functions import columnwise_prod
+from .central_tendency_param import CentTendParam
 
-__all__ = ['CentTend', 'CentTendParam']
-
-
-class CentTendParam(object):
-
-    """Parameter storage for CT model.
-
-    Attributes
-    ----------
-    mean_r : float
-        Instantaneous rate of return
-    mean_v : float
-        Mean of the volatility process
-    kappa_s : float
-        Mean reversion speed for volatility
-    kappa_v : float
-        Mean reversion speed for central tendency
-    eta_s : float
-        Instantaneous standard deviation of volatility
-    eta_v : float
-        Instantaneous standard deviation of central tendency
-    rho : float
-        Correlation
-
-    """
-
-    def __init__(self, riskfree=.0, lmbd = .1,
-                 mean_v=.5, kappa_s=1.5, kappa_v=.5,
-                 eta_s=.1, eta_v=.01, rho=-.5):
-        """Initialize class.
-
-        Parameters
-        ----------
-        riskfree : float
-            Risk-free rate of return
-        lmbd : float
-            Equity risk premium
-        mean_v : float
-            Mean of the volatility process
-        kappa : float
-            Mean reversion speed
-        eta : float
-            Instantaneous standard deviation of volatility
-        rho : float
-            Correlation
-
-        """
-        self.riskfree = riskfree
-        self.lmbd = lmbd
-        self.mean_v = mean_v
-        self.kappa_s = kappa_s
-        self.kappa_v = kappa_v
-        self.eta_s = eta_s
-        self.eta_v = eta_v
-        self.rho = rho
-        self.update_ajd()
-        if not self.is_valid():
-            warnings.warn('Feller condition is violated!')
-
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
-        # AJD parameters
-        self.mat_k0 = [self.riskfree, 0., self.kappa_v * self.mean_v]
-        self.mat_k1 = [[0, self.lmbd - .5, 0],
-                       [0, -self.kappa_s, self.kappa_s],
-                       [0, 0, -self.kappa_v]]
-        self.mat_h0 = np.zeros((3, 3))
-        self.mat_h1 = np.zeros((3, 3, 3))
-        self.mat_h1[1, 0] = [1, self.eta_s*self.rho, 0]
-        self.mat_h1[1, 1] = [self.eta_s*self.rho, self.eta_s**2, 0]
-        self.mat_h1[2, 2, 2] = self.eta_v**2
-
-    def is_valid(self):
-        """Check Feller condition.
-
-        Returns
-        -------
-        bool
-            True for valid parameters, False for invalid
-
-        """
-        return 2 * self.kappa_v * self.mean_v - self.eta_v**2 > 0
-
-    def update(self, theta):
-        """Update attributes from parameter vector.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        """
-        [self.lmbd, self.mean_v, self.kappa_s, self.kappa_v,
-         self.eta_s, self.eta_v, self.rho] = theta
-        self.update_ajd()
-
-    def get_theta(self):
-        """Return vector of model parameters.
-
-        Returns
-        -------
-        (nparams, ) array
-            Parameter vector
-
-        """
-        return np.array([self.lmbd, self.mean_v, self.kappa_s, self.kappa_v,
-                         self.eta_s, self.eta_v, self.rho])
-
-    def get_bounds(self):
-        """Bounds on parameters.
-
-        Returns
-        -------
-        sequence of (min, max) tuples
-
-        """
-        lb = [None, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, -1]
-        ub = [None, None, None, None, None, None, 1]
-        return list(zip(lb, ub))
+__all__ = ['CentTend']
 
 
 class CentTend(SDE):
@@ -399,51 +277,6 @@ class CentTend(SDE):
                  self.mat_a2(theta, 1))
         return np.hstack(mat_a)
 
-    def diff_mat_a(self, theta, aggh):
-        """Derivative of Matrix A in integrated moments.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-        aggh : float
-            Interval length
-
-        Returns
-        -------
-        list of nmoms (3*nmoms, nparams) arrays
-            Matrix A
-
-        """
-        param = CentTendParam()
-        param.update(theta=theta)
-        diff = []
-        for i in range(self.mat_a(theta, aggh).shape[0]):
-            # (3*nmoms, nparams)
-            with np.errstate(divide='ignore'):
-                fun = lambda x: self.mat_a(x, aggh)[i]
-                diff.append(nd.Jacobian(fun)(theta))
-        return diff
-
-    def drealized_const(self, theta, aggh):
-        """Intercept in the realized moment conditions.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-        aggh : float
-            Interval length
-
-        Returns
-        -------
-        (nmoms, nparams) array
-            Intercept
-
-        """
-        with np.errstate(divide='ignore'):
-            return nd.Jacobian(lambda x: self.realized_const(x, aggh))(theta)
-
     def realized_depvar(self, data):
         """Array of the left-hand side variables
         in realized moment conditions.
@@ -537,21 +370,7 @@ class CentTend(SDE):
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)
 
-        if exact_jacob:
-            # (nmoms, nparams)
-            dconst = self.drealized_const(theta, aggh)
-            dmat_a = self.diff_mat_a(theta, aggh)
-
-            dmoms = []
-            for i in range(instr.shape[1]):
-                for mat_a, mat_c in zip(dmat_a, dconst):
-                    left = (instr.T[i] * depvar.T).mean(1).dot(mat_a)
-                    dmoms.append(left - mat_c)
-            dmoms = np.vstack(dmoms)
-        else:
-            dmoms = None
-
-        return moms, dmoms
+        return moms, None
 
 
 if __name__ == '__main__':

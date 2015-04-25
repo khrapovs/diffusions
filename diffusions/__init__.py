@@ -9,3 +9,4 @@ from .cir_param import *
 from .heston import *
 from .heston_param import *
 from .central_tendency import *
+from .central_tendency_param import *

@@ -24,11 +24,11 @@ def try_simulation():
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
-    heston = Heston(theta_true)
-    print(theta_true.is_valid())
+    heston = Heston(param_true)
+    print(param_true.is_valid())
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 3
     npoints = int(nperiods / interval)
@@ -48,10 +48,10 @@ def try_marginal():
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
-    heston = Heston(theta_true)
+    heston = Heston(param_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, .1, 10, 20
     npoints = int(nperiods / interval)
@@ -72,10 +72,10 @@ def try_sim_realized():
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
-    heston = Heston(theta_true)
+    heston = Heston(param_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/80, 1, 1
     aggh = 10
@@ -96,10 +96,10 @@ def try_integrated_gmm_single():
     lmbd = .3
     rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
-    heston = Heston(theta_true)
+    heston = Heston(param_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 2000, 1/80, 1, 1
     aggh = 1
@@ -110,18 +110,17 @@ def try_integrated_gmm_single():
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    theta_start = theta_true
-    theta_start.update(theta_true.get_theta()/2)
+    param_start = param_true
+    param_start.update(param_true.get_theta()/2)
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
 
     time_start = time.time()
-    subset = 'vol'
-    res = heston.integrated_gmm(theta_start.get_theta(subset=subset),
-                                data=data, instrlag=2,
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
-                                use_jacob=True, exact_jacob=False,
-                                subset=subset, iter=3,
-                                bounds=theta_start.get_bounds(subset=subset))
+                                subset=subset, iter=3, bounds=bounds)
     res.print_results()
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
@@ -135,10 +134,10 @@ def try_integrated_gmm():
     lmbd = .3
     rho = -.5
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    theta_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
-    heston = Heston(theta_true)
+    heston = Heston(param_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 2000, 1/80, 1, 1
     aggh = 10
@@ -149,8 +148,11 @@ def try_integrated_gmm():
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    theta_start = theta_true
-    theta_start.update(theta_true.get_theta()/2)
+    param_start = param_true
+    param_start.update(param_true.get_theta()/2)
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
 
     tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
     for lag, method in tasks:
@@ -158,9 +160,7 @@ def try_integrated_gmm():
         res = heston.integrated_gmm(theta_start, data=data, instrlag=lag,
                                     instr_data=instr_data, aggh=aggh,
                                     instr_choice='var', method=method,
-                                    use_jacob=True, exact_jacob=False,
-                                    subset='vol',
-                                    bounds=theta_start.get_bounds(), iter=3)
+                                    subset='vol', bounds=bounds, iter=3)
         res.print_results()
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
