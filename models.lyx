@@ -362,14 +362,10 @@ RV_{t,h}-\frac{1}{h}\int_{t}^{t+h}\sigma^{2}\left(Y_{s},\theta_{0}\right)ds
 \end_layout
 
 \begin_layout Section
-Models
-\end_layout
-
-\begin_layout Subsection
 Geometric Brownian Motion
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The model
 \end_layout
 
@@ -400,7 +396,7 @@ d\log S_{t}=\left(\mu-\frac{1}{2}\sigma^{2}\right)dt+\sigma dW_{t}.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 AJD representation
 \end_layout
 
@@ -416,7 +412,7 @@ K_{0}=\mu-\frac{1}{2}\sigma^{2},\quad K_{1}=0,\quad H_{0}=\sigma^{2},\quad H_{1}
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Exact solution
 \end_layout
 
@@ -440,7 +436,7 @@ r_{t,h}\sim N\left(\mu-\frac{1}{2}\sigma^{2},\sigma^{2}\right).
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Moments
 \end_layout
 
@@ -515,7 +511,7 @@ The derivative of the moment function with respect to model parameters
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Integrated moments
 \end_layout
 
@@ -555,11 +551,11 @@ Here we used the fact that
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Vasicek model
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The model
 \end_layout
 
@@ -575,7 +571,7 @@ dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\sigma dW_{t}.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 AJD representation
 \end_layout
 
@@ -591,7 +587,7 @@ K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=\sigma^{2},\quad H_{1}=0.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Exact solution
 \end_layout
 
@@ -645,11 +641,11 @@ r_{t+h}|r_{t}\sim N\left(r_{t}e^{-\kappa h}+\mu\left(1-e^{-\kappa h}\right),\sig
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Cox-Ingersoll-Ross model
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The model
 \end_layout
 
@@ -675,7 +671,7 @@ Feller condition for positivity of the process is
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 AJD representation
 \end_layout
 
@@ -691,7 +687,7 @@ K_{0}=\kappa\mu,\quad K_{1}=-\kappa,\quad H_{0}=0,\quad H_{1}=\sigma^{2}.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The solution
 \end_layout
 
@@ -769,7 +765,7 @@ which is a noncentral
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Moments
 \end_layout
 
@@ -796,11 +792,11 @@ since
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Heston model
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The model
 \end_layout
 
@@ -834,7 +830,7 @@ with
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 AJD representation
 \end_layout
 
@@ -917,9 +913,9 @@ H_{0}=\left[\begin{array}{cc}
 
 \begin_layout Standard
 \begin_inset Note Comment
-status collapsed
+status open
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Integrated moments (alternative)
 \end_layout
 
@@ -1043,7 +1039,7 @@ E_{t}\left[\left(h\mathcal{V}_{t,h}-E_{t}\left[h\mathcal{V}_{t,h}\right]\right)^
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Integrated moments
 \end_layout
 
@@ -1183,11 +1179,11 @@ E\left[\tilde{r}_{t,H}\mathcal{V}_{t,H}\right] & = & \rho\frac{\eta}{\kappa}\fra
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Central Tendency 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 The model
 \end_layout
 
@@ -1222,7 +1218,7 @@ with
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 AJD representation
 \end_layout
 
@@ -1314,7 +1310,7 @@ H_{0}=\left[\mathbf{0}_{3\times3}\right],\quad H_{1,1}=\left[\mathbf{0}_{3\times
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Integrated moments
 \end_layout
 
@@ -1364,7 +1360,7 @@ E_{t-5h}\left[\left(\begin{array}{cccc}
 M_{1}L^{3} & \cdot & \cdot & \cdot\\
 \cdot & M_{2} & \cdot & \cdot\\
 \left(\frac{1}{2}-\lambda_{r}\right)L^{5} & \cdot & L^{5} & \cdot\\
-\cdot & \left(\frac{1}{2}-\lambda_{r}\right)M_{1} & \cdot & M_{1}L^{3}
+\cdot & \left(\frac{1}{2}-\lambda_{r}\right)M_{1}L^{3} & \cdot & M_{1}L^{3}
 \end{array}\right)\left(\begin{array}{c}
 \mathcal{V}_{t,H}\\
 \mathcal{V}_{t,H}^{2}\\
@@ -1418,12 +1414,93 @@ E_{t-5h}\left[A\left(L\right)X_{t,H}\right]=C,
 with the lag polynomial
 \begin_inset Formula 
 \[
-A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2}+A_{3}L^{3}+A_{4}L^{4}+A_{5}L^{5}.
+A\left(L\right)=A_{0}+A_{1}L+A_{2}L^{2}+A_{3}L^{3}+A_{4}L^{4}+A_{5}L^{5},
 \]
 
 \end_inset
 
-To make this one single matrix product, we can write
+and
+\begin_inset Formula 
+\[
+A_{0}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & m_{2,0} & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot
+\end{array}\right),\quad A_{1}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & m_{2,1} & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot
+\end{array}\right),\quad A_{2}=\left(\begin{array}{cccc}
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & m_{2,2} & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot
+\end{array}\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+A_{3}=\left(\begin{array}{cccc}
+m_{1,0} & \cdot & \cdot & \cdot\\
+\cdot & m_{2,3} & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \frac{1}{2}-\lambda_{r} & \cdot & m_{1,0}
+\end{array}\right),\quad A=\left(\begin{array}{cccc}
+m_{1,1} & \cdot & \cdot & \cdot\\
+\cdot & m_{2,4} & \cdot & \cdot\\
+\cdot & \cdot & \cdot & \cdot\\
+\cdot & \left(\frac{1}{2}-\lambda_{r}\right)m_{1,1} & \cdot & m_{1,1}
+\end{array}\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+A_{5}=\left(\begin{array}{cccc}
+m_{1,2} & \cdot & \cdot & \cdot\\
+\cdot & m_{2,5} & \cdot & \cdot\\
+\frac{1}{2}-\lambda_{r} & \cdot & 1 & \cdot\\
+\cdot & \left(\frac{1}{2}-\lambda_{r}\right)m_{1,2} & \cdot & m_{1,2}
+\end{array}\right).
+\]
+
+\end_inset
+
+Here
+\begin_inset Formula 
+\[
+m_{1,0}=0,\quad m_{1,1}=-\left(A_{h}^{y}+A_{h}^{\sigma}\right),\quad m_{1,2}=A_{h}^{y}A_{h}^{\sigma},
+\]
+
+\end_inset
+
+and for the second polynomial the coefficients are found accordingly to
+ the relation between polynomial roots and coefficients
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+See e.g.: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://math.stackexchange.com/questions/88917/relation-betwen-coefficients-and-roots-of-a-polynomial"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ To make this one single matrix product, we can write
 \begin_inset Formula 
 \[
 E_{t-2h}\left[\left(\begin{array}{cccccc}
@@ -1565,7 +1642,7 @@ E\left[\sigma_{t}^{4}\right]=V\left[\sigma_{t}^{2}\right]+\left(E\left[\sigma_{t
 
 \begin_layout Standard
 \begin_inset Note Comment
-status collapsed
+status open
 
 \begin_layout Plain Layout
 The conditional variance of the spot volatility is
@@ -1758,7 +1835,7 @@ E\left[\mathcal{V}_{t,H}^{2}\right]=V\left[\mathcal{V}_{t,H}\right]+\left(E\left
 
 \begin_layout Standard
 \begin_inset Note Comment
-status collapsed
+status open
 
 \begin_layout Plain Layout
 Taking conditional expectation of the integrated equation we obtain
@@ -1940,7 +2017,7 @@ The last term is
 
 \begin_layout Standard
 \begin_inset Note Comment
-status collapsed
+status open
 
 \begin_layout Plain Layout
 The last term can be modified as follows:
