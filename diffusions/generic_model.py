@@ -310,7 +310,7 @@ class SDE(object):
 
     def integrated_mom(self, theta, data=None, instr_data=None,
                        instr_choice='const', aggh=1, subset='all',
-                       instrlag=1., **kwargs):
+                       instrlag=1, **kwargs):
         """Integrated moment function.
 
         Parameters

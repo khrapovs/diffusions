@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+from statsmodels.tsa.tsatools import lagmat
 
 from diffusions import (columnwise_prod, rolling_window, nice_errors,
                         poly_coef, instruments)
@@ -72,18 +73,22 @@ class HelperFunctionTestCase(ut.TestCase):
     def test_instruments(self):
         """Test instruments."""
         nperiods = 10
-        data = np.ones((2, nperiods))
         instrlag = 2
 
-        instrmnts = instruments(data[0], instrlag=instrlag, nobs=nperiods,
-                                instr_choice='var')
-        ninstr = 1
-        shape = (nperiods, ninstr*instrlag + 1)
-        # Test the shape of instruments
-        self.assertEqual(instrmnts.shape, shape)
-
         instrmnts = instruments(nobs=nperiods)
-        ninstr = 0
+        np.testing.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
+
+        ninstr = 2
+        data = np.arange(nperiods*ninstr).reshape((ninstr, nperiods))
+        instrmnts = instruments(data=data, instr_choice='const')
+        np.testing.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
+
+        instrmnts = instruments(data=data, instr_choice='var')
+        expect = np.hstack([np.ones((nperiods, 1)), lagmat(data.T, maxlag=1)])
+        np.testing.assert_array_equal(instrmnts, expect)
+
+        instrmnts = instruments(data[0], instrlag=instrlag, instr_choice='var')
+        ninstr = 1
         shape = (nperiods, ninstr*instrlag + 1)
         # Test the shape of instruments
         self.assertEqual(instrmnts.shape, shape)

@@ -266,7 +266,7 @@ def poly_coef(roots):
     return coefs
 
 
-def instruments(data=None, instrlag=0, nobs=None, instr_choice='const'):
+def instruments(data=None, instrlag=1, nobs=None, instr_choice='const'):
     """Create an array of instruments.
 
     Parameters
@@ -287,12 +287,27 @@ def instruments(data=None, instrlag=0, nobs=None, instr_choice='const'):
     (nobs, ninstr*instrlag + 1) array
         Instrument array
 
+    Examples
+    --------
+    .. doctest::
+
+        >>> instruments(nobs=3)
+        array([[ 1.],
+               [ 1.],
+               [ 1.]])
+
     """
-    if nobs is None:
-        raise ValueError('Specify nobs!')
+    if data is not None:
+        if data.ndim == 1:
+            nobs = data.shape[0]
+        else:
+            nobs = data.shape[1]
 
     if instr_choice == 'const' or data is None:
+        if nobs is None:
+            raise ValueError('Specify nobs!')
         return np.ones((nobs, 1))
+
     else:
         instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
         width = ((0, 0), (1, 0))
