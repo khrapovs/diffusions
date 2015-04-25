@@ -54,11 +54,13 @@ class HestonParam(object):
 
         """
         self.riskfree = riskfree
+
         self.mean_v = mean_v
         self.kappa = kappa
         self.eta = eta
         self.lmbd = lmbd
         self.rho = rho
+
         self.update_ajd()
         if not self.is_valid():
             warnings.warn('Feller condition is violated!')

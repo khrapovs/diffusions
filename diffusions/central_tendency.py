@@ -21,6 +21,7 @@ Also let :math:`R\left(Y_{t}\right)=r`.
 
 """
 from __future__ import print_function, division
+from math import exp
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
@@ -199,14 +200,14 @@ class CentTend(SDE):
         return param.mean_v * (1 - self.coef_small_as(param, aggh)
             - self.coef_small_bs(param, aggh))
 
-    def depvar_unc_mean(self, theta, aggh):
+    def depvar_unc_mean(self, param, aggh):
         """Array of the left-hand side variables
         in realized moment conditions.
 
         Parameters
         ----------
-        data : (2, nobs) array
-            Returns and realized variance
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -216,32 +217,31 @@ class CentTend(SDE):
             Dependend variables
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
+        mean_vol = param.mean_v
+
+        mean_vol2 = self.coef_small_as(param, aggh)**2 * unc_var_sigma(param) \
+            + self.coef_small_bs(param, aggh)**2 * unc_var_ct(param) \
+            + unc_var_error()
 
         mean_ret = (param.lmbd - .5) * param.mean_v
 
-        mean_vol = param.mean_v
-
-        mean_vol2 = ((param.eta / param.kappa)**2
-                     * self.coef_small_c(theta, aggh) / aggh
-                     + param.mean_v**2)
-
         mean_cross = ((param.lmbd - .5) * mean_vol2
-                      + param.rho * param.eta / param.kappa
-                      * self.coef_small_c(theta, aggh) / aggh)
+                      + param.rho * param.mean_v * param.eta / param.kappa
+                      * (1 - self.coef_small_as(param, aggh)) / aggh)
 
         return np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
 
-    def realized_const(self, theta, aggh):
+    def realized_const(self, param, aggh, subset=None):
         """Intercept in the realized moment conditions.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -249,19 +249,18 @@ class CentTend(SDE):
             Intercept
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return ((self.mat_a0(theta, 1) + self.mat_a1(theta, 1)
-            + self.mat_a2(theta, 1))
-            * self.depvar_unc_mean(theta, aggh)).sum(1)
+        return ((self.mat_a0(param, 1)
+            + self.mat_a1(param, 1)
+            + self.mat_a2(param, 1))
+            * self.depvar_unc_mean(param, aggh)).sum(1)[subset].squeeze()
 
-    def mat_a0(self, theta, aggh):
+    def mat_a0(self, param, aggh):
         """Matrix A_0 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -271,17 +270,15 @@ class CentTend(SDE):
             Matrix A_0
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        return np.diag([0, 0, 1, 0]).astype(float)
+        return np.diag([0, 1, 0, 0]).astype(float)
 
-    def mat_a1(self, theta, aggh):
+    def mat_a1(self, param, aggh):
         """Matrix A_1 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -291,21 +288,19 @@ class CentTend(SDE):
             Matrix A_1
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        mat_a = np.diag([0, 1, 0, 1]).astype(float)
-        mat_a[2, 2] = -self.coef_big_a(theta, aggh) \
-            * (1 + self.coef_big_a(theta, 1))
-        mat_a[3, 2] = .5 - param.lmbd
+        mat_a = np.diag([1, 0, 0, 1]).astype(float)
+        mat_a[1, 1] = -self.coef_big_a(param, 1) \
+            * (1 + self.coef_big_a(param, 1))
+        mat_a[3, 1] = .5 - param.lmbd
         return mat_a
 
-    def mat_a2(self, theta, aggh):
+    def mat_a2(self, param, aggh):
         """Matrix A_2 in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
+        param : parameter instance
+            Model parameters
         aggh : float
             Interval length
 
@@ -315,24 +310,22 @@ class CentTend(SDE):
             Matrix A_2
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        mat_a = np.diag([1, -self.coef_big_a(theta, 1),
-                         self.coef_big_a(theta, 1)**3,
-                         -self.coef_big_a(theta, 1)])
-        mat_a[0, 1] = .5 - param.lmbd
-        mat_a[3, 2] = (param.lmbd - .5) * self.coef_big_a(theta, 1)
+        mat_a = np.diag([-self.coef_big_a(param, 1),
+                         self.coef_big_a(param, 1)**3, 1,
+                         -self.coef_big_a(param, 1)])
+        mat_a[2, 0] = .5 - param.lmbd
+        mat_a[3, 1] = (param.lmbd - .5) * self.coef_big_a(param, 1)
         return mat_a
 
-    def mat_a(self, theta, aggh):
+    def mat_a(self, param, subset=None):
         """Matrix A in integrated moments.
 
         Parameters
         ----------
-        theta : (nparams, ) array
-            Parameter vector
-        aggh : float
-            Interval length
+        param : parameter instance
+            Model parameters
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -340,13 +333,12 @@ class CentTend(SDE):
             Matrix A
 
         """
-        param = CentTendParam()
-        param.update(theta=theta)
-        mat_a = (self.mat_a0(theta, 1), self.mat_a1(theta, 1),
-                 self.mat_a2(theta, 1))
-        return np.hstack(mat_a)
+        mat_a = (self.mat_a0(param, 1),
+                 self.mat_a1(param, 1),
+                 self.mat_a2(param, 1))
+        return np.hstack(mat_a)[subset].squeeze()
 
-    def realized_depvar(self, data):
+    def realized_depvar(self, data, subset=None):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -354,6 +346,8 @@ class CentTend(SDE):
         ----------
         data : (2, nobs) array
             Returns and realized variance
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -362,84 +356,33 @@ class CentTend(SDE):
 
         """
         ret, rvar = data
-        var = np.vstack([ret, rvar, rvar**2, ret * rvar])
+        var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=2, original='in')
 
-    def instruments(self, data=None, instrlag=0, nobs=None):
-        """Create an array of instruments.
-
-        Parameters
-        ----------
-        data : (ninstr, nobs) array
-            Returns and realized variance
-        instrlag : int
-            Number of lags for the instruments
-
-        Returns
-        -------
-        (nobs, ninstr*instrlag + 1) array
-            Instrument array
-
-        """
-        if data is None:
-            return np.ones((nobs, 1))
-        else:
-            instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
-            width = ((0, 0), (1, 0))
-            return np.pad(instr, width, mode='constant', constant_values=1)
-
-    def integrated_mom(self, theta, data=None, instr_data=None,
-                       instr_choice='const', aggh=1,
-                       instrlag=1., exact_jacob=False, **kwargs):
-        """Integrated moment function.
+    def convert(self, theta, subset):
+        """Convert parameter vector to instance.
 
         Parameters
         ----------
         theta : array
             Model parameters
-        data : (2, nobs) array
-            Returns and realized variance
-        instr_data : (ninstr, nobs) array
-            Instruments (no lags)
-        instrlag : int
-            Number of lags for the instruments
-        instr_choice : str {'const', 'var'}
-            Choice of instruments.
-                - 'const' : just a constant (unconditional moments)
-                - 'var' : lags of instrument data
-        aggh : int
-            Number of intervals (days) to aggregate over using rolling mean
-        exact_jacob : bool
-            Whether to use exactly derived Jacobian (True)
-            or numerical approximation (False)
+        subset : str
+            Which parameters to estimate. Belongs to ['all', 'vol']
 
         Returns
         -------
-        moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
-            Moment restrictions
-        dmoments : (nmoms, nparams) array
-            Average derivative of the moment restrictions
+        param : HestonParam instance
+            Model parameters
+        subset_sl : slice
+            Which moments to use
 
         """
-        ret, rvar = data
-        lag = 2
-        self.aggh = aggh
-        # self.realized_depvar(data): (nobs, 3*nmoms)
-        depvar = self.realized_depvar(data)[lag:]
-        # (nobs - lag, 4) array
-        error = depvar.dot(self.mat_a(theta, aggh).T) \
-            - self.realized_const(theta, aggh)
-
-        # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
-        # (nobs-lag, ninstr*instrlag+1)
-        if instr_choice == 'const':
-            instr = self.instruments(nobs=rvar.size)[:-lag]
-        else:
-            instr = self.instruments(instr_data, instrlag=instrlag)[:-lag]
-        # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
-        moms = columnwise_prod(error, instr)
-
-        return moms, None
+        param = CentTendParam()
+        param.update(theta=theta, subset=subset)
+        subset_sl = None
+        if subset == 'vol':
+            subset_sl = slice(4)
+        return param, subset_sl
 
 
 def unc_mean_ct2(param):
@@ -508,21 +451,50 @@ def unc_var_sigma(param):
     return param.mean_v**2 + unc_mean_sigma2(param)
 
 
-def unc_var_error(param):
+def unc_var_error(param, aggh):
     """Unconditional variance of aggregated volatility error,
     :math:`V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]`
+
+    Derived symbolically in symbolic.py
 
     Parameters
     ----------
     param : parameter instance
         Model parameters
+    aggh : float
+        Interval length
 
     Returns
     -------
     float
 
     """
-    return param.mean_v**2 + unc_mean_sigma2(param)
+    mu = param.mu
+    kappa_s = param.kappa_s
+    kappa_y = param.kappa_y
+    eta_s = param.eta_s
+    eta_y = param.eta_y
+
+    return (mu*(eta_s**2*kappa_y**3*(kappa_s - kappa_y)**2*(kappa_s +
+        kappa_y)*(2*aggh*kappa_s*exp(2*aggh*kappa_s) - 3*exp(2*aggh*kappa_s) +
+        4*exp(aggh*kappa_s) - 1)*exp(2*aggh*(kappa_s + 2*kappa_y)) +
+        eta_y**2*kappa_s**2*(-kappa_s**4*exp(2*aggh*kappa_s) +
+        4*kappa_s**4*exp(aggh*(2*kappa_s + kappa_y)) -
+        kappa_s**3*kappa_y*exp(2*aggh*kappa_s) +
+        4*kappa_s**2*kappa_y**2*exp(aggh*(kappa_s + kappa_y)) -
+        4*kappa_s**2*kappa_y**2*exp(aggh*(kappa_s + 2*kappa_y)) -
+        4*kappa_s**2*kappa_y**2*exp(aggh*(2*kappa_s + kappa_y)) -
+        kappa_s*kappa_y**3*exp(2*aggh*kappa_y)
+        - kappa_y**4*exp(2*aggh*kappa_y) +
+        4*kappa_y**4*exp(aggh*(kappa_s + 2*kappa_y)) +
+        (2*aggh*kappa_s*kappa_y*(kappa_s**3 - kappa_s**2*kappa_y -
+        kappa_s*kappa_y**2 + kappa_y**3) + kappa_s**3*(kappa_s + kappa_y) -
+        4*kappa_s**2*kappa_y**2 + 4*kappa_s**2*(-kappa_s**2 + kappa_y**2) +
+        kappa_y**3*(kappa_s + kappa_y) + 4*kappa_y**2*(kappa_s**2 -
+        kappa_y**2))*exp(2*aggh*(kappa_s + kappa_y)))*exp(2*aggh*(kappa_s +
+        kappa_y)))*exp(aggh*(-4*kappa_s -
+        4*kappa_y))/(2*aggh**2*kappa_s**3*kappa_y**3*(kappa_s -
+        kappa_y)**2*(kappa_s + kappa_y)))
 
 
 if __name__ == '__main__':

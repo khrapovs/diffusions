@@ -23,6 +23,13 @@ big_bs = kappa_s / (kappa_s - kappa_y) * (big_ay - big_as)
 small_as = sp.integrate(big_as, (h, 0, h))
 small_bs = sp.integrate(big_bs, (h, 0, h)).simplify()
 
+small_ay = sp.integrate(big_ay, (h, 0, h))
+
+assert (small_bs - kappa_s / (kappa_s - kappa_y)
+    * (small_ay - small_as)).simplify() == 0
+
+small_bs = kappa_s / (kappa_s - kappa_y) * (small_ay - small_as)
+
 #%%
 temp1 = (big_as.subs(h, -u)**2).simplify()
 temp2 = (big_bs.subs(h, -u)**2).simplify()
@@ -35,8 +42,8 @@ var_sigma = var_sigma.simplify()
 print(var_sigma)
 
 #%%
-temp1 = (small_as.subs(h, h-u)**2).simplify()
-temp2 = (small_bs.subs(h, h-u)**2).simplify()
+temp1 = (small_as.subs(h, h-u)**2)
+temp2 = (small_bs.subs(h, h-u)**2)
 
 var_error = mu * (eta_s**2 * sp.integrate(temp1, (u, 0, h))
     + eta_y**2 * sp.integrate(temp2, (u, 0, h))) / h**2

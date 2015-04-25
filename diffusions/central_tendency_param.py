@@ -20,18 +20,20 @@ class CentTendParam(object):
 
     Attributes
     ----------
-    mean_r : float
-        Instantaneous rate of return
+    riskfree : float
+        Risk-free rate of return
     mean_v : float
         Mean of the volatility process
     kappa_s : float
-        Mean reversion speed for volatility
-    kappa_v : float
-        Mean reversion speed for central tendency
+        Mean reversion speed of volatility
+    kappa_y : float
+        Mean reversion speed of central tendency
     eta_s : float
         Instantaneous standard deviation of volatility
-    eta_v : float
+    eta_s : float
         Instantaneous standard deviation of central tendency
+    lmbd : float
+        Equity risk premium
     rho : float
         Correlation
 
@@ -46,19 +48,24 @@ class CentTendParam(object):
         ----------
         riskfree : float
             Risk-free rate of return
-        lmbd : float
-            Equity risk premium
         mean_v : float
             Mean of the volatility process
-        kappa : float
-            Mean reversion speed
-        eta : float
+        kappa_s : float
+            Mean reversion speed of volatility
+        kappa_y : float
+            Mean reversion speed of central tendency
+        eta_s : float
             Instantaneous standard deviation of volatility
+        eta_s : float
+            Instantaneous standard deviation of central tendency
+        lmbd : float
+            Equity risk premium
         rho : float
             Correlation
 
         """
         self.riskfree = riskfree
+
         self.mean_v = mean_v
         self.kappa_s = kappa_s
         self.kappa_v = kappa_v
@@ -66,6 +73,7 @@ class CentTendParam(object):
         self.eta_v = eta_v
         self.lmbd = lmbd
         self.rho = rho
+
         self.update_ajd()
         if not self.is_valid():
             warnings.warn('Feller condition is violated!')
