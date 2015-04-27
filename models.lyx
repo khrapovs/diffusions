@@ -1450,7 +1450,7 @@ m_{1,0} & \cdot & \cdot & \cdot\\
 \cdot & m_{2,3} & \cdot & \cdot\\
 \cdot & \cdot & \cdot & \cdot\\
 \cdot & \frac{1}{2}-\lambda_{r} & \cdot & m_{1,0}
-\end{array}\right),\quad A=\left(\begin{array}{cccc}
+\end{array}\right),\quad A_{4}=\left(\begin{array}{cccc}
 m_{1,1} & \cdot & \cdot & \cdot\\
 \cdot & m_{2,4} & \cdot & \cdot\\
 \cdot & \cdot & \cdot & \cdot\\

@@ -163,12 +163,45 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertIsInstance(centtend.coef_small_cs(param, aggh), float)
 
         self.assertEqual(len(centtend.roots(param, aggh)), 5)
-        self.assertEqual(len(centtend.depvar_unc_mean(param, aggh)), 4)
-#        np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
+        roots = [centtend.coef_big_as(param, aggh),
+                  centtend.coef_big_ay(param, aggh),
+                  centtend.coef_big_as(param, aggh)**2,
+                  centtend.coef_big_ay(param, aggh)**2,
+                  centtend.coef_big_as(param, aggh)
+                  * centtend.coef_big_ay(param, aggh)]
+        self.assertEqual(centtend.roots(param, aggh), roots)
 
-#        self.assertEqual(centtend.mat_a0(param, aggh).shape, (4, 4))
-#        self.assertEqual(centtend.mat_a1(param, aggh).shape, (4, 4))
-#        self.assertEqual(centtend.mat_a2(param, aggh).shape, (4, 4))
+        self.assertEqual(len(centtend.depvar_unc_mean(param, aggh)), 4)
+
+        self.assertEqual(centtend.mat_a0(param, aggh).shape, (4, 4))
+        self.assertEqual(centtend.mat_a0(param, aggh)[1, 1], 1.)
+
+        self.assertEqual(centtend.mat_a1(param, aggh).shape, (4, 4))
+        expect = -np.sum(centtend.roots(param, aggh))
+        self.assertEqual(centtend.mat_a1(param, aggh)[1, 1], expect)
+
+        self.assertEqual(centtend.mat_a2(param, aggh).shape, (4, 4))
+
+        self.assertEqual(centtend.mat_a3(param, aggh).shape, (4, 4))
+        self.assertEqual(centtend.mat_a3(param, aggh)[0, 0], 1.)
+        self.assertEqual(centtend.mat_a3(param, aggh)[3, 1], .5 - param.lmbd)
+
+        self.assertEqual(centtend.mat_a4(param, aggh).shape, (4, 4))
+        expect = -np.sum(centtend.roots(param, aggh)[:2])
+        self.assertEqual(centtend.mat_a4(param, aggh)[0, 0], expect)
+        self.assertEqual(centtend.mat_a4(param, aggh)[3, 1],
+                         (.5 - param.lmbd) * expect)
+
+        self.assertEqual(centtend.mat_a5(param, aggh).shape, (4, 4))
+        expect = np.prod(centtend.roots(param, aggh)[:2])
+        self.assertEqual(centtend.mat_a5(param, aggh)[0, 0], expect)
+        self.assertEqual(centtend.mat_a5(param, aggh)[3, 1],
+                         (.5 - param.lmbd) * expect)
+        expect = -np.prod(centtend.roots(param, aggh))
+        self.assertEqual(centtend.mat_a5(param, aggh)[1, 1], expect)
+        self.assertEqual(centtend.mat_a5(param, aggh)[2, 2], 1.)
+        self.assertEqual(centtend.mat_a5(param, aggh)[2, 0], .5 - param.lmbd)
+
 #
 #        self.assertEqual(centtend.mat_a(param).shape, (4, 3*4))
 #

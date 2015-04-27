@@ -28,6 +28,7 @@ from statsmodels.tsa.tsatools import lagmat
 
 from .generic_model import SDE
 from .central_tendency_param import CentTendParam
+from .helper_functions import poly_coef
 
 __all__ = ['CentTend']
 
@@ -355,7 +356,9 @@ class CentTend(SDE):
             Matrix A_0
 
         """
-        return np.diag([0, 1, 0, 0]).astype(float)
+        mat = np.zeros((4, 4))
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[0]
+        return mat
 
     def mat_a1(self, param, aggh):
         """Matrix A_1 in integrated moments.
@@ -373,11 +376,9 @@ class CentTend(SDE):
             Matrix A_1
 
         """
-        mat_a = np.diag([1, 0, 0, 1]).astype(float)
-        mat_a[1, 1] = -self.coef_big_a(param, 1) \
-            * (1 + self.coef_big_a(param, 1))
-        mat_a[3, 1] = .5 - param.lmbd
-        return mat_a
+        mat = np.zeros((4, 4))
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[1]
+        return mat
 
     def mat_a2(self, param, aggh):
         """Matrix A_2 in integrated moments.
@@ -395,12 +396,80 @@ class CentTend(SDE):
             Matrix A_2
 
         """
-        mat_a = np.diag([-self.coef_big_a(param, 1),
-                         self.coef_big_a(param, 1)**3, 1,
-                         -self.coef_big_a(param, 1)])
-        mat_a[2, 0] = .5 - param.lmbd
-        mat_a[3, 1] = (param.lmbd - .5) * self.coef_big_a(param, 1)
-        return mat_a
+        mat = np.zeros((4, 4))
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[2]
+        return mat
+
+    def mat_a3(self, param, aggh):
+        """Matrix A_3 in integrated moments.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        (4, 4) array
+            Matrix A_3
+
+        """
+        mat = np.zeros((4, 4))
+        mat[0, 0] = poly_coef(self.roots(param, aggh)[:2])[0]
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[3]
+        mat[3, 1] = .5 - param.lmbd
+        mat[3, 3] = mat[0, 0]
+        return mat
+
+    def mat_a4(self, param, aggh):
+        """Matrix A_4 in integrated moments.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        (4, 4) array
+            Matrix A_4
+
+        """
+        mat = np.zeros((4, 4))
+        mat[0, 0] = poly_coef(self.roots(param, aggh)[:2])[1]
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[4]
+        mat[3, 1] = (.5 - param.lmbd) * mat[0, 0]
+        mat[3, 3] = mat[0, 0]
+        return mat
+
+    def mat_a5(self, param, aggh):
+        """Matrix A_5 in integrated moments.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        (4, 4) array
+            Matrix A_5
+
+        """
+        mat = np.zeros((4, 4))
+        mat[0, 0] = poly_coef(self.roots(param, aggh)[:2])[2]
+        mat[1, 1] = poly_coef(self.roots(param, aggh))[5]
+        mat[2, 2] = 1
+        mat[3, 3] = mat[0, 0]
+        mat[2, 0] = .5 - param.lmbd
+        mat[3, 1] = (.5 - param.lmbd) * mat[0, 0]
+        return mat
 
     def mat_a(self, param, subset=None):
         """Matrix A in integrated moments.
