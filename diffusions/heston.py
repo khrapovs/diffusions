@@ -119,9 +119,8 @@ class Heston(SDE):
         """
         return param.mean_v * (1 - self.coef_small_a(param, aggh))
 
-    def depvar_unc_mean(self, param, aggh):
-        """Array of the left-hand side variables
-        in realized moment conditions.
+    def mean_vol(self, param, aggh):
+        """Unconditional mean of realized volatiliy.
 
         Parameters
         ----------
@@ -132,23 +131,64 @@ class Heston(SDE):
 
         Returns
         -------
-        (nobs, 3*nmoms) array
-            Dependend variables
+        float
 
         """
-        mean_vol = param.mean_v
+        return param.mean_v
 
-        mean_vol2 = ((param.eta / param.kappa)**2
-                     * self.coef_small_c(param, aggh) / aggh
-                     + param.mean_v**2)
+    def mean_vol2(self, param, aggh):
+        """Unconditional mean of squared realized volatiliy.
 
-        mean_ret = (param.lmbd - .5) * param.mean_v
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
 
-        mean_cross = ((param.lmbd - .5) * mean_vol2
-                      + param.rho * param.eta / param.kappa
-                      * self.coef_small_c(param, aggh) / aggh)
+        Returns
+        -------
+        float
 
-        return np.array([mean_vol, mean_vol2, mean_ret, mean_cross])
+        """
+        return ((param.eta / param.kappa)**2
+            * self.coef_small_c(param, aggh) / aggh + param.mean_v**2)
+
+    def mean_ret(self, param, aggh):
+        """Unconditional mean of realized returns.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return (param.lmbd - .5) * param.mean_v
+
+    def mean_cross(self, param, aggh):
+        """Unconditional mean of realized returns times volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return ((param.lmbd - .5) * self.mean_vol2(param, aggh)
+            + param.rho * param.eta / param.kappa
+            * self.coef_small_c(param, aggh) / aggh)
 
     def realized_const(self, param, aggh, subset=None):
         """Intercept in the realized moment conditions.

@@ -158,6 +158,26 @@ class SDE(object):
         """
         return self.euler_scale(state, theta)
 
+    def depvar_unc_mean(self, param, aggh):
+        """Unconditional means of realized data.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        array
+
+        """
+        return np.array([self.mean_vol(param, aggh),
+                         self.mean_vol2(param, aggh),
+                         self.mean_ret(param, aggh),
+                         self.mean_cross(param, aggh)])
+
     def update(self, state, error):
         """Euler update function.
 

@@ -215,9 +215,16 @@ class CentTend(SDE):
         """
         return (1 - self.coef_big_ay(param, aggh)) / param.kappa_y / aggh
 
-    def depvar_unc_mean(self, param, aggh):
-        """Array of the left-hand side variables
-        in realized moment conditions.
+    def roots(self, param, aggh):
+        """Roots of the polynomial in moment restrictions.
+
+        .. :math:
+
+            \left(1-A_{2h}^{\sigma}L\right)
+            \left(1-A_{2h}^{y}L\right)
+            \left(1-A_{h}^{\sigma}A_{h}^{y}L\right)
+            \left(1-A_{h}^{y}L\right)
+            \left(1-A_{h}^{\sigma}L\right)`
 
         Parameters
         ----------
@@ -228,23 +235,86 @@ class CentTend(SDE):
 
         Returns
         -------
-        (nobs, 3*nmoms) array
-            Dependend variables
+        list of floats
 
         """
-        mean_vol = param.mean_v
+        return [self.coef_big_as(param, aggh),
+                self.coef_big_ay(param, aggh),
+                self.coef_big_as(param, aggh)**2,
+                self.coef_big_ay(param, aggh)**2,
+                self.coef_big_as(param, aggh) * self.coef_big_ay(param, aggh)]
 
-        mean_vol2 = self.coef_small_as(param, aggh)**2 * unc_var_sigma(param) \
-            + self.coef_small_bs(param, aggh)**2 * unc_var_ct(param) \
-            + unc_var_error()
+    def mean_vol(self, param, aggh):
+        """Unconditional mean of realized volatiliy.
 
-        mean_ret = (param.lmbd - .5) * param.mean_v
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
 
-        mean_cross = ((param.lmbd - .5) * mean_vol2
-                      + param.rho * param.mean_v * param.eta / param.kappa
-                      * (1 - self.coef_small_as(param, aggh)) / aggh)
+        Returns
+        -------
+        float
 
-        return np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
+        """
+        return param.mean_v
+
+    def mean_vol2(self, param, aggh):
+        """Unconditional mean of squared realized volatiliy.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return (self.coef_small_as(param, aggh)**2 * unc_var_sigma(param)
+            + self.coef_small_bs(param, aggh)**2 * unc_var_ct(param)
+            + unc_var_error(param, aggh))
+
+    def mean_ret(self, param, aggh):
+        """Unconditional mean of realized returns.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return (param.lmbd - .5) * param.mean_v
+
+    def mean_cross(self, param, aggh):
+        """Unconditional mean of realized returns times volatility.
+
+        Parameters
+        ----------
+        param : parameter instance
+            Model parameters
+        aggh : float
+            Interval length
+
+        Returns
+        -------
+        float
+
+        """
+        return ((param.lmbd - .5) * self.mean_vol2(param, aggh)
+            + param.rho * param.mean_v * param.eta_s / param.kappa_s
+            * (1 - self.coef_small_as(param, aggh)) / aggh)
 
     def realized_const(self, param, aggh, subset=None):
         """Intercept in the realized moment conditions.
@@ -413,7 +483,7 @@ def unc_mean_ct2(param):
     float
 
     """
-    return param.mean_v * param.eta_v**2 / param.kappa_v / 2
+    return param.mean_v * param.eta_y**2 / param.kappa_y / 2
 
 
 def unc_mean_sigma2(param):
@@ -484,7 +554,7 @@ def unc_var_error(param, aggh):
     float
 
     """
-    mu = param.mu
+    mu = param.mean_v
     kappa_s = param.kappa_s
     kappa_y = param.kappa_y
     eta_s = param.eta_s

@@ -162,6 +162,10 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertIsInstance(centtend.coef_small_bs(param, aggh), float)
         self.assertIsInstance(centtend.coef_small_cs(param, aggh), float)
 
+        self.assertEqual(len(centtend.roots(param, aggh)), 5)
+        self.assertEqual(len(centtend.depvar_unc_mean(param, aggh)), 4)
+#        np.array([mean_ret, mean_vol, mean_vol2, mean_cross])
+
 #        self.assertEqual(centtend.mat_a0(param, aggh).shape, (4, 4))
 #        self.assertEqual(centtend.mat_a1(param, aggh).shape, (4, 4))
 #        self.assertEqual(centtend.mat_a2(param, aggh).shape, (4, 4))

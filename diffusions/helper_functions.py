@@ -296,12 +296,23 @@ def instruments(data=None, instrlag=1, nobs=None, instr_choice='const'):
                [ 1.],
                [ 1.]])
 
+        >>> data = np.arange(6).reshape((2,3))
+        >>> instruments(data=data)
+        array([[ 1.],
+               [ 1.],
+               [ 1.]])
+        >>> instruments(data=data, instr_choice='var')
+        array([[ 1.,  0.,  0.],
+               [ 1.,  0.,  3.],
+               [ 1.,  1.,  4.]])
+        >>> instruments(data=data, instr_choice='var', instrlag=2)
+        array([[ 1.,  0.,  0.,  0.,  0.],
+               [ 1.,  0.,  3.,  0.,  0.],
+               [ 1.,  1.,  4.,  0.,  3.]])
+
     """
     if data is not None:
-        if data.ndim == 1:
-            nobs = data.shape[0]
-        else:
-            nobs = data.shape[1]
+        nobs = data.shape[-1]
 
     if instr_choice == 'const' or data is None:
         if nobs is None:
