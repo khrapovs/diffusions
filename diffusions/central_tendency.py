@@ -528,7 +528,7 @@ class CentTend(SDE):
 
         Returns
         -------
-        param : HestonParam instance
+        param : CentTendParam instance
             Model parameters
         subset_sl : slice
             Which moments to use
@@ -538,7 +538,7 @@ class CentTend(SDE):
         param.update(theta=theta, subset=subset)
         subset_sl = None
         if subset == 'vol':
-            subset_sl = slice(4)
+            subset_sl = slice(5)
         return param, subset_sl
 
 
