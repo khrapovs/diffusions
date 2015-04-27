@@ -1476,7 +1476,7 @@ m_{1,2} & \cdot & \cdot & \cdot\\
 Here
 \begin_inset Formula 
 \[
-m_{1,0}=0,\quad m_{1,1}=-\left(A_{h}^{y}+A_{h}^{\sigma}\right),\quad m_{1,2}=A_{h}^{y}A_{h}^{\sigma},
+m_{1,0}=1,\quad m_{1,1}=-\left(A_{h}^{y}+A_{h}^{\sigma}\right),\quad m_{1,2}=A_{h}^{y}A_{h}^{\sigma},
 \]
 
 \end_inset
