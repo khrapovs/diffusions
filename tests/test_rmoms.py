@@ -73,13 +73,14 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         mom, dmom = heston.integrated_mom(param.get_theta(),
                                           instr_data=instr_data,
-                                          instr_choice='var', exact_jacob=True,
+                                          instr_choice='var',
                                           data=data, instrlag=instrlag)
         nmoms_all = nmoms * (ninstr*instrlag + 1)
         mom_shape = (nperiods - instrlag, nmoms_all)
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
 
         mom, dmom = heston.integrated_mom(param.get_theta(),
                                           instr_choice='const',
@@ -89,6 +90,19 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
+
+        subset = 'vol'
+        mom, dmom = heston.integrated_mom(param.get_theta(subset=subset),
+                                          subset=subset,
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms = 2
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
 
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
@@ -132,6 +146,70 @@ class RealizedMomentsTestCase(ut.TestCase):
             * (1 - heston.coef_big_a(param, 1))
 
         self.assertAlmostEqual(heston.realized_const(param, aggh)[3], res)
+
+    def test_ct_relized_mom(self):
+        """Test realized moments of Central Tendency model."""
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_y = .5
+        eta_s = .1
+        eta_y = .01
+        rho = -.5
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+
+        centtend = CentTend(param)
+        centtend.interval = .5
+        nmoms = 4
+
+        nperiods = 10
+        ret = np.arange(nperiods)
+        rvar = ret ** 2
+        data = np.vstack([ret, rvar])
+        instrlag = 2
+
+        depvar = centtend.realized_depvar(data)
+        instr_data = np.vstack([rvar, rvar**2])
+        ninstr = instr_data.shape[0]
+
+        # Test shape of dependent variables
+        self.assertEqual(depvar.shape, (nperiods, 6 * 4))
+
+        mom, dmom = centtend.integrated_mom(param.get_theta(),
+                                          instr_data=instr_data,
+                                          instr_choice='var',
+                                          data=data, instrlag=instrlag)
+        nmoms_all = nmoms * (ninstr*instrlag + 1)
+        mom_shape = (nperiods - instrlag, nmoms_all)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
+
+        mom, dmom = centtend.integrated_mom(param.get_theta(),
+                                            instr_choice='const',
+                                            data=data, instrlag=instrlag)
+        nmoms_all = nmoms
+        mom_shape = (nperiods - instrlag, nmoms_all)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
+
+        subset = 'vol'
+        mom, dmom = centtend.integrated_mom(param.get_theta(subset=subset),
+                                            subset=subset,
+                                            instr_choice='const',
+                                            data=data, instrlag=instrlag)
+        nmoms = 2
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
 
     def test_ct_coefs(self):
         """Test coefficients in descretization of CT model.

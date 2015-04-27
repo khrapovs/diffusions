@@ -511,13 +511,13 @@ class CentTend(SDE):
 
         Returns
         -------
-        (nobs, 3*nmoms) array
+        (nobs, 5*nmoms) array
             Dependend variables
 
         """
         ret, rvar = data
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
-        return lagmat(var.T, maxlag=2, original='in')
+        return lagmat(var.T, maxlag=5, original='in')
 
     def convert(self, theta, subset):
         """Convert parameter vector to instance.
@@ -541,7 +541,7 @@ class CentTend(SDE):
         param.update(theta=theta, subset=subset)
         subset_sl = None
         if subset == 'vol':
-            subset_sl = slice(5)
+            subset_sl = slice(2)
         return param, subset_sl
 
 

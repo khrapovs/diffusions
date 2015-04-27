@@ -22,16 +22,16 @@ def try_simulation():
     lmbd = .01
     mean_v = .5
     kappa_s = 1.5
-    kappa_v = .05
+    kappa_y = .05
     eta_s = .02**.5
-    eta_v = .001**.5
+    eta_y = .001**.5
     rho = -.9
 
-    theta_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                               eta_s=eta_s, eta_v=eta_v, rho=rho)
-    centtend = CentTend(theta_true)
-    print(theta_true.is_valid())
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    centtend = CentTend(param_true)
+    print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 500, .1, 10, 3
@@ -53,16 +53,16 @@ def try_marginal():
     lmbd = .01
     mean_v = .5
     kappa_s = 1.5
-    kappa_v = .05
+    kappa_y = .05
     eta_s = .02**.5
-    eta_v = .001**.5
+    eta_y = .001**.5
     rho = -.9
 
-    theta_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                               eta_s=eta_s, eta_v=eta_v, rho=rho)
-    centtend = CentTend(theta_true)
-    print(theta_true.is_valid())
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    centtend = CentTend(param_true)
+    print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 500, .1, 10, 1000
@@ -84,16 +84,16 @@ def try_sim_realized():
     lmbd = .01
     mean_v = .2
     kappa_s = .1
-    kappa_v = .05
+    kappa_y = .05
     eta_s = .01**.5
-    eta_v = .001**.5
+    eta_y = .001**.5
     rho = -.9
 
-    theta_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                               eta_s=eta_s, eta_v=eta_v, rho=rho)
-    centtend = CentTend(theta_true)
-    print(theta_true.is_valid())
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    centtend = CentTend(param_true)
+    print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 1000, 1/80, 1, 1
@@ -106,6 +106,51 @@ def try_sim_realized():
     plot_realized(returns, rvar)
 
 
+def try_integrated_gmm_single():
+
+    riskfree = .0
+
+    lmbd = .01
+    mean_v = .2
+    kappa_s = .1
+    kappa_y = .05
+    eta_s = .01**.5
+    eta_y = .001**.5
+    rho = -.9
+
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    centtend = CentTend(param_true)
+    print(param_true.is_valid())
+
+    start = [1, mean_v, mean_v]
+    nperiods, interval, ndiscr, nsim = 1000, 1/80, 1, 1
+    aggh = 1
+
+    data = centtend.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                                 aggh=aggh, nperiods=nperiods,
+                                 nsim=nsim, diff=0)
+    ret, rvar = data
+    plot_realized(ret, rvar)
+
+    instr_data = np.vstack([rvar, rvar**2])
+
+    param_start = param_true
+    param_start.update(param_true.get_theta()/2)
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
+
+    time_start = time.time()
+    res = centtend.integrated_gmm(theta_start, data=data, instrlag=2,
+                                instr_data=instr_data, aggh=aggh,
+                                instr_choice='var', method='TNC',
+                                subset=subset, iter=3, bounds=bounds)
+    res.print_results()
+    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+
+
 def try_integrated_gmm():
 
     riskfree = .0
@@ -113,16 +158,16 @@ def try_integrated_gmm():
     lmbd = .01
     mean_v = .2
     kappa_s = .1
-    kappa_v = .05
+    kappa_y = .05
     eta_s = .01**.5
-    eta_v = .001**.5
+    eta_y = .001**.5
     rho = -.9
 
-    theta_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                               eta_s=eta_s, eta_v=eta_v, rho=rho)
-    centtend = CentTend(theta_true)
-    print(theta_true.is_valid())
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    centtend = CentTend(param_true)
+    print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 2000, 1/80, 1, 1
@@ -135,17 +180,19 @@ def try_integrated_gmm():
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    theta_start = theta_true
-    theta_start.update(theta_true.get_theta()/2)
+    param_start = param_true
+    param_start.update(param_true.get_theta()/2)
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
 
     tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
     for lag, method in tasks:
         time_start = time.time()
         res = centtend.integrated_gmm(theta_start, data=data, instrlag=lag,
-                                      instr_data=instr_data, aggh=aggh,
-                                      instr_choice='var', method=method,
-                                      use_jacob=True, exact_jacob=False,
-                                      bounds=theta_start.get_bounds(), iter=3)
+                                    instr_data=instr_data, aggh=aggh,
+                                    instr_choice='var', method=method,
+                                    subset='vol', bounds=bounds, iter=3)
         res.print_results()
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
@@ -157,5 +204,6 @@ if __name__ == '__main__':
     sns.set_context('notebook')
 #    try_simulation()
 #    try_marginal()
-    try_sim_realized()
+#    try_sim_realized()
+    try_integrated_gmm_single()
 #    try_integrated_gmm()
