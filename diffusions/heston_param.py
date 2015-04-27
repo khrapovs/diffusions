@@ -34,7 +34,7 @@ class HestonParam(object):
     """
 
     def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1,
-                 lmbd = .1, rho=-.5):
+                 lmbd=.1, rho=-.5):
         """Initialize class.
 
         Parameters

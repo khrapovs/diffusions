@@ -14,6 +14,7 @@ import seaborn as sns
 
 from diffusions import Heston, HestonParam
 from diffusions import plot_trajectories, plot_final_distr, plot_realized
+from load_real_data import load_data
 
 
 def try_simulation():
@@ -125,6 +126,42 @@ def try_integrated_gmm_single():
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
+def try_integrated_gmm_real():
+    riskfree = .0
+
+    mean_v = .2
+    kappa = .22
+    eta = .12
+
+    lmbd = .3
+    rho = -.5
+    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    param_start = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                             mean_v=mean_v, kappa=kappa,
+                             eta=eta, rho=rho)
+    heston = Heston(param_start)
+
+    aggh = 1
+
+    data = load_data()
+    ret, rvar = data
+    plot_realized(ret, rvar)
+
+    instr_data = np.vstack([rvar, rvar**2])
+
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
+
+    time_start = time.time()
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
+                                instr_data=instr_data, aggh=aggh,
+                                instr_choice='var', method='TNC',
+                                subset=subset, iter=3, bounds=bounds)
+    res.print_results()
+    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+
+
 def try_integrated_gmm():
     riskfree = .0
 
@@ -173,5 +210,6 @@ if __name__ == '__main__':
 #    try_simulation()
 #    try_marginal()
 #    try_sim_realized()
-    try_integrated_gmm_single()
+#    try_integrated_gmm_single()
+    try_integrated_gmm_real()
 #    try_integrated_gmm()

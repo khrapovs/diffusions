@@ -21,6 +21,7 @@ Also let :math:`R\left(Y_{t}\right)=r`.
 
 """
 from __future__ import print_function, division
+
 from math import exp
 
 import numpy as np
@@ -219,13 +220,13 @@ class CentTend(SDE):
     def roots(self, param, aggh):
         """Roots of the polynomial in moment restrictions.
 
-        .. :math:
+        .. math::
 
             \left(1-A_{2h}^{\sigma}L\right)
             \left(1-A_{2h}^{y}L\right)
             \left(1-A_{h}^{\sigma}A_{h}^{y}L\right)
             \left(1-A_{h}^{y}L\right)
-            \left(1-A_{h}^{\sigma}L\right)`
+            \left(1-A_{h}^{\sigma}L\right)
 
         Parameters
         ----------

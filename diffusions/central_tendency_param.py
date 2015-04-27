@@ -39,7 +39,7 @@ class CentTendParam(object):
 
     """
 
-    def __init__(self, riskfree=.0, lmbd = .1,
+    def __init__(self, riskfree=.0, lmbd=.1,
                  mean_v=.5, kappa_s=1.5, kappa_y=.5,
                  eta_s=.1, eta_y=.01, rho=-.5):
         """Initialize class.
@@ -148,7 +148,6 @@ class CentTendParam(object):
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
 
-
     def get_bounds(self, subset='all'):
         """Bounds on parameters.
 
@@ -164,10 +163,11 @@ class CentTendParam(object):
         """
         lb = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, None, -1]
         ub = [None, None, None, None, None, None, 1]
+        bounds = list(zip(lb, ub))
         if subset == 'all':
-            return list(zip(lb, ub))
+            return bounds
         elif subset == 'vol':
-            return list(zip(lb, ub))[:5]
+            return bounds[:5]
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
 
