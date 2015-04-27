@@ -78,18 +78,18 @@ class DriftTestCase(ut.TestCase):
         """Test AJD drift function for CT model."""
 
         riskfree, lmbd, mean_v = 0., .01, .2
-        kappa_s, kappa_v, eta_s, eta_v, rho = 1.5, .5, .2, .02, -.5
+        kappa_s, kappa_y, eta_s, eta_y, rho = 1.5, .5, .2, .02, -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
         nvars, nsim = 3, 5
         size = (nsim, nvars)
         state = np.ones(size)
         drift = np.ones(size)
         drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
         drift_s = kappa_s * (state[:, 2] - state[:, 1])
-        drift_v = kappa_v * (mean_v - state[:, 2])
-        drift = np.vstack([drift_r, drift_s, drift_v]).T
+        drift_y = kappa_y * (mean_v - state[:, 2])
+        drift = np.vstack([drift_r, drift_s, drift_y]).T
 
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
         np.testing.assert_almost_equal(ajd_drift(state, param), drift)
@@ -161,10 +161,10 @@ class DiffusionTestCase(ut.TestCase):
         """Test AJD diffusion function for CT model."""
 
         riskfree, lmbd, mean_v = 0., .01, .2
-        kappa_s, kappa_v, eta_s, eta_v, rho = 1.5, .5, .2, .02, -.5
+        kappa_s, kappa_y, eta_s, eta_y, rho = 1.5, .5, .2, .02, -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
         nvars, nsim = 3, 5
         size = (nsim, nvars)
         state = np.ones(size)
@@ -173,7 +173,7 @@ class DiffusionTestCase(ut.TestCase):
                          [eta_s*rho, eta_s**2, 0],
                          [0, 0, 0]])
         var2 = np.zeros((3, 3))
-        var2[-1, -1] = eta_v**2
+        var2[-1, -1] = eta_y**2
 
         var = ((np.ones((nsim, nvars, nvars)) * var1).T * state[:, 1]).T \
             + ((np.ones((nsim, nvars, nvars)) * var2).T * state[:, 2]).T

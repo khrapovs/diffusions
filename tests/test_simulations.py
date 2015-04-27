@@ -119,13 +119,13 @@ class GBMTestCase(ut.TestCase):
         lmbd = .01
         mean_v = .5
         kappa_s = 1.5
-        kappa_v = .5
+        kappa_y = .5
         eta_s = .1
-        eta_v = .01
+        eta_y = .01
         rho = -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
         centend = CentTend(param)
         centend.ndiscr, centend.interval = 2, .5
         nvars, nsim = 3, 3
@@ -136,13 +136,13 @@ class GBMTestCase(ut.TestCase):
         new_state = centend.update(state, error)
         drift_r = riskfree + state[:, 1]**2 * (lmbd - .5)
         drift_s = kappa_s * (state[:, 2] - state[:, 1])
-        drift_v = kappa_v * (mean_v - state[:, 2])
+        drift_v = kappa_y * (mean_v - state[:, 2])
         loc = np.vstack([drift_r, drift_s, drift_v]).T
 
         var_s = np.zeros((3, 3))
         var_s[:2, :2] = np.array([[1, eta_s*rho], [eta_s*rho, eta_s**2]])
         var_v = np.zeros((3, 3))
-        var_v[2, 2] = eta_v**2
+        var_v[2, 2] = eta_y**2
         var = ((np.ones((nsim, nvars, nvars)) * var_s).T * state[:, 1]).T \
             + ((np.ones((nsim, nvars, nvars)) * var_v).T * state[:, 2]).T
         scale = np.linalg.cholesky(var)
@@ -252,13 +252,13 @@ class SimulationTestCase(ut.TestCase):
         lmbd = .01
         mean_v = .5
         kappa_s = 1.5
-        kappa_v = .5
+        kappa_y = .5
         eta_s = .1
-        eta_v = .01
+        eta_y = .01
         rho = -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
         centtend = CentTend(param)
         start = [1, mean_v, mean_v]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
@@ -349,13 +349,13 @@ class RealizedSimTestCase(ut.TestCase):
         lmbd = .01
         mean_v = .5
         kappa_s = 1.5
-        kappa_v = .5
+        kappa_y = .5
         eta_s = .1
-        eta_v = .01
+        eta_y = .01
         rho = -.5
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                              mean_v=mean_v, kappa_s=kappa_s, kappa_v=kappa_v,
-                              eta_s=eta_s, eta_v=eta_v, rho=rho)
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
         centtend = CentTend(param)
         start = [1, mean_v, mean_v]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
