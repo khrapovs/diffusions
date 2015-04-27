@@ -202,8 +202,7 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(centtend.mat_a5(param, aggh)[2, 2], 1.)
         self.assertEqual(centtend.mat_a5(param, aggh)[2, 0], .5 - param.lmbd)
 
-#
-#        self.assertEqual(centtend.mat_a(param).shape, (4, 3*4))
+        self.assertEqual(centtend.mat_a(param).shape, (4, 6*4))
 #
 #        self.assertEqual(centtend.realized_const(param, aggh).shape, (4, ))
 #        self.assertEqual(centtend.realized_const(param, aggh)[2], 0)

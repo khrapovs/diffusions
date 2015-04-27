@@ -483,13 +483,16 @@ class CentTend(SDE):
 
         Returns
         -------
-        (nmoms, 3*nmoms) array
+        (nmoms, 6*nmoms) array
             Matrix A
 
         """
         mat_a = (self.mat_a0(param, 1),
                  self.mat_a1(param, 1),
-                 self.mat_a2(param, 1))
+                 self.mat_a2(param, 1),
+                 self.mat_a3(param, 1),
+                 self.mat_a4(param, 1),
+                 self.mat_a5(param, 1))
         return np.hstack(mat_a)[subset].squeeze()
 
     def realized_depvar(self, data, subset=None):
