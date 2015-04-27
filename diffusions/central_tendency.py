@@ -337,7 +337,10 @@ class CentTend(SDE):
         """
         return ((self.mat_a0(param, 1)
             + self.mat_a1(param, 1)
-            + self.mat_a2(param, 1))
+            + self.mat_a2(param, 1)
+            + self.mat_a3(param, 1)
+            + self.mat_a4(param, 1)
+            + self.mat_a5(param, 1))
             * self.depvar_unc_mean(param, aggh)).sum(1)[subset].squeeze()
 
     def mat_a0(self, param, aggh):

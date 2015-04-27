@@ -203,26 +203,33 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(centtend.mat_a5(param, aggh)[2, 0], .5 - param.lmbd)
 
         self.assertEqual(centtend.mat_a(param).shape, (4, 6*4))
-#
-#        self.assertEqual(centtend.realized_const(param, aggh).shape, (4, ))
-#        self.assertEqual(centtend.realized_const(param, aggh)[2], 0)
-#
-#        res = centtend.depvar_unc_mean(param, aggh)[0] \
-#            * (1 - centtend.coef_big_a(param, 1))
-#
-#        self.assertEqual(centtend.realized_const(param, aggh)[0], res)
-#
-#        res = centtend.depvar_unc_mean(param, aggh)[1] \
-#            * (1 - centtend.coef_big_a(param, 1)) \
-#            * (1 - centtend.coef_big_a(param, 1)**2)
-#
-#        self.assertEqual(centtend.realized_const(param, aggh)[1], res)
-#
-#        res = (centtend.depvar_unc_mean(param, aggh)[1] * (.5 - param.lmbd) \
-#            + centtend.depvar_unc_mean(param, aggh)[3]) \
-#            * (1 - centtend.coef_big_a(param, 1))
-#
-#        self.assertAlmostEqual(centtend.realized_const(param, aggh)[3], res)
+
+        self.assertEqual(centtend.realized_const(param, aggh).shape, (4, ))
+        self.assertEqual(centtend.realized_const(param, aggh)[2], 0)
+
+        roots = [centtend.coef_big_as(param, 1),
+                  centtend.coef_big_ay(param, 1),
+                  centtend.coef_big_as(param, 1)**2,
+                  centtend.coef_big_ay(param, 1)**2,
+                  centtend.coef_big_as(param, 1)
+                  * centtend.coef_big_ay(param, 1)]
+
+        res = centtend.depvar_unc_mean(param, aggh)[0] \
+            * (1 - roots[0]) * (1 - roots[1])
+
+        self.assertAlmostEqual(centtend.realized_const(param, aggh)[0], res)
+
+        res = centtend.depvar_unc_mean(param, aggh)[1] \
+            * (1 - roots[0]) * (1 - roots[1]) * (1 - roots[2]) \
+            * (1 - roots[3]) * (1 - roots[4])
+
+        self.assertAlmostEqual(centtend.realized_const(param, aggh)[1], res)
+
+        res = (centtend.depvar_unc_mean(param, aggh)[1] * (.5 - param.lmbd) \
+            + centtend.depvar_unc_mean(param, aggh)[3]) \
+            * (1 - roots[0]) * (1 - roots[1])
+
+        self.assertAlmostEqual(centtend.realized_const(param, aggh)[3], res)
 
 
 if __name__ == '__main__':
