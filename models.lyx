@@ -1380,24 +1380,6 @@ M_{2} & = & M_{1}\left(1-A_{h}^{\sigma}A_{h}^{y}L\right)\left(1-A_{2h}^{y}L\righ
 
 \end_inset
 
-
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
-f=(1-a1*x)*(1-a2*x)*(1-a1**2*x)*(1-a2**2*x)*(1-a1*a2*x)
-\end_layout
-
-\begin_layout Plain Layout
-sp.Poly(f,x).all_coeffs()
-\end_layout
-
-\begin_layout Plain Layout
-np.sum([np.prod(np.arange(5)[[x]]) for x in combinations(range(5),2)])
-\end_layout
-
-\end_inset
-
 Define the data vector as 
 \begin_inset Formula $X_{t,H}=\left[\mathcal{V}_{t,H},\mathcal{V}_{t,H}^{2},\tilde{r}_{t,H},\tilde{r}_{t,H}\mathcal{V}_{t,H}\right]$
 \end_inset
