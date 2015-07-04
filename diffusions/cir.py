@@ -38,7 +38,8 @@ class CIR(SDE):
         """
         super(CIR, self).__init__(theta_true)
 
-    def drift(self, state, theta):
+    @staticmethod
+    def drift(state, theta):
         """Drift function.
 
         Parameters
@@ -56,7 +57,8 @@ class CIR(SDE):
         """
         return theta.kappa * (theta.mean - state)
 
-    def diff(self, state, theta):
+    @staticmethod
+    def diff(state, theta):
         """Diffusion (instantaneous volatility) function.
 
         Parameters

@@ -51,7 +51,8 @@ class Heston(SDE):
         """
         super(Heston, self).__init__(theta_true)
 
-    def coef_big_a(self, param, aggh):
+    @staticmethod
+    def coef_big_a(param, aggh):
         """Coefficient A_h in exact discretization of volatility.
 
         Parameters
@@ -119,7 +120,8 @@ class Heston(SDE):
         """
         return param.mean_v * (1 - self.coef_small_a(param, aggh))
 
-    def mean_vol(self, param, aggh):
+    @staticmethod
+    def mean_vol(param, aggh):
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -154,7 +156,8 @@ class Heston(SDE):
         return ((param.eta / param.kappa)**2
             * self.coef_small_c(param, aggh) / aggh + param.mean_v**2)
 
-    def mean_ret(self, param, aggh):
+    @staticmethod
+    def mean_ret(param, aggh):
         """Unconditional mean of realized returns.
 
         Parameters
@@ -213,7 +216,8 @@ class Heston(SDE):
             + self.mat_a2(param, 1))
             * self.depvar_unc_mean(param, aggh)).sum(1)[subset].squeeze()
 
-    def mat_a0(self, param, aggh):
+    @staticmethod
+    def mat_a0(param, aggh):
         """Matrix A_0 in integrated moments.
 
         Parameters
@@ -297,7 +301,8 @@ class Heston(SDE):
                  self.mat_a2(param, 1))
         return np.hstack(mat_a)[subset].squeeze()
 
-    def realized_depvar(self, data, subset=None):
+    @staticmethod
+    def realized_depvar(data, subset=None):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -318,7 +323,8 @@ class Heston(SDE):
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=2, original='in')
 
-    def convert(self, theta, subset):
+    @staticmethod
+    def convert(theta, subset):
         """Convert parameter vector to instance.
 
         Parameters

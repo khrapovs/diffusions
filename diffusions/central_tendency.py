@@ -52,7 +52,8 @@ class CentTend(SDE):
         """
         super(CentTend, self).__init__(theta_true)
 
-    def coef_big_as(self, param, aggh):
+    @staticmethod
+    def coef_big_as(param, aggh):
         """Coefficient A^\sigma_h in exact discretization of volatility.
 
         Parameters
@@ -108,7 +109,8 @@ class CentTend(SDE):
         return param.mean_v * (1 - self.coef_big_as(param, aggh)
             - self.coef_big_bs(param, aggh))
 
-    def coef_big_ay(self, param, aggh):
+    @staticmethod
+    def coef_big_ay(param, aggh):
         """Coefficient A^v_h in exact discretization of volatility.
 
         Parameters
@@ -246,7 +248,8 @@ class CentTend(SDE):
                 self.coef_big_ay(param, aggh)**2,
                 self.coef_big_as(param, aggh) * self.coef_big_ay(param, aggh)]
 
-    def mean_vol(self, param, aggh):
+    @staticmethod
+    def mean_vol(param, aggh):
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -282,7 +285,8 @@ class CentTend(SDE):
             + self.coef_small_bs(param, aggh)**2 * unc_var_ct(param)
             + unc_var_error(param, aggh))
 
-    def mean_ret(self, param, aggh):
+    @staticmethod
+    def mean_ret(param, aggh):
         """Unconditional mean of realized returns.
 
         Parameters
@@ -499,7 +503,8 @@ class CentTend(SDE):
                  self.mat_a5(param, 1))
         return np.hstack(mat_a)[subset].squeeze()
 
-    def realized_depvar(self, data, subset=None):
+    @staticmethod
+    def realized_depvar(data, subset=None):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -520,7 +525,8 @@ class CentTend(SDE):
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=5, original='in')
 
-    def convert(self, theta, subset):
+    @staticmethod
+    def convert(theta, subset):
         """Convert parameter vector to instance.
 
         Parameters

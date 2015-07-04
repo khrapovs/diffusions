@@ -56,7 +56,8 @@ class GBM(SDE):
         """
         super(GBM, self).__init__(theta_true)
 
-    def drift(self, state, theta):
+    @staticmethod
+    def drift(state, theta):
         """Drift function.
 
         Parameters
@@ -74,7 +75,8 @@ class GBM(SDE):
         """
         return theta.mean - theta.sigma**2/2
 
-    def diff(self, state, theta):
+    @staticmethod
+    def diff(state, theta):
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -202,7 +204,8 @@ class GBM(SDE):
                          - 2 * sigma * self.interval**2
                          * (mean - sigma**2/2)], [0, 0]])
 
-    def realized_depvar(self, data):
+    @staticmethod
+    def realized_depvar(data):
         """Array of the left-hand side variables
         in realized moment conditions.
 
@@ -220,7 +223,8 @@ class GBM(SDE):
         ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 
-    def realized_const(self, theta):
+    @staticmethod
+    def realized_const(theta):
         """Intercept in the realized moment conditions.
 
         Parameters
@@ -254,7 +258,8 @@ class GBM(SDE):
         with np.errstate(divide='ignore'):
             return nd.Jacobian(self.realized_const)(theta)
 
-    def instruments(self, data, instrlag=1):
+    @staticmethod
+    def instruments(data, instrlag=1):
         """Create an array of instruments.
 
         Parameters
