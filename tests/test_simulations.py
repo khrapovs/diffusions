@@ -177,6 +177,11 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
+        paths_new = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0,
+                                 new_innov=False)
+
+        np.testing.assert_array_equal(paths, paths_new)
+
         paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
@@ -198,6 +203,11 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
+        paths_new = vasicek.simulate(start, interval, ndiscr, nobs, nsim,
+                                     new_innov=False)
+
+        np.testing.assert_array_equal(paths, paths_new)
+
         fun = lambda: vasicek.simulate([1, 1], interval, ndiscr,
                                        nobs, nsim, diff=0)
 
@@ -215,6 +225,11 @@ class SimulationTestCase(ut.TestCase):
         paths = cir.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        paths_new = cir.simulate(start, interval, ndiscr, nobs, nsim,
+                                 new_innov=False)
+
+        np.testing.assert_array_equal(paths, paths_new)
 
         fun = lambda: cir.simulate([1, 1], interval, ndiscr,
                                    nobs, nsim, diff=0)
@@ -235,6 +250,11 @@ class SimulationTestCase(ut.TestCase):
         paths = heston.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        paths_new = heston.simulate(start, interval, ndiscr, nobs, nsim,
+                                    diff=0, new_innov=False)
+
+        np.testing.assert_array_equal(paths, paths_new)
 
         paths = heston.simulate(start, interval, ndiscr, nobs, nsim)
 
@@ -267,6 +287,11 @@ class SimulationTestCase(ut.TestCase):
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
+        paths_new = centtend.simulate(start, interval, ndiscr, nobs, nsim,
+                                      diff=0, new_innov=False)
+
+        np.testing.assert_array_equal(paths, paths_new)
+
         paths = centtend.simulate(start, interval, ndiscr, nobs, nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
@@ -295,6 +320,14 @@ class RealizedSimTestCase(ut.TestCase):
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
+        data = gbm.sim_realized(start, interval=interval, aggh=aggh,
+                                ndiscr=ndiscr, nperiods=nperiods,
+                                nsim=nsim, diff=0, new_innov=False)
+        returns_new, rvol_new = data
+
+        np.testing.assert_array_equal(returns, returns_new)
+        np.testing.assert_array_equal(rvol, rvol_new)
+
     def test_vasicek_sim_realized(self):
         """Test simulation of realized values of the Vasicek model."""
 
@@ -310,6 +343,14 @@ class RealizedSimTestCase(ut.TestCase):
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
 
+        data = vasicek.sim_realized(start, interval=interval, aggh=aggh,
+                                    ndiscr=ndiscr, nperiods=nperiods,
+                                    nsim=nsim, diff=0, new_innov=False)
+        returns_new, rvol_new = data
+
+        np.testing.assert_array_equal(returns, returns_new)
+        np.testing.assert_array_equal(rvol, rvol_new)
+
     def test_cir_sim_realized(self):
         """Test simulation of realized values of the CIR model."""
 
@@ -324,6 +365,14 @@ class RealizedSimTestCase(ut.TestCase):
 
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
+
+        data = cir.sim_realized(start, interval=interval, aggh=aggh,
+                                ndiscr=ndiscr, nperiods=nperiods,
+                                nsim=nsim, diff=0, new_innov=False)
+        returns_new, rvol_new = data
+
+        np.testing.assert_array_equal(returns, returns_new)
+        np.testing.assert_array_equal(rvol, rvol_new)
 
     def test_heston_sim_realized(self):
         """Test simulation of realized values of the Heston model."""
@@ -341,6 +390,14 @@ class RealizedSimTestCase(ut.TestCase):
 
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
+
+        data = heston.sim_realized(start, interval=interval, aggh=aggh,
+                                   ndiscr=ndiscr, nperiods=nperiods,
+                                   nsim=nsim, diff=0, new_innov=False)
+        returns_new, rvol_new = data
+
+        np.testing.assert_array_equal(returns, returns_new)
+        np.testing.assert_array_equal(rvol, rvol_new)
 
     def test_ct_sim_realized(self):
         """Test simulation of realized values of the Central Tendency model."""
@@ -366,6 +423,14 @@ class RealizedSimTestCase(ut.TestCase):
 
         self.assertEqual(returns.shape, (nperiods-aggh+1, ))
         self.assertEqual(rvol.shape, (nperiods-aggh+1, ))
+
+        data = centtend.sim_realized(start, interval=interval, aggh=aggh,
+                                     ndiscr=ndiscr, nperiods=nperiods,
+                                     nsim=nsim, diff=0, new_innov=False)
+        returns_new, rvol_new = data
+
+        np.testing.assert_array_equal(returns, returns_new)
+        np.testing.assert_array_equal(rvol, rvol_new)
 
 
 if __name__ == '__main__':

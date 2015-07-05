@@ -89,6 +89,7 @@ class SDE(object):
         self.interval = None
         self.ndiscr = None
         self.theta_true = theta_true
+        self.errors = None
 
     def euler_loc(self, state, theta):
         """Euler location.
@@ -210,7 +211,8 @@ class SDE(object):
 
         return new_state
 
-    def simulate(self, start, interval, ndiscr, nobs, nsim, diff=None):
+    def simulate(self, start, interval, ndiscr, nobs, nsim, diff=None,
+                 new_innov=True):
         """Simulate observations from the model.
 
         Parameters
@@ -228,6 +230,9 @@ class SDE(object):
         diff : int
             Dimensions which should be differentiated,
             i.e. return = price[1:] - price[:-1]
+        new_innov : bool
+            Whether to generate new innovations (True),
+            or use already stored (False)
 
         Returns
         -------
@@ -242,10 +247,12 @@ class SDE(object):
         nvars = np.size(start)
         npoints = nobs * ndiscr
 
-        self.errors = np.random.normal(size=(npoints, nsim, nvars))
+        if self.errors is None or new_innov:
+            # Generate new errors
+            self.errors = np.random.normal(size=(npoints, nsim, nvars))
+            # Standardize the errors
+            self.errors = nice_errors(self.errors, 1)
 
-        # Standardize the errors
-        self.errors = nice_errors(self.errors, 1)
         nsim = self.errors.shape[1]
 
         paths = start * np.ones((npoints + 1, nsim, nvars))
@@ -261,7 +268,7 @@ class SDE(object):
         return paths[1:]
 
     def sim_realized(self, start, interval=1/80, ndiscr=1, aggh=1,
-                     nperiods=500, nsim=1, diff=None):
+                     nperiods=500, nsim=1, diff=None, new_innov=True):
         """Simulate realized returns and variance from the model.
 
         Parameters
@@ -281,6 +288,9 @@ class SDE(object):
         diff : int
             Dimensions which should be differentiated,
             i.e. return = price[1:] - price[:-1]
+        new_innov : bool
+            Whether to generate new innovations (True),
+            or use already stored (False)
 
         Returns
         -------
@@ -292,7 +302,8 @@ class SDE(object):
         """
         intervals = int(1 / interval)
         nobs = nperiods * intervals
-        paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff)
+        paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff,
+                              new_innov)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
