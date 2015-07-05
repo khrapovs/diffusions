@@ -1406,7 +1406,7 @@ E^{P}\left[\sigma_{t}^{2}\right]=E^{P}\left[y_{t}^{2}\right]=\mu,
 while under the risk-neutral measure, they are different:
 \begin_inset Formula 
 \[
-E^{Q}\left[y_{t}^{2}\right]=\tilde{\mu}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}},
+E^{Q}\left[y_{t}^{2}\right]=\tilde{\mu}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}}>\mu,
 \]
 
 \end_inset
@@ -1414,7 +1414,7 @@ E^{Q}\left[y_{t}^{2}\right]=\tilde{\mu}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_
 and
 \begin_inset Formula 
 \[
-E^{Q}\left[\sigma_{t}^{2}\right]=E^{Q}\left[y_{t}^{2}\right]\frac{\kappa_{\sigma}}{\tilde{\kappa}_{\sigma}}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}}\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\lambda_{\sigma}\eta_{\sigma}}.
+E^{Q}\left[\sigma_{t}^{2}\right]=E^{Q}\left[y_{t}^{2}\right]\frac{\kappa_{\sigma}}{\tilde{\kappa}_{\sigma}}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}}\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\lambda_{\sigma}\eta_{\sigma}}>\tilde{\mu}.
 \]
 
 \end_inset
