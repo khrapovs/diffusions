@@ -109,6 +109,7 @@ class SDEParameterTestCase(ut.TestCase):
         kappa = 1.5
         eta = .1
         lmbd = .01
+        lmbd_v = .5
         rho = -.5
         param = HestonParam(riskfree=riskfree, lmbd=lmbd,
                             mean_v=mean_v, kappa=kappa,
@@ -116,11 +117,29 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, lmbd)
+        self.assertEqual(param.lmbd_v, .0)
         self.assertEqual(param.mean_v, mean_v)
         self.assertEqual(param.kappa, kappa)
         self.assertEqual(param.eta, eta)
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho, measure='Q')
+
+        self.assertEqual(param.riskfree, riskfree)
+        self.assertEqual(param.lmbd, 0)
+        self.assertEqual(param.lmbd_v, lmbd_v)
+        self.assertEqual(param.mean_v, mean_v * kappa / param.kappa)
+        self.assertEqual(param.kappa, kappa - lmbd_v * eta)
+        self.assertEqual(param.eta, eta)
+        self.assertEqual(param.rho, rho)
+        self.assertTrue(param.is_valid())
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                            mean_v=mean_v, kappa=kappa,
+                            eta=eta, rho=rho, measure='P')
 
         theta = np.array([mean_v, kappa, eta, lmbd, rho])
         theta_vol = theta[:3]
@@ -160,6 +179,8 @@ class SDEParameterTestCase(ut.TestCase):
 
         riskfree = .01
         lmbd = .01
+        lmbd_s = .5
+        lmbd_y = .5
         mean_v = .5
         kappa_s = 1.5
         kappa_y = .5
@@ -172,6 +193,8 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, lmbd)
+        self.assertEqual(param.lmbd_s, .0)
+        self.assertEqual(param.lmbd_y, .0)
         self.assertEqual(param.mean_v, mean_v)
         self.assertEqual(param.kappa_s, kappa_s)
         self.assertEqual(param.kappa_y, kappa_y)
@@ -179,6 +202,28 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.eta_y, eta_y)
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
+
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
+                              lmbd_y=lmbd_y, mean_v=mean_v, kappa_s=kappa_s,
+                              kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
+                              rho=rho, measure='Q')
+
+        self.assertEqual(param.riskfree, riskfree)
+        self.assertEqual(param.lmbd, 0)
+        self.assertEqual(param.lmbd_s, lmbd_s)
+        self.assertEqual(param.lmbd_y, lmbd_y)
+        self.assertEqual(param.mean_v, mean_v * kappa_y / param.kappa_y * param.scale)
+        self.assertEqual(param.kappa_s, kappa_s - lmbd_s * eta_s)
+        self.assertEqual(param.kappa_y, kappa_y - lmbd_y * eta_y)
+        self.assertEqual(param.scale, kappa_s / param.kappa_s)
+        self.assertEqual(param.eta_s, eta_s)
+        self.assertEqual(param.eta_y, eta_y * param.scale**.5)
+        self.assertEqual(param.rho, rho)
+        self.assertTrue(param.is_valid())
+
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         theta = np.array([mean_v, kappa_s, kappa_y, eta_s, eta_y, lmbd, rho])
         np.testing.assert_array_equal(param.get_theta(), theta)

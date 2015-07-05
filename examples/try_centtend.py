@@ -60,6 +60,8 @@ def try_simulation_pq():
     """
     riskfree = .01
     lmbd = 1.01
+    lmbd_s = .5
+    lmbd_y = .5
     mean_v = .5
     kappa_s = 1.5
     kappa_y = .05
@@ -67,9 +69,10 @@ def try_simulation_pq():
     eta_y = .001**.5
     rho = -.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
+                               lmbd_y=lmbd_y, mean_v=mean_v, kappa_s=kappa_s,
+                               kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
+                               rho=rho)
     centtend = CentTend(param_true)
     print(param_true.is_valid())
 
@@ -82,29 +85,20 @@ def try_simulation_pq():
     volatility = paths[:, 0, 1]
     tendency = paths[:, 0, 2]
 
-    lmbd = 0
-    lmbd_s, lmbd_y = .5, .5
-    assert lmbd_s < kappa_s / eta_s, 'kappa_s is not positive!'
-    assert lmbd_y < kappa_y / eta_y, 'kappa_y is not positive!'
-    kappa_sq = kappa_s - lmbd_s * eta_s
-    kappa_yq = kappa_y - lmbd_y * eta_y
-    scale = kappa_s / kappa_sq
-    mean_vq = mean_v * kappa_y / kappa_yq * scale
-    eta_yq = eta_y * scale**.5
-
-    param_true_new = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                                   mean_v=mean_vq, kappa_s=kappa_sq,
-                                   kappa_y=kappa_yq, eta_s=eta_s, eta_y=eta_yq,
-                                   rho=rho)
+    param_true_new = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
+                                   lmbd_y=lmbd_y, mean_v=mean_v,
+                                   kappa_s=kappa_s, kappa_y=kappa_y,
+                                   eta_s=eta_s, eta_y=eta_y,
+                                   rho=rho, measure='Q')
     centtend.update_theta(param_true_new)
-    start_q = [1, mean_vq, mean_vq]
+    start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
 
     paths_q = centtend.simulate(start_q, interval, ndiscr, npoints, nsim,
                                 diff=0, new_innov=False)
 
     returns_q = paths_q[:, 0, 0]
     volatility_q = paths_q[:, 0, 1]
-    tendency_q = paths_q[:, 0, 2] / scale
+    tendency_q = paths_q[:, 0, 2] / param_true_new.scale
 
     plot_trajectories([returns, returns_q], interval, ['returns', 'returns Q'])
     names = ['vol', 'ct']
@@ -192,6 +186,7 @@ def try_sim_realized_pq():
     """
     riskfree = .01
     lmbd = 1.01
+    lmbd_s, lmbd_y = .5, .5
     mean_v = .2
     kappa_s = .1
     kappa_y = .05
@@ -199,9 +194,10 @@ def try_sim_realized_pq():
     eta_y = .001**.5
     rho = -.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
+                               lmbd_y=lmbd_y, mean_v=mean_v, kappa_s=kappa_s,
+                               kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
+                               rho=rho)
     centtend = CentTend(param_true)
     print(param_true.is_valid())
 
@@ -215,29 +211,20 @@ def try_sim_realized_pq():
 
     returns, rvar = data
 
-    lmbd = 0
-    lmbd_s, lmbd_y = .5, .5
-    assert lmbd_s < kappa_s / eta_s, 'kappa_v is not positive!'
-    assert lmbd_y < kappa_y / eta_y, 'kappa_y is not positive!'
-    kappa_sq = kappa_s - lmbd_s * eta_s
-    kappa_yq = kappa_y - lmbd_y * eta_y
-    scale = kappa_s / kappa_sq
-    mean_vq = mean_v * kappa_y / kappa_yq * scale
-    eta_yq = eta_y * scale**.5
-
-    param_true_new = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                                   mean_v=mean_vq, kappa_s=kappa_sq,
-                                   kappa_y=kappa_yq, eta_s=eta_s, eta_y=eta_yq,
-                                   rho=rho)
+    param_true_new = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
+                                   lmbd_y=lmbd_y, mean_v=mean_v,
+                                   kappa_s=kappa_s, kappa_y=kappa_y,
+                                   eta_s=eta_s, eta_y=eta_y, rho=rho,
+                                   measure='Q')
     centtend.update_theta(param_true_new)
-    start_q = [1, mean_vq, mean_vq]
+    start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
     aggh = 10
     data_new = centtend.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
                                    aggh=aggh, nperiods=nperiods, nsim=nsim,
                                    diff=0, new_innov=False)
     returns_new, rvar_new = data_new
     plot_realized([returns[aggh-1:], returns_new],
-                  [rvar[aggh-1:], rvar_new],
+                  [rvar[aggh-1:], rvar_new / param_true_new.scale],
                   suffix=['P', 'Q'])
 
 
@@ -411,10 +398,10 @@ if __name__ == '__main__':
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
 #    try_simulation()
-    try_simulation_pq()
+#    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-#    try_sim_realized_pq()
+    try_sim_realized_pq()
 #    try_integrated_gmm_single()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

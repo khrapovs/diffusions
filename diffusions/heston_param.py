@@ -39,7 +39,7 @@ class HestonParam(object):
     """
 
     def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1,
-                 lmbd=.1, rho=-.5):
+                 lmbd=.1, lmbd_v=.0, rho=-.5, measure='P'):
         """Initialize class.
 
         Parameters
@@ -53,17 +53,26 @@ class HestonParam(object):
         eta : float
             Instantaneous standard deviation of volatility
         lmbd : float
-            Equity risk premium
+            Equity risk price
+        lmbd_v : float
+            Volatility risk price
         rho : float
             Correlation
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
 
         """
         self.riskfree = riskfree
-
-        self.mean_v = mean_v
-        self.kappa = kappa
+        if measure == 'P':
+            self.kappa = kappa
+            self.mean_v = mean_v
+            self.lmbd = lmbd
+        elif measure == 'Q':
+            self.kappa = kappa - lmbd_v * eta
+            self.mean_v = mean_v * kappa / self.kappa
+            self.lmbd = .0
+        self.lmbd_v = lmbd_v
         self.eta = eta
-        self.lmbd = lmbd
         self.rho = rho
 
         self.update_ajd()

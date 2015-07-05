@@ -39,9 +39,9 @@ class CentTendParam(object):
 
     """
 
-    def __init__(self, riskfree=.0, lmbd=.1,
+    def __init__(self, riskfree=.0, lmbd=.1, lmbd_s=.0, lmbd_y=.0,
                  mean_v=.5, kappa_s=1.5, kappa_y=.5,
-                 eta_s=.1, eta_y=.01, rho=-.5):
+                 eta_s=.1, eta_y=.01, rho=-.5, measure='P'):
         """Initialize class.
 
         Parameters
@@ -59,19 +59,34 @@ class CentTendParam(object):
         eta_y : float
             Instantaneous standard deviation of central tendency
         lmbd : float
-            Equity risk premium
+            Equity risk price
+        lmbd_s : float
+            Volatility risk price
+        lmbd_y : float
+            Central tendency risk price
         rho : float
             Correlation
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
 
         """
         self.riskfree = riskfree
-
-        self.mean_v = mean_v
-        self.kappa_s = kappa_s
-        self.kappa_y = kappa_y
+        if measure == 'P':
+            self.kappa_s = kappa_s
+            self.kappa_y = kappa_y
+            self.mean_v = mean_v
+            self.lmbd = lmbd
+            self.eta_y = eta_y
+        elif measure == 'Q':
+            self.kappa_s = kappa_s - lmbd_s * eta_s
+            self.kappa_y = kappa_y - lmbd_y * eta_y
+            self.scale = kappa_s / self.kappa_s
+            self.mean_v = mean_v * kappa_y / self.kappa_y * self.scale
+            self.lmbd = 0
+            self.eta_y = eta_y * self.scale**.5
+        self.lmbd_s = lmbd_s
+        self.lmbd_y = lmbd_y
         self.eta_s = eta_s
-        self.eta_y = eta_y
-        self.lmbd = lmbd
         self.rho = rho
 
         self.update_ajd()

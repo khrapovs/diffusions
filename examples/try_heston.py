@@ -44,6 +44,46 @@ def try_simulation():
     plot_trajectories(volatility, interval, 'volatility')
 
 
+def try_simulation_pq():
+    """Try simulating and plotting Heston model.
+
+    """
+    riskfree = .0
+    lmbd = .0
+    lmbd_v = .5
+    mean_v = .5
+    kappa = .1
+    eta = .02**.5
+    rho = -.9
+    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                             mean_v=mean_v, kappa=kappa,
+                             eta=eta, rho=rho, measure='P')
+    heston = Heston(param_true)
+    print(param_true.is_valid())
+
+    nperiods, interval, ndiscr, nsim = 100, .1, 10, 3
+    start = [1, mean_v]
+    npoints = int(nperiods / interval)
+    paths = heston.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
+
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                             mean_v=mean_v, kappa=kappa,
+                             eta=eta, rho=rho, measure='Q')
+    heston.update_theta(param_true)
+    start_q = [1, param_true.mean_v]
+    paths_q = heston.simulate(start_q, interval, ndiscr, npoints, nsim, diff=0,
+                              new_innov=False)
+
+    returns = paths[:, 0, 0]
+    volatility = paths[:, 0, 1]
+    returns_q = paths_q[:, 0, 0]
+    volatility_q = paths_q[:, 0, 1]
+    plot_trajectories([returns, returns_q], interval, ['returns', 'returns_q'])
+    plot_trajectories([volatility, volatility_q], interval,
+                      ['volatility', 'volatility_q'])
+
+
 def try_marginal():
     """Simulate and plot marginal distribution of the data in Heston model.
 
@@ -103,30 +143,28 @@ def try_sim_realized_pq():
     """
     riskfree = .0
     lmbd = 1.5
+    lmbd_v = .5
     mean_v = .5
     kappa = .1
     eta = .02**.5
     rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
-                             kappa=kappa, eta=eta, rho=rho)
+                             kappa=kappa, eta=eta, rho=rho, measure='P')
     heston = Heston(param_true)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 100, 1/10, 1, 1
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/10, 1, 1
     aggh = 1
 
     data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     returns, rvar = data
 
-    lmbd = 0
-    lmbd_v = .5
-    kappa_q = kappa - lmbd_v * eta
-    mean_vq = mean_v * kappa / kappa_q
-    param_true_new = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_vq,
-                                 kappa=kappa_q, eta=eta, rho=rho)
+    param_true_new = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                                 mean_v=mean_v, kappa=kappa, eta=eta, rho=rho,
+                                 measure='Q')
     heston.update_theta(param_true_new)
-    start_q = [1, mean_vq]
+    start_q = [1, param_true_new.mean_v]
     aggh = 10
     data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
                                    aggh=aggh, nperiods=nperiods, nsim=nsim,
@@ -267,6 +305,7 @@ if __name__ == '__main__':
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
 #    try_simulation()
+#    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
     try_sim_realized_pq()
