@@ -136,7 +136,7 @@ def plot_final_distr(paths, names):
     plt.show()
 
 
-def plot_realized(returns, rvar):
+def plot_realized(returns, rvar, suffix=None):
     """Plot realized returns and volatility.
 
     Parameters
@@ -148,10 +148,20 @@ def plot_realized(returns, rvar):
 
     """
     fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(7, 6))
-    axes[0].plot(returns, label='Returns')
-    axes[1].plot(rvar**.5, label='Realized volatility')
-    axes[0].legend()
-    axes[1].legend()
+    if isinstance(returns, list):
+        returns = np.vstack(returns).T
+        rlabel = ['Returns ' + x for x in suffix]
+    else:
+        rlabel = 'Returns'
+    if isinstance(rvar, list):
+        rvar = np.vstack(rvar).T
+        vlabel = ['Realized volatility ' + x for x in suffix]
+    else:
+        vlabel = 'Realized volatility'
+    axes[0].plot(returns)
+    axes[1].plot(rvar**.5)
+    axes[0].legend(rlabel)
+    axes[1].legend(vlabel)
     plt.show()
 
 

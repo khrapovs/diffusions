@@ -18,6 +18,9 @@ from load_real_data import load_data
 
 
 def try_simulation():
+    """Try simulating and plotting Heston model.
+
+    """
     riskfree = .0
     lmbd = .0
     mean_v = .5
@@ -42,6 +45,9 @@ def try_simulation():
 
 
 def try_marginal():
+    """Simulate and plot marginal distribution of the data in Heston model.
+
+    """
     riskfree = .0
     lmbd = .0
     mean_v = .5
@@ -66,6 +72,9 @@ def try_marginal():
 
 
 def try_sim_realized():
+    """Simulate realized data from Heston model and plot it.
+
+    """
     riskfree = .0
     lmbd = .0
     mean_v = .5
@@ -88,7 +97,47 @@ def try_sim_realized():
     plot_realized(returns, rvar)
 
 
+def try_sim_realized_pq():
+    """Simulate realized data from Heston model under P and Q measures.
+
+    """
+    riskfree = .0
+    lmbd = 1.5
+    mean_v = .5
+    kappa = .1
+    eta = .02**.5
+    rho = -.9
+    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho)
+    heston = Heston(param_true)
+
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 100, 1/80, 1, 1
+    aggh = 1
+
+    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                               aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
+    returns, rvar = data
+
+    lmbd = 0
+    lmbd_v = .5
+    kappa_q = kappa - lmbd_v * eta
+    mean_vq = mean_v * kappa / kappa_q
+    param_true_new = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_vq,
+                                 kappa=kappa_q, eta=eta, rho=rho)
+    heston.update_theta(param_true_new)
+    start_q = [1, mean_vq]
+    data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
+                                   aggh=aggh, nperiods=nperiods, nsim=nsim,
+                                   diff=0, new_innov=False)
+    returns_new, rvar_new = data_new
+    plot_realized([returns, returns_new], [rvar, rvar_new], suffix=['P', 'Q'])
+
+
 def try_integrated_gmm_single():
+    """Simulate realized data from Heston model. Estimate parameters.
+
+    """
     riskfree = .0
 
     mean_v = .5
@@ -127,6 +176,9 @@ def try_integrated_gmm_single():
 
 
 def try_integrated_gmm_real():
+    """Estimate Heston model parameters with real data.
+
+    """
     riskfree = .0
 
     mean_v = .2
@@ -163,6 +215,10 @@ def try_integrated_gmm_real():
 
 
 def try_integrated_gmm():
+    """Simulate realized data from Heston model. Estimate parameters.
+    Check various optimization methods.
+
+    """
     riskfree = .0
 
     mean_v = .5
@@ -209,7 +265,8 @@ if __name__ == '__main__':
     sns.set_context('notebook')
 #    try_simulation()
 #    try_marginal()
-    try_sim_realized()
+#    try_sim_realized()
+    try_sim_realized_pq()
 #    try_integrated_gmm_single()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()
