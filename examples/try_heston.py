@@ -112,7 +112,7 @@ def try_sim_realized_pq():
                              kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 100, 1/80, 1, 1
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 100, 1/10, 1, 1
     aggh = 1
 
     data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
@@ -127,11 +127,14 @@ def try_sim_realized_pq():
                                  kappa=kappa_q, eta=eta, rho=rho)
     heston.update_theta(param_true_new)
     start_q = [1, mean_vq]
+    aggh = 10
     data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
                                    aggh=aggh, nperiods=nperiods, nsim=nsim,
                                    diff=0, new_innov=False)
     returns_new, rvar_new = data_new
-    plot_realized([returns, returns_new], [rvar, rvar_new], suffix=['P', 'Q'])
+    plot_realized([returns[aggh-1:], returns_new],
+                  [rvar[aggh-1:], rvar_new],
+                  suffix=['P', 'Q'])
 
 
 def try_integrated_gmm_single():
