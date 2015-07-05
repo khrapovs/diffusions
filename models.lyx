@@ -908,7 +908,16 @@ Feller condition
 \begin_inset Formula $2\mu\kappa>\eta^{2}$
 \end_inset
 
-, so not new restrictions are added.
+.
+ Still, we need 
+\begin_inset Formula $\tilde{\kappa}>0$
+\end_inset
+
+ which is equivalent to 
+\begin_inset Formula $\lambda_{\sigma}<\kappa/\eta$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -1294,6 +1303,91 @@ with
 .
  Also let 
 \begin_inset Formula $R\left(Y_{t}\right)=r$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Risk-neutral model
+\end_layout
+
+\begin_layout Standard
+Let the log stochastic discount factor (SDF) process 
+\begin_inset Formula $m_{t}=\log M_{t}$
+\end_inset
+
+ be represented by the following SDE: 
+\begin_inset Formula 
+\[
+dm_{t}=-rdt-\zeta_{r}dW_{t}^{r}-\zeta_{v}dW_{t}^{v}-\zeta_{y}dW_{t}^{y}.
+\]
+
+\end_inset
+
+with
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\zeta_{r}\\
+\zeta_{v}\\
+\zeta_{y}
+\end{array}\right]=\left[\begin{array}{c}
+\lambda_{r}\sigma_{t}\\
+-\frac{1}{\sqrt{1-\rho^{2}}}\left(\rho\lambda_{r}+\lambda_{\sigma}\right)\sigma_{t}\\
+-\lambda_{y}y_{t}
+\end{array}\right].
+\]
+
+\end_inset
+
+The risk-neutral innovations are then
+\begin_inset Formula 
+\begin{eqnarray*}
+d\tilde{W}_{t}^{r} & = & dW_{t}^{r}+\zeta_{r}dt,\\
+d\tilde{W}_{t}^{v} & = & dW_{t}^{v}+\zeta_{v}dt,\\
+d\tilde{W}_{t}^{y} & = & dW_{t}^{y}+\zeta_{y}dt.
+\end{eqnarray*}
+
+\end_inset
+
+After the substitution 
+\begin_inset Formula 
+\begin{align*}
+dp_{t} & =\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}d\tilde{W}_{t}^{r},\\
+d\sigma_{t}^{2} & =\tilde{\kappa}_{\sigma}\left(\frac{\kappa_{\sigma}}{\tilde{\kappa}_{\sigma}}y_{t}^{2}-\sigma_{t}^{2}\right)dt+\eta_{\sigma}\sigma_{t}d\tilde{W}_{t}^{\sigma},\\
+dy_{t}^{2} & =\tilde{\kappa}_{y}\left(\tilde{\mu}-y_{t}^{2}\right)dt+\eta_{y}y_{t}d\tilde{W}_{t}^{y},
+\end{align*}
+
+\end_inset
+
+with 
+\begin_inset Formula $\tilde{W}_{t}^{\sigma}=\rho\tilde{W}_{t}^{r}+\sqrt{1-\rho^{2}}\tilde{W}_{t}^{v}$
+\end_inset
+
+, and the modified parameters are
+\begin_inset Formula 
+\[
+\tilde{\kappa}_{\sigma}=\kappa_{\sigma}-\lambda_{\sigma}\eta_{\sigma},\quad\tilde{\kappa}_{y}=\kappa_{y}-\lambda_{y}\eta_{y},\quad\tilde{\mu}=\mu\frac{\kappa_{y}}{\tilde{\kappa}_{y}}.
+\]
+
+\end_inset
+
+Feller condition 
+\begin_inset Formula $2\tilde{\kappa}\tilde{\mu}>\eta^{2}$
+\end_inset
+
+ is equivalent to the one for physical measure, 
+\begin_inset Formula $2\mu\kappa>\eta^{2}$
+\end_inset
+
+.
+ Still, we need 
+\begin_inset Formula $\tilde{\kappa}>0$
+\end_inset
+
+ which is equivalent to 
+\begin_inset Formula $\lambda_{\sigma}<\kappa/\eta$
 \end_inset
 
 .

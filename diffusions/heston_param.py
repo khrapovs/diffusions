@@ -31,6 +31,11 @@ class HestonParam(object):
     rho : float
         Correlation
 
+    Methods
+    -------
+    is_valid
+        Check Feller condition
+
     """
 
     def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1,
