@@ -212,7 +212,8 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.lmbd, 0)
         self.assertEqual(param.lmbd_s, lmbd_s)
         self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertEqual(param.mean_v, mean_v * kappa_y / param.kappa_y * param.scale)
+        self.assertEqual(param.mean_v, mean_v * kappa_y / param.kappa_y
+            * param.scale)
         self.assertEqual(param.kappa_s, kappa_s - lmbd_s * eta_s)
         self.assertEqual(param.kappa_y, kappa_y - lmbd_y * eta_y)
         self.assertEqual(param.scale, kappa_s / param.kappa_s)
