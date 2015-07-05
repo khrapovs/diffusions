@@ -1393,6 +1393,44 @@ Feller condition
 .
 \end_layout
 
+\begin_layout Standard
+Note that the unconditional means of the processes at hand under the physical
+ measure are the same:
+\begin_inset Formula 
+\[
+E^{P}\left[\sigma_{t}^{2}\right]=E^{P}\left[y_{t}^{2}\right]=\mu,
+\]
+
+\end_inset
+
+while under the risk-neutral measure, they are different:
+\begin_inset Formula 
+\[
+E^{Q}\left[y_{t}^{2}\right]=\tilde{\mu}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}},
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+E^{Q}\left[\sigma_{t}^{2}\right]=E^{Q}\left[y_{t}^{2}\right]\frac{\kappa_{\sigma}}{\tilde{\kappa}_{\sigma}}=\mu\frac{\kappa_{y}}{\kappa_{y}-\lambda_{y}\eta_{y}}\frac{\kappa_{\sigma}}{\kappa_{\sigma}-\lambda_{\sigma}\eta_{\sigma}}.
+\]
+
+\end_inset
+
+Given that all of the parameters above are non-negative, we can write the
+ following inequality:
+\begin_inset Formula 
+\[
+E^{P}\left[\sigma_{t}^{2}\right]=E^{P}\left[y_{t}^{2}\right]\leq E^{Q}\left[y_{t}^{2}\right]\leq E^{Q}\left[\sigma_{t}^{2}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 AJD representation
 \end_layout
