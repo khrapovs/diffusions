@@ -828,6 +828,87 @@ with
 \end_inset
 
 .
+ Feller condition is
+\begin_inset Formula 
+\[
+2\kappa\mu>\eta^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Risk-neutral model
+\end_layout
+
+\begin_layout Standard
+Let the log stochastic discount factor (SDF) process 
+\begin_inset Formula $m_{t}=\log M_{t}$
+\end_inset
+
+ be represented by the following SDE: 
+\begin_inset Formula 
+\[
+dm_{t}=-rdt-\zeta_{r}dW_{t}^{r}-\zeta_{v}dW_{t}^{v},
+\]
+
+\end_inset
+
+with
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\zeta_{r}\\
+\zeta_{v}
+\end{array}\right]=\left[\begin{array}{c}
+\lambda_{r}\sigma_{t}\\
+-\frac{1}{\sqrt{1-\rho^{2}}}\left(\rho\lambda_{r}+\lambda_{\sigma}\right)\sigma_{t}
+\end{array}\right].
+\]
+
+\end_inset
+
+The risk-neutral innovations are then
+\begin_inset Formula 
+\begin{eqnarray*}
+d\tilde{W}_{t}^{r} & = & dW_{t}^{r}+\zeta_{r}dt,\\
+d\tilde{W}_{t}^{v} & = & dW_{t}^{v}+\zeta_{v}dt.
+\end{eqnarray*}
+
+\end_inset
+
+After the substitution 
+\begin_inset Formula 
+\begin{align*}
+dp_{t} & =\left(r-\frac{1}{2}\sigma_{t}^{2}\right)dt+\sigma_{t}d\tilde{W}_{t}^{r},\\
+d\sigma_{t}^{2} & =\tilde{\kappa}\left(\tilde{\mu}-\sigma_{t}^{2}\right)dt+\eta\sigma_{t}d\tilde{W}_{t}^{\sigma},
+\end{align*}
+
+\end_inset
+
+with 
+\begin_inset Formula $\tilde{W}_{t}^{\sigma}=\rho\tilde{W}_{t}^{r}+\sqrt{1-\rho^{2}}\tilde{W}_{t}^{v}$
+\end_inset
+
+, and the modified parameters are
+\begin_inset Formula 
+\[
+\tilde{\kappa}=\kappa-\lambda_{\sigma}\eta,\quad\tilde{\mu}=\mu\frac{\kappa}{\tilde{\kappa}}.
+\]
+
+\end_inset
+
+Feller condition 
+\begin_inset Formula $2\tilde{\kappa}\tilde{\mu}>\eta^{2}$
+\end_inset
+
+ is equivalent to the one for physical measure, 
+\begin_inset Formula $2\mu\kappa>\eta^{2}$
+\end_inset
+
+, so not new restrictions are added.
 \end_layout
 
 \begin_layout Subsection
@@ -913,7 +994,7 @@ H_{0}=\left[\begin{array}{cc}
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Subsection
 Integrated moments (alternative)
