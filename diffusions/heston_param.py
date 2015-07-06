@@ -63,21 +63,26 @@ class HestonParam(object):
 
         """
         self.riskfree = riskfree
-        if measure == 'P':
-            self.kappa = kappa
-            self.mean_v = mean_v
-            self.lmbd = lmbd
-        elif measure == 'Q':
-            self.kappa = kappa - lmbd_v * eta
-            self.mean_v = mean_v * kappa / self.kappa
-            self.lmbd = .0
+        self.kappa = kappa
+        self.mean_v = mean_v
+        self.lmbd = lmbd
         self.lmbd_v = lmbd_v
         self.eta = eta
         self.rho = rho
-
+        if measure == 'Q':
+            self.convert_to_q()
         self.update_ajd()
         if not self.is_valid():
             warnings.warn('Feller condition is violated!')
+
+    def convert_to_q(self):
+        """Convert parameters to risk-neutral version.
+
+        """
+        kappa_p = self.kappa
+        self.kappa = kappa_p - self.lmbd_v * self.eta
+        self.mean_v *= (kappa_p / self.kappa)
+        self.lmbd = .0
 
     def update_ajd(self):
         """Update AJD representation.
@@ -102,7 +107,7 @@ class HestonParam(object):
         """
         return 2 * self.kappa * self.mean_v - self.eta**2 > 0
 
-    def update(self, theta, subset='all'):
+    def update(self, theta, subset='all', measure='P'):
         """Update attributes from parameter vector.
 
         Parameters
@@ -119,6 +124,8 @@ class HestonParam(object):
             [self.mean_v, self.kappa, self.eta] = theta
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
+        if measure == 'Q':
+            self.convert_to_q()
         self.update_ajd()
 
     def get_theta(self, subset='all'):

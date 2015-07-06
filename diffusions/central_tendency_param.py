@@ -71,27 +71,34 @@ class CentTendParam(object):
 
         """
         self.riskfree = riskfree
-        if measure == 'P':
-            self.kappa_s = kappa_s
-            self.kappa_y = kappa_y
-            self.mean_v = mean_v
-            self.lmbd = lmbd
-            self.eta_y = eta_y
-        elif measure == 'Q':
-            self.kappa_s = kappa_s - lmbd_s * eta_s
-            self.kappa_y = kappa_y - lmbd_y * eta_y
-            self.scale = kappa_s / self.kappa_s
-            self.mean_v = mean_v * kappa_y / self.kappa_y * self.scale
-            self.lmbd = 0
-            self.eta_y = eta_y * self.scale**.5
+        self.kappa_s = kappa_s
+        self.kappa_y = kappa_y
+        self.mean_v = mean_v
+        self.lmbd = lmbd
         self.lmbd_s = lmbd_s
         self.lmbd_y = lmbd_y
+        self.eta_y = eta_y
         self.eta_s = eta_s
         self.rho = rho
-
+        self.scale = 1
+        if measure == 'Q':
+            self.convert_to_q()
         self.update_ajd()
         if not self.is_valid():
             warnings.warn('Feller condition is violated!')
+
+    def convert_to_q(self):
+        """Convert parameters to risk-neutral version.
+
+        """
+        kappa_sp = self.kappa_s
+        kappa_yp = self.kappa_y
+        self.kappa_s = self.kappa_s - self.lmbd_s * self.eta_s
+        self.kappa_y = self.kappa_y - self.lmbd_y * self.eta_y
+        self.scale = kappa_sp / self.kappa_s
+        self.mean_v *= (kappa_yp / self.kappa_y * self.scale)
+        self.lmbd = 0
+        self.eta_y *= (self.scale**.5)
 
     def update_ajd(self):
         """Update AJD representation.
@@ -119,7 +126,7 @@ class CentTendParam(object):
         """
         return 2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0
 
-    def update(self, theta, subset='all'):
+    def update(self, theta, subset='all', measure='P'):
         """Update attributes from parameter vector.
 
         Parameters
@@ -138,6 +145,8 @@ class CentTendParam(object):
                  self.eta_s, self.eta_y] = theta
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
+        if measure == 'Q':
+            self.convert_to_q()
         self.update_ajd()
 
     def get_theta(self, subset='all'):
