@@ -8,17 +8,17 @@
 Affine Diffusions
 =================
 
+Simulation and estimation of Affine Diffusion models.
+
 Documentation
 -------------
-
-Simulation and estimation of Affine Diffusion models.
 
 `Documentation <http://diffusions.readthedocs.org/en/latest/>`_
 
 Requirements
 ------------
 
-`MyGMM <https://github.com/khrapovs/mygmm>`_
+- `mygmm <https://github.com/khrapovs/mygmm>`_
 
 Installation
 ------------
