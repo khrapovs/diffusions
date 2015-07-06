@@ -24,3 +24,4 @@
 *.token
 .ipynb_checkpoints
 build/
+*.egg-info

@@ -48,7 +48,7 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from diffusions.mygmm import GMM
+from mygmm import GMM
 from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
                                rolling_window, columnwise_prod, instruments)
 

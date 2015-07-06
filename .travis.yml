@@ -24,6 +24,7 @@ before_install:
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose seaborn statsmodels
   - conda install --yes -c https://conda.binstar.org/omnia numdifftools
+  - pip install git+git://github.com/khrapovs/mygmm
 
 # Run test
 script:
