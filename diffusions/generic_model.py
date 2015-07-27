@@ -362,7 +362,3 @@ class SDE(object):
         moms = columnwise_prod(error, instr)
 
         return moms, None
-
-
-if __name__ == '__main__':
-    pass

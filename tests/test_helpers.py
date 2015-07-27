@@ -10,8 +10,8 @@ import unittest as ut
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from diffusions import (columnwise_prod, rolling_window, nice_errors,
-                        poly_coef, instruments)
+from diffusions.helper_functions import (columnwise_prod, rolling_window,
+                                         nice_errors, poly_coef, instruments)
 
 
 class HelperFunctionTestCase(ut.TestCase):

@@ -11,7 +11,7 @@ import numpy as np
 
 from diffusions import (GBMparam, VasicekParam, CIRparam,
                         HestonParam, CentTendParam)
-from diffusions import ajd_drift, ajd_diff
+from diffusions.helper_functions import ajd_drift, ajd_diff
 
 
 class DriftTestCase(ut.TestCase):

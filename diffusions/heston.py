@@ -333,7 +333,3 @@ class Heston(SDE):
         if subset == 'vol':
             subset_sl = slice(2)
         return param, subset_sl
-
-
-if __name__ == '__main__':
-    pass
