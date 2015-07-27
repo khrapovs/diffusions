@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-
-#from distutils.core import setup
-from setuptools import setup, Extension, find_packages
-from setuptools.dist import Distribution
+from setuptools import setup, find_packages
 
 
 with open('README.rst') as file:
@@ -10,14 +7,14 @@ with open('README.rst') as file:
 
 setup(name='diffusions',
       version='1.0',
-      description=('Affine Diffusions. Simulation and estimation.'),
+      description='Affine Diffusions. Simulation and estimation.',
       long_description=long_description,
       author='Stanislav Khrapov',
-      license='MIT',
       author_email='khrapovs@gmail.com',
       url='https://github.com/khrapovs/diffusions',
-      py_modules=['diffusions'],
+      license='MIT',
       packages=find_packages(),
+      zip_safe=False,
       keywords=['diffusion', 'econometrics', 'estimation', 'affine',
         'CIR', 'Vasicek', 'Brownian motion', 'SDE', 'GBM',
         'Heston', 'volatility', 'stochastic', 'central tendency',
