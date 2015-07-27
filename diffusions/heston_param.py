@@ -11,10 +11,12 @@ import warnings
 
 import numpy as np
 
+from .generic_param import GenericParam
+
 __all__ = ['HestonParam']
 
 
-class HestonParam(object):
+class HestonParam(GenericParam):
 
     """Parameter storage for Heston model.
 
@@ -96,6 +98,39 @@ class HestonParam(object):
         self.mat_h1[1] = [[1, self.eta*self.rho],
                     [self.eta*self.rho, self.eta**2]]
 
+    def get_model_name(self):
+        """Return model name.
+
+        Returns
+        -------
+        str
+            Parameter vector
+
+        """
+        return 'Heston'
+
+    def get_names(self, subset='all'):
+        """Return parameter names.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to return. Belongs to ['all', 'vol']
+
+        Returns
+        -------
+        list of str
+            Parameter names
+
+        """
+        names = ['mean_v', 'kappa', 'eta', 'lmbd', 'rho']
+        if subset == 'all':
+            return names
+        elif subset == 'vol':
+            return names[:3]
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
+
     def is_valid(self):
         """Check Feller condition.
 
@@ -107,6 +142,22 @@ class HestonParam(object):
         """
         return 2 * self.kappa * self.mean_v - self.eta**2 > 0
 
+    @classmethod
+    def from_theta(cls, theta, measure='P'):
+        """Initialize parameters from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
+
+        """
+        return cls(riskfree=theta[0], mean_v=theta[1], kappa=theta[2],
+                   eta=theta[3], lmbd=theta[4], lmbd_v=theta[5],
+                   rho=theta[6], measure=measure)
+
     def update(self, theta, subset='all', measure='P'):
         """Update attributes from parameter vector.
 
@@ -116,6 +167,8 @@ class HestonParam(object):
             Parameter vector
         subset : str
             Which parameters to update. Belongs to ['all', 'vol']
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
 
         """
         if subset == 'all':

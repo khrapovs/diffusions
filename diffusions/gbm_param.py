@@ -54,7 +54,7 @@ class GBMparam(GenericParam):
 
     @classmethod
     def from_theta(cls, theta):
-        """Update attributes from parameter vector.
+        """Initialize parameters from parameter vector.
 
         Parameters
         ----------
@@ -65,6 +65,18 @@ class GBMparam(GenericParam):
         param = cls(mean=theta[0], sigma=theta[1])
         param.update_ajd()
         return param
+
+    def update(self, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        self.mean, self.sigma = theta
+        self.update_ajd()
 
     def get_model_name(self):
         """Return model name.

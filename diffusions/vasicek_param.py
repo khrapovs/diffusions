@@ -9,10 +9,12 @@ from __future__ import print_function, division
 
 import numpy as np
 
+from .generic_param import GenericParam
+
 __all__ = ['VasicekParam']
 
 
-class VasicekParam(object):
+class VasicekParam(GenericParam):
 
     """Parameter storage for Vasicek model.
 
@@ -55,16 +57,19 @@ class VasicekParam(object):
         self.mat_h0 = self.eta**2
         self.mat_h1 = 0
 
-    def get_theta(self):
-        """Return vector of parameters.
+    @classmethod
+    def from_theta(cls, theta):
+        """Initialize parameters from parameter vector.
 
-        Returns
-        -------
-        (3, ) array
+        Parameters
+        ----------
+        theta : (nparams, ) array
             Parameter vector
 
         """
-        return np.array([self.mean, self.kappa, self.eta])
+        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
+        param.update_ajd()
+        return param
 
     def update(self, theta):
         """Update attributes from parameter vector.
@@ -75,5 +80,38 @@ class VasicekParam(object):
             Parameter vector
 
         """
-        [self.mean, self.kappa, self.eta] = theta
+        self.mean, self.kappa, self.eta = theta
         self.update_ajd()
+
+    def get_model_name(self):
+        """Return model name.
+
+        Returns
+        -------
+        str
+            Parameter vector
+
+        """
+        return 'Vasicek'
+
+    def get_names(self):
+        """Return parameter names.
+
+        Returns
+        -------
+        (3, ) list of str
+            Parameter names
+
+        """
+        return ['mean', 'kappa', 'eta']
+
+    def get_theta(self):
+        """Return vector of parameters.
+
+        Returns
+        -------
+        (3, ) array
+            Parameter vector
+
+        """
+        return np.array([self.mean, self.kappa, self.eta])

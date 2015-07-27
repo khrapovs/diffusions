@@ -37,12 +37,27 @@ class GenericParam(object):
 
     @classmethod
     def from_theta(cls, theta):
+        """Initialize parameters from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        raise NotImplementedError('Must be overridden')
+
+    def update(self, theta, subset='all', measure='P'):
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update. Belongs to ['all', 'vol']
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
 
         """
         raise NotImplementedError('Must be overridden')

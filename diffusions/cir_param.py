@@ -9,10 +9,12 @@ from __future__ import print_function, division
 
 import numpy as np
 
+from .generic_param import GenericParam
+
 __all__ = ['CIRparam']
 
 
-class CIRparam(object):
+class CIRparam(GenericParam):
 
     """Parameter storage for CIR model.
 
@@ -43,8 +45,6 @@ class CIRparam(object):
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        # Vector of parameters
-        self.theta = [mean, kappa, eta]
         self.update_ajd()
 
     def update_ajd(self):
@@ -57,29 +57,6 @@ class CIRparam(object):
         self.mat_h0 = 0.
         self.mat_h1 = self.eta**2
 
-    def get_theta(self):
-        """Return vector of parameters.
-
-        Returns
-        -------
-        (3, ) array
-            Parameter vector
-
-        """
-        return np.array([self.mean, self.kappa, self.eta])
-
-    def update(self, theta):
-        """Update attributes from parameter vector.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
-
-        """
-        [self.mean, self.kappa, self.eta] = theta
-        self.update_ajd()
-
     def is_valid(self):
         """Check Feller condition.
 
@@ -90,3 +67,62 @@ class CIRparam(object):
 
         """
         return 2 * self.kappa * self.mean - self.eta**2 > 0
+
+    @classmethod
+    def from_theta(cls, theta):
+        """Initialize parameters from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
+        param.update_ajd()
+        return param
+
+    def update(self, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        self.mean, self.kappa, self.eta = theta
+        self.update_ajd()
+
+    def get_model_name(self):
+        """Return model name.
+
+        Returns
+        -------
+        str
+            Parameter vector
+
+        """
+        return 'CIR'
+
+    def get_names(self):
+        """Return parameter names.
+
+        Returns
+        -------
+        (3, ) list of str
+            Parameter names
+
+        """
+        return ['mean', 'kappa', 'eta']
+
+    def get_theta(self):
+        """Return vector of parameters.
+
+        Returns
+        -------
+        (3, ) array
+            Parameter vector
+
+        """
+        return np.array([self.mean, self.kappa, self.eta])

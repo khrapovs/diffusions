@@ -11,10 +11,12 @@ import warnings
 
 import numpy as np
 
+from .generic_param import GenericParam
+
 __all__ = ['CentTendParam']
 
 
-class CentTendParam(object):
+class CentTendParam(GenericParam):
 
     """Parameter storage for CT model.
 
@@ -126,6 +128,58 @@ class CentTendParam(object):
         """
         return 2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0
 
+    def get_model_name(self):
+        """Return model name.
+
+        Returns
+        -------
+        str
+            Parameter vector
+
+        """
+        return 'CT'
+
+    def get_names(self, subset='all'):
+        """Return parameter names.
+
+        Parameters
+        ----------
+        subset : str
+            Which parameters to return. Belongs to ['all', 'vol']
+
+        Returns
+        -------
+        list of str
+            Parameter names
+
+        """
+        names = ['mean_v', 'kappa', 'eta', 'lmbd', 'rho']
+        if subset == 'all':
+            return names
+        elif subset == 'vol':
+            return names[:3]
+        else:
+            raise ValueError(subset + ' keyword variable is not supported!')
+
+    @classmethod
+    def from_theta(cls, theta, measure='P'):
+        """Initialize parameters from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+        measure : str
+            Either physical measure (P), or risk-neutral (Q)
+
+        """
+        param = cls(riskfree=theta[0], mean_v=theta[1], kappa_s=theta[2],
+                    kappa_v=theta[3], eta_s=theta[4], eta_y=theta[5],
+                    lmbd=theta[6], lmbd_s=theta[7], lmbd_y=theta[8],
+                    rho=theta[9], measure=measure)
+
+        return param
+
     def update(self, theta, subset='all', measure='P'):
         """Update attributes from parameter vector.
 
@@ -194,7 +248,3 @@ class CentTendParam(object):
             return bounds[:5]
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
-
-
-if __name__ == '__main__':
-    pass
