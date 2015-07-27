@@ -16,6 +16,8 @@ from diffusions import plot_trajectories, plot_final_distr, plot_realized
 def try_simulation():
     mean, sigma = .05, .2
     theta_true = GBMparam(mean, sigma)
+    print(theta_true)
+
     gbm = GBM(theta_true)
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
@@ -94,8 +96,8 @@ def try_integrated_gmm():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_simulation()
+    try_simulation()
 #    try_marginal()
 #    try_sim_realized()
 #    try_gmm()
-    try_integrated_gmm()
+#    try_integrated_gmm()

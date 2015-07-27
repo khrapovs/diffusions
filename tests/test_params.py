@@ -31,8 +31,7 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(2)
-        param = GBMparam()
-        param.update(theta=theta)
+        param = GBMparam.from_theta(theta)
         np.testing.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.mean - param.sigma**2/2

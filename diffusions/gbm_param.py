@@ -50,6 +50,31 @@ class GBMparam(object):
         self.mat_h0 = self.sigma**2
         self.mat_h1 = 0.
 
+    @classmethod
+    def from_theta(cls, theta):
+        """Update attributes from parameter vector.
+
+        Parameters
+        ----------
+        theta : (nparams, ) array
+            Parameter vector
+
+        """
+        param = cls(mean=theta[0], sigma=theta[1])
+        param.update_ajd()
+        return param
+
+    def get_names(self):
+        """Return parameter names.
+
+        Returns
+        -------
+        (2, ) array
+            Parameter vector
+
+        """
+        return ['mean', 'sigma']
+
     def get_theta(self):
         """Return vector of parameters.
 
@@ -61,14 +86,17 @@ class GBMparam(object):
         """
         return np.array([self.mean, self.sigma])
 
-    def update(self, theta):
-        """Update attributes from parameter vector.
-
-        Parameters
-        ----------
-        theta : (nparams, ) array
-            Parameter vector
+    def __str__(self):
+        """String representation.
 
         """
-        [self.mean, self.sigma] = theta
-        self.update_ajd()
+        show = 'GBM parameters:\n'
+        for name, param in zip(self.get_names(), self.get_theta()):
+            show += name + ' = ' + str(param) + ', '
+        return show[:-2]
+
+    def __repr__(self):
+        """String representation.
+
+        """
+        return self.__str__()
