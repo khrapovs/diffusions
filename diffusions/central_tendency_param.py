@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-r"""
-Parameter class for Central Tendency (CT) model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+CT parameter class
+~~~~~~~~~~~~~~~~~~
 
 """
 from __future__ import print_function, division

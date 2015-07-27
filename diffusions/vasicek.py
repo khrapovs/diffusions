@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
-Vasicek model for interest rates
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Suppose that :math:`r_{t}` evolves according to
-
-.. math::
-    dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\eta dW_{t}.
+Vasicek model class
+~~~~~~~~~~~~~~~~~~~
 
 """
 from __future__ import print_function, division
