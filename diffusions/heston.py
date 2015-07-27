@@ -39,9 +39,6 @@ class Heston(SDE):
 
     """Heston model.
 
-    Attributes
-    ----------
-
     Methods
     -------
 
@@ -49,6 +46,11 @@ class Heston(SDE):
 
     def __init__(self, theta_true=None):
         """Initialize the class.
+
+        Parameters
+        ----------
+        theta_true : parameter instance
+            True parameters used for simulation of the data
 
         """
         super(Heston, self).__init__(theta_true)

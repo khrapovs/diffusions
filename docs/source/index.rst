@@ -8,7 +8,7 @@ Affine Diffusion Models
 =======================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    generic_model
    gbm

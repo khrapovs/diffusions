@@ -96,7 +96,7 @@ def try_integrated_gmm():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-    try_simulation()
+#    try_simulation()
 #    try_marginal()
 #    try_sim_realized()
 #    try_gmm()

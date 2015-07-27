@@ -38,16 +38,15 @@ class CentTend(SDE):
 
     """Central Tendency model.
 
-    Attributes
-    ----------
-
-    Methods
-    -------
-
     """
 
     def __init__(self, theta_true=None):
         """Initialize the class.
+
+        Parameters
+        ----------
+        theta_true : parameter instance
+            True parameters used for simulation of the data
 
         """
         super(CentTend, self).__init__(theta_true)

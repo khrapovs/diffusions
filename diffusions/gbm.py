@@ -42,16 +42,15 @@ class GBM(SDE):
 
     """Geometric Brownian Motion.
 
-    Attributes
-    ----------
-
-    Methods
-    -------
-
     """
 
     def __init__(self, theta_true=None):
         """Initialize the class.
+
+        Parameters
+        ----------
+        theta_true : parameter instance
+            True parameters used for simulation of the data
 
         """
         super(GBM, self).__init__(theta_true)
@@ -369,7 +368,3 @@ class GBM(SDE):
         dmom = np.vstack(dmom)
 
         return mom, dmom
-
-
-if __name__ == '__main__':
-    pass

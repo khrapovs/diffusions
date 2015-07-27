@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Parameter class for Geometric Brownian Motion (GBM)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------
 
 """
 from __future__ import print_function, division

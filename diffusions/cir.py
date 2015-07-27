@@ -24,16 +24,15 @@ class CIR(SDE):
 
     """Cox-Ingersoll-Ross (CIR) model.
 
-    Attributes
-    ----------
-
-    Methods
-    -------
-
     """
 
     def __init__(self, theta_true=None):
         """Initialize the class.
+
+        Parameters
+        ----------
+        theta_true : parameter instance
+            True parameters used for simulation of the data
 
         """
         super(CIR, self).__init__(theta_true)
@@ -75,7 +74,3 @@ class CIR(SDE):
 
         """
         return theta.eta * state**.5
-
-
-if __name__ == '__main__':
-    pass
