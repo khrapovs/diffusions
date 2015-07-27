@@ -1,5 +1,5 @@
-Vasicek model
--------------
+Vasicek
+-------
 
 Suppose that :math:`r_{t}` evolves according to
 

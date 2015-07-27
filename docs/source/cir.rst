@@ -1,5 +1,5 @@
-Cox-Ingersoll-Ross (CIR) model
-------------------------------
+Cox-Ingersoll-Ross (CIR)
+------------------------
 
 Suppose that :math:`r_{t}` evolves according to
 

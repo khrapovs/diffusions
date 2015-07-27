@@ -1,5 +1,5 @@
-Heston model
-------------
+Heston
+------
 
 The model is
 

@@ -1,4 +1,4 @@
-Gemoetric Brownian Motion (GBM)
+Geometric Brownian Motion (GBM)
 -------------------------------
 
 Suppose that :math:`S_{t}` evolves according to

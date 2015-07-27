@@ -1,5 +1,5 @@
-Central Tendency (CT) model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Central Tendency (CT)
+---------------------
 
 The model is
 

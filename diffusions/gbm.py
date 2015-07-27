@@ -88,8 +88,7 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam()
-        param.update(theta=theta)
+        param = GBMparam.from_theta(theta)
         loc = float(self.exact_loc(0, param))
         return np.array([loc, 0], dtype=float)
 
@@ -107,8 +106,7 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam()
-        param.update(theta=theta)
+        param = GBMparam.from_theta(theta)
         loc = float(self.exact_loc(0, param))
         scale = float(self.exact_scale(0, param))
         return np.array([loc**2 + scale**2, 0], dtype=float)

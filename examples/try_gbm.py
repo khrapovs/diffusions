@@ -100,4 +100,4 @@ if __name__ == '__main__':
 #    try_marginal()
 #    try_sim_realized()
 #    try_gmm()
-#    try_integrated_gmm()
+    try_integrated_gmm()
