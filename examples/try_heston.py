@@ -13,7 +13,8 @@ import numpy as np
 import seaborn as sns
 
 from diffusions import Heston, HestonParam
-from diffusions import plot_trajectories, plot_final_distr, plot_realized
+from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
+                                         plot_realized)
 from load_real_data import load_data
 
 
