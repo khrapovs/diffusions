@@ -193,7 +193,7 @@ def try_integrated_gmm_single():
                              eta=eta, rho=rho)
     heston = Heston(param_true)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 2000, 1/80, 1, 1
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 1000, 1/10, 1, 1
     aggh = 1
     data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
@@ -309,7 +309,7 @@ if __name__ == '__main__':
 #    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-    try_sim_realized_pq()
-#    try_integrated_gmm_single()
+#    try_sim_realized_pq()
+    try_integrated_gmm_single()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

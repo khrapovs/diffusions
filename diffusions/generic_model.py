@@ -279,24 +279,24 @@ class SDE(object):
 
         Parameters
         ----------
-        theta_start : parameter instance
+        theta_start : array
             Initial parameter values for estimation.
 
         """
         estimator = GMM(self.momcond)
-        return estimator.gmmest(theta_start.get_theta(), **kwargs)
+        return estimator.gmmest(theta_start, **kwargs)
 
     def integrated_gmm(self, theta_start, **kwargs):
         """Estimate model parameters using Integrated GMM.
 
         Parameters
         ----------
-        theta_start : parameter instance
+        theta_start : array
             Initial parameter values for estimation.
 
         """
         estimator = GMM(self.integrated_mom)
-        return estimator.gmmest(theta_start.get_theta(), **kwargs)
+        return estimator.gmmest(theta_start, **kwargs)
 
     def integrated_mom(self, theta, data=None, instr_data=None,
                        instr_choice='const', aggh=1, subset='all',
@@ -330,6 +330,7 @@ class SDE(object):
             Average derivative of the moment restrictions
 
         """
+        # Convert parameter vector to instance
         param, subset_sl = self.convert(theta, subset)
 
         ret, rvar = data
