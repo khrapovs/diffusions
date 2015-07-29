@@ -104,6 +104,18 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(mom.shape, mom_shape)
         self.assertIsNone(dmom)
 
+        subset = 'vol'
+        mom, dmom = heston.integrated_mom(param.get_theta(subset=subset),
+                                          subset=subset, measure='Q',
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms = 2
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+        self.assertIsNone(dmom)
+
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
 

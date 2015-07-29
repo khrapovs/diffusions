@@ -217,6 +217,48 @@ def try_integrated_gmm_single():
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
+def try_integrated_gmm_single_rn():
+    """Simulate realized data from risk-neutral Heston model.
+    Estimate parameters.
+
+    """
+    riskfree = .0
+
+    mean_v = .5
+    kappa = .1
+    eta = .02**.5 # 0.1414
+    lmbd = .3
+    rho = -.5
+    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                             mean_v=mean_v, kappa=kappa,
+                             eta=eta, rho=rho)
+    heston = Heston(param_true)
+
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 1000, 1/10, 1, 1
+    aggh = 1
+    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+                               aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
+    ret, rvar = data
+    plot_realized(ret, rvar)
+
+    instr_data = np.vstack([rvar, rvar**2])
+
+    param_start = param_true
+    param_start.update(param_true.get_theta()/2)
+    subset = 'vol'
+    theta_start = param_start.get_theta(subset=subset)
+    bounds = param_start.get_bounds(subset=subset)
+
+    time_start = time.time()
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
+                                instr_data=instr_data, aggh=aggh,
+                                instr_choice='var', method='TNC',
+                                subset=subset, iter=3, bounds=bounds)
+    res.print_results()
+    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+
+
 def try_integrated_gmm_real():
     """Estimate Heston model parameters with real data.
 
