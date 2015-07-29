@@ -36,6 +36,8 @@ class HestonParam(GenericParam):
         Volatility risk price
     rho : float
         Correlation
+    measure : str
+        Under which measure (P or Q)
 
     Methods
     -------
@@ -79,6 +81,7 @@ class HestonParam(GenericParam):
         self.lmbd_v = lmbd_v
         self.eta = eta
         self.rho = rho
+        self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
@@ -89,10 +92,14 @@ class HestonParam(GenericParam):
         """Convert parameters to risk-neutral version.
 
         """
-        kappa_p = self.kappa
-        self.kappa = kappa_p - self.lmbd_v * self.eta
-        self.mean_v *= (kappa_p / self.kappa)
-        self.lmbd = .0
+        if self.measure == 'Q':
+            warnings.warn('Parameters are already converted to Q!')
+        else:
+            kappa_p = self.kappa
+            self.kappa = kappa_p - self.lmbd_v * self.eta
+            self.mean_v *= (kappa_p / self.kappa)
+            self.lmbd = .0
+            self.measure = 'Q'
 
     def update_ajd(self):
         """Update AJD representation.
@@ -194,6 +201,7 @@ class HestonParam(GenericParam):
             [self.mean_v, self.kappa, self.eta] = theta
         else:
             raise ValueError(subset + ' keyword variable is not supported!')
+        self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()

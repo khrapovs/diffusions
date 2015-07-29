@@ -166,7 +166,7 @@ def try_sim_realized_pq():
                                  measure='Q')
     heston.update_theta(param_true_new)
     start_q = [1, param_true_new.mean_v]
-    aggh = 10
+    aggh = 1
     data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
                                    aggh=aggh, nperiods=nperiods, nsim=nsim,
                                    diff=0, new_innov=False)
@@ -223,23 +223,35 @@ def try_integrated_gmm_single_rn():
 
     """
     riskfree = .0
-
+    lmbd = 1.5
+    lmbd_v = .5
     mean_v = .5
     kappa = .1
-    eta = .02**.5 # 0.1414
-    lmbd = .3
-    rho = -.5
+    eta = .02**.5
+    rho = -.9
     # 2 * self.kappa * self.mean_v - self.eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
-    heston = Heston(param_true)
+    param_p = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho, measure='P')
+    heston = Heston(param_p)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 1000, 1/10, 1, 1
+    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/10, 1, 1
     aggh = 1
-    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+
+    data_p = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    ret, rvar = data
+    returns_p, rvar_p = data_p
+
+    param_q = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
+                                 mean_v=mean_v, kappa=kappa, eta=eta, rho=rho,
+                                 measure='Q')
+    heston.update_theta(param_true_new)
+    start_q = [1, param_true_new.mean_v]
+    aggh = 1
+    data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
+                                   aggh=aggh, nperiods=nperiods, nsim=nsim,
+                                   diff=0, new_innov=False)
+    returns_new, rvar_new = data_new
+
     plot_realized(ret, rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
@@ -351,7 +363,7 @@ if __name__ == '__main__':
 #    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-#    try_sim_realized_pq()
-    try_integrated_gmm_single()
+    try_sim_realized_pq()
+#    try_integrated_gmm_single()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

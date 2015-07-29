@@ -6,6 +6,8 @@ Test suite for parameter classes.
 """
 from __future__ import print_function, division
 
+import warnings
+
 import unittest as ut
 import numpy as np
 
@@ -190,9 +192,31 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
+        param.convert_to_q()
+
+        self.assertEqual(param.riskfree, riskfree)
+        self.assertEqual(param.lmbd, 0)
+        self.assertEqual(param.lmbd_v, lmbd_v)
+        self.assertEqual(param.mean_v, mean_v * kappa / param.kappa)
+        self.assertEqual(param.kappa, kappa - lmbd_v * eta)
+        self.assertEqual(param.eta, eta)
+        self.assertEqual(param.rho, rho)
+        self.assertTrue(param.is_valid())
+
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
                             mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho, measure='Q')
+
+        self.assertEqual(param.riskfree, riskfree)
+        self.assertEqual(param.lmbd, 0)
+        self.assertEqual(param.lmbd_v, lmbd_v)
+        self.assertEqual(param.mean_v, mean_v * kappa / param.kappa)
+        self.assertEqual(param.kappa, kappa - lmbd_v * eta)
+        self.assertEqual(param.eta, eta)
+        self.assertEqual(param.rho, rho)
+        self.assertTrue(param.is_valid())
+
+        param.convert_to_q()
 
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, 0)
