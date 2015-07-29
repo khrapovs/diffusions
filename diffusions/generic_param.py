@@ -16,10 +16,6 @@ class GenericParam(object):
 
     Attributes
     ----------
-    mean : float
-        Mean of the process
-    sigma : float
-        Instantaneous standard deviation
 
     """
 

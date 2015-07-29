@@ -52,17 +52,6 @@ class SDE(object):
         self.theta_true = theta_true
         self.errors = None
 
-    def update_theta(self, theta_true):
-        """Update model parameters.
-
-        Parameters
-        ----------
-        theta_true : parameter instance
-            True parameters used for simulation of the data
-
-        """
-        self.theta_true = theta_true
-
     def euler_loc(self, state, theta):
         """Euler location.
 

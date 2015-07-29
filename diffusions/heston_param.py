@@ -22,14 +22,18 @@ class HestonParam(GenericParam):
 
     Attributes
     ----------
-    mean_r : float
-        Instantaneous rate of return
+    riskfree : float
+        Risk-free rate of return
     mean_v : float
         Mean of the volatility process
     kappa : float
         Mean reversion speed
     eta : float
         Instantaneous standard deviation of volatility
+    lmbd : float
+        Equity risk price
+    lmbd_v : float
+        Volatility risk price
     rho : float
         Correlation
 
@@ -37,6 +41,8 @@ class HestonParam(GenericParam):
     -------
     is_valid
         Check Feller condition
+    convert_to_q
+        Convert parameters to risk-neutral version
 
     """
 
