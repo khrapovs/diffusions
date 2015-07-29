@@ -20,10 +20,10 @@ Feller condition for positivity of the volatility process is
 :math:`\kappa\mu>\frac{1}{2}\eta^{2}`.
 
 
-.. automodule:: diffusions.heston
-
-.. autoclass:: diffusions.heston.Heston
-
 .. automodule:: diffusions.heston_param
 
 .. autoclass:: diffusions.heston_param.HestonParam
+
+.. automodule:: diffusions.heston
+
+.. autoclass:: diffusions.heston.Heston

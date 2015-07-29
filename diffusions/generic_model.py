@@ -281,7 +281,6 @@ class SDE(object):
         ----------
         theta_start : parameter instance
             Initial parameter values for estimation.
-            Object with mandatory attribute 'theta'.
 
         """
         estimator = GMM(self.momcond)
@@ -294,7 +293,6 @@ class SDE(object):
         ----------
         theta_start : parameter instance
             Initial parameter values for estimation.
-            Object with mandatory attribute 'theta'.
 
         """
         estimator = GMM(self.integrated_mom)

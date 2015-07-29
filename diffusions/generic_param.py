@@ -12,7 +12,7 @@ __all__ = ['GenericParam']
 
 class GenericParam(object):
 
-    """Parameter storage for GBM model.
+    """Generic parameter storage. Must be overriden.
 
     Attributes
     ----------

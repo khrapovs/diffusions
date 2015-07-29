@@ -10,10 +10,10 @@ Feller condition for positivity of the process is
 :math:`\kappa\mu>\frac{1}{2}\eta^{2}`.
 
 
-.. automodule:: diffusions.cir
-
-.. autoclass:: diffusions.cir.CIR
-
 .. automodule:: diffusions.cir_param
 
 .. autoclass:: diffusions.cir_param.CIRparam
+
+.. automodule:: diffusions.cir
+
+.. autoclass:: diffusions.cir.CIR

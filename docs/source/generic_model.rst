@@ -48,4 +48,4 @@ of :math:`Y` as well as the effects of any discounting.
 .. automodule:: diffusions.generic_model
 
 .. autoclass:: diffusions.generic_model.SDE
-	:members: update_theta, simulate, sim_realized, gmmest, integrated_gmm
+	:members: simulate, sim_realized, gmmest, integrated_gmm

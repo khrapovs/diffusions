@@ -17,10 +17,10 @@ or in other words
 Also let :math:`R\left(Y_{t}\right)=r`.
 
 
-.. automodule:: diffusions.central_tendency
-
-.. autoclass:: diffusions.central_tendency.CentTend
-
 .. automodule:: diffusions.central_tendency_param
 
 .. autoclass:: diffusions.central_tendency_param.CentTendParam
+
+.. automodule:: diffusions.central_tendency
+
+.. autoclass:: diffusions.central_tendency.CentTend
