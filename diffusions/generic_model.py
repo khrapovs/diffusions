@@ -300,7 +300,7 @@ class SDE(object):
 
     def integrated_mom(self, theta, data=None, instr_data=None,
                        instr_choice='const', aggh=1, subset='all',
-                       instrlag=1, **kwargs):
+                       instrlag=1, measure='P'):
         """Integrated moment function.
 
         Parameters
@@ -320,7 +320,13 @@ class SDE(object):
         aggh : int
             Number of intervals (days) to aggregate over using rolling mean
         subset : str
-            Which parameters to estimate. Belongs to ['all', 'vol']
+            Which parameters to estimate. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
+        measure : str
+            Under which measure to estimate:
+                - P : physical measure
+                - Q : risk-neutral
 
         Returns
         -------
@@ -331,7 +337,7 @@ class SDE(object):
 
         """
         # Convert parameter vector to instance
-        param, subset_sl = self.convert(theta, subset)
+        param, subset_sl = self.convert(theta, subset=subset, measure=measure)
 
         ret, rvar = data
         lag = 2

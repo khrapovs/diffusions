@@ -179,9 +179,9 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(depvar.shape, (nperiods, 6 * 4))
 
         mom, dmom = centtend.integrated_mom(param.get_theta(),
-                                          instr_data=instr_data,
-                                          instr_choice='var',
-                                          data=data, instrlag=instrlag)
+                                            instr_data=instr_data,
+                                            instr_choice='var',
+                                            data=data, instrlag=instrlag)
         nmoms_all = nmoms * (ninstr*instrlag + 1)
         mom_shape = (nperiods - instrlag, nmoms_all)
 

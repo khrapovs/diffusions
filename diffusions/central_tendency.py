@@ -510,7 +510,7 @@ class CentTend(SDE):
         return lagmat(var.T, maxlag=5, original='in')
 
     @staticmethod
-    def convert(theta, subset):
+    def convert(theta, subset='all', measure='P'):
         """Convert parameter vector to instance.
 
         Parameters
@@ -518,7 +518,13 @@ class CentTend(SDE):
         theta : array
             Model parameters
         subset : str
-            Which parameters to estimate. Belongs to ['all', 'vol']
+            Which parameters to estimate. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
+        measure : str
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
 
         Returns
         -------
@@ -529,7 +535,7 @@ class CentTend(SDE):
 
         """
         param = CentTendParam()
-        param.update(theta=theta, subset=subset)
+        param.update(theta=theta, subset=subset, measure=measure)
         subset_sl = None
         if subset == 'vol':
             subset_sl = slice(2)

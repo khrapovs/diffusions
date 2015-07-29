@@ -69,7 +69,9 @@ class CentTendParam(GenericParam):
         rho : float
             Correlation
         measure : str
-            Either physical measure (P), or risk-neutral (Q)
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
 
         """
         self.riskfree = riskfree
@@ -145,7 +147,9 @@ class CentTendParam(GenericParam):
         Parameters
         ----------
         subset : str
-            Which parameters to return. Belongs to ['all', 'vol']
+            Which parameter names to return. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
 
         Returns
         -------
@@ -170,7 +174,9 @@ class CentTendParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         measure : str
-            Either physical measure (P), or risk-neutral (Q)
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
 
         """
         param = cls(riskfree=theta[0], mean_v=theta[1], kappa_s=theta[2],
@@ -188,7 +194,9 @@ class CentTendParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         subset : str
-            Which parameters to update. Belongs to ['all', 'vol']
+            Which parameters to update. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
 
         """
         if subset == 'all':
@@ -209,7 +217,9 @@ class CentTendParam(GenericParam):
         Parameters
         ----------
         subset : str
-            Which parameters to update. Belongs to ['all', 'vol']
+            Which parameters to return. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
 
         Returns
         -------
@@ -232,7 +242,9 @@ class CentTendParam(GenericParam):
         Parameters
         ----------
         subset : str
-            Which parameters to update. Belongs to ['all', 'vol']
+            Which parameter bounds to return. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
 
         Returns
         -------
