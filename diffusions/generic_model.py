@@ -311,7 +311,7 @@ class SDE(object):
 
     def integrated_mom(self, theta, data=None, instr_data=None,
                        instr_choice='const', aggh=1, subset='all',
-                       instrlag=1, measure='P'):
+                       instrlag=1, measure='P', **kwargs):
         """Integrated moment function.
 
         Parameters
@@ -348,7 +348,7 @@ class SDE(object):
 
         """
         # Convert parameter vector to instance
-        param, subset_sl = self.convert(theta, subset=subset, measure=measure)
+        param, subset_sl = self.convert(theta, subset=subset)
 
         ret, rvar = data
         lag = 2

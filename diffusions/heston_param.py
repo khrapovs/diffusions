@@ -100,6 +100,7 @@ class HestonParam(GenericParam):
             self.mean_v *= (kappa_p / self.kappa)
             self.lmbd = .0
             self.measure = 'Q'
+            self.update_ajd()
 
     def update_ajd(self):
         """Update AJD representation.

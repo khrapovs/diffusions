@@ -166,6 +166,7 @@ class SDEParameterTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         names = ['mean_v', 'kappa', 'eta', 'lmbd', 'rho']
 
+        self.assertEqual(param.measure, 'P')
         self.assertEqual(param.get_model_name(), 'Heston')
         self.assertEquals(param.get_names(), names)
         self.assertEquals(param.get_names(subset='all'), names)
@@ -183,6 +184,7 @@ class SDEParameterTestCase(ut.TestCase):
         theta = [riskfree, mean_v, kappa, eta, lmbd, lmbd_v, rho]
         param = HestonParam.from_theta(theta, measure='P')
 
+        self.assertEqual(param.measure, 'P')
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, lmbd)
         self.assertEqual(param.lmbd_v, lmbd_v)
@@ -194,6 +196,7 @@ class SDEParameterTestCase(ut.TestCase):
 
         param.convert_to_q()
 
+        self.assertEqual(param.measure, 'Q')
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, 0)
         self.assertEqual(param.lmbd_v, lmbd_v)
@@ -202,11 +205,23 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.eta, eta)
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
+
+        mat_k0 = [param.riskfree, param.kappa * param.mean_v]
+        mat_k1 = [[0, param.lmbd - .5], [0, -param.kappa]]
+        mat_h0 = np.zeros((2, 2))
+        mat_h1 = [np.zeros((2, 2)), [[1, param.eta*param.rho],
+                  [param.eta*param.rho, param.eta**2]]]
+
+        np.testing.assert_array_equal(param.mat_k0, mat_k0)
+        np.testing.assert_array_equal(param.mat_k1, mat_k1)
+        np.testing.assert_array_equal(param.mat_h0, mat_h0)
+        np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
                             mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho, measure='Q')
 
+        self.assertEqual(param.measure, 'Q')
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, 0)
         self.assertEqual(param.lmbd_v, lmbd_v)
@@ -216,20 +231,14 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
-        param.convert_to_q()
-
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, 0)
-        self.assertEqual(param.lmbd_v, lmbd_v)
-        self.assertEqual(param.mean_v, mean_v * kappa / param.kappa)
-        self.assertEqual(param.kappa, kappa - lmbd_v * eta)
-        self.assertEqual(param.eta, eta)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            param.convert_to_q()
 
         theta = [riskfree, mean_v, kappa, eta, lmbd, lmbd_v, rho]
         param = HestonParam.from_theta(theta, measure='Q')
 
+        self.assertEqual(param.measure, 'Q')
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, 0)
         self.assertEqual(param.lmbd_v, lmbd_v)
@@ -245,6 +254,7 @@ class SDEParameterTestCase(ut.TestCase):
         mean_vq = mean_v * kappa / param.kappa
         kappa_q = kappa - lmbd_v * eta
 
+        self.assertEqual(param.measure, 'Q')
         self.assertEqual(param.riskfree, riskfree)
         self.assertEqual(param.lmbd, 0)
         self.assertEqual(param.lmbd_v, lmbd_v)
