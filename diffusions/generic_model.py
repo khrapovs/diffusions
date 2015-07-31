@@ -183,8 +183,8 @@ class SDE(object):
 
         return new_state
 
-    def simulate(self, start, interval, ndiscr, nobs, nsim, diff=None,
-                 new_innov=True):
+    def simulate(self, start, interval=1/80, ndiscr=1, nobs=500, nsim=1,
+                 diff=None, new_innov=True):
         """Simulate observations from the model.
 
         Parameters
@@ -274,8 +274,9 @@ class SDE(object):
         """
         intervals = int(1 / interval)
         nobs = nperiods * intervals
-        paths = self.simulate(start, interval, ndiscr, nobs, nsim, diff,
-                              new_innov)
+        paths = self.simulate(start, interval=interval, ndiscr=ndiscr,
+                              nobs=nobs, nsim=nsim, diff=diff,
+                              new_innov=new_innov)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)

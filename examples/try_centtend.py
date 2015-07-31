@@ -41,8 +41,8 @@ def try_simulation():
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 500, .1, 10, 3
-    npoints = int(nperiods / interval)
-    paths = centtend.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
+    nobs = int(nperiods / interval)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
@@ -78,8 +78,8 @@ def try_simulation_pq():
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 100, .1, 10, 3
-    npoints = int(nperiods / interval)
-    paths = centtend.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
+    nobs = int(nperiods / interval)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
@@ -93,7 +93,7 @@ def try_simulation_pq():
     centtend.update_theta(param_true_new)
     start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
 
-    paths_q = centtend.simulate(start_q, interval, ndiscr, npoints, nsim,
+    paths_q = centtend.simulate(start_q, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim,
                                 diff=0, new_innov=False)
 
     returns_q = paths_q[:, 0, 0]
@@ -131,8 +131,8 @@ def try_marginal():
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 500, .1, 10, 1000
-    npoints = int(nperiods / interval)
-    paths = centtend.simulate(start, interval, ndiscr, npoints, nsim, diff=0)
+    nobs = int(nperiods / interval)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
     volatility = paths[:, :, 1]

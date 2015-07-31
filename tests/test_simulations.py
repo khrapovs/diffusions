@@ -168,21 +168,24 @@ class SimulationTestCase(ut.TestCase):
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+        paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                             nobs=nobs, nsim=nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
         nsim = 1
-        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+        paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                             nobs=nobs, nsim=nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        paths_new = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0,
-                                 new_innov=False)
+        paths_new = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                                 nobs=nobs, nsim=nsim, diff=0, new_innov=False)
 
         np.testing.assert_array_equal(paths, paths_new)
 
-        paths = gbm.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                             nobs=nobs, nsim=nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
@@ -199,17 +202,19 @@ class SimulationTestCase(ut.TestCase):
         vasicek = Vasicek(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = vasicek.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = vasicek.simulate(start, interval=interval, ndiscr=ndiscr,
+                                 nobs=nobs, nsim=nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        paths_new = vasicek.simulate(start, interval, ndiscr, nobs, nsim,
-                                     new_innov=False)
+        paths_new = vasicek.simulate(start, interval=interval, ndiscr=ndiscr,
+                                     nobs=nobs, nsim=nsim, new_innov=False)
 
         np.testing.assert_array_equal(paths, paths_new)
 
-        fun = lambda: vasicek.simulate([1, 1], interval, ndiscr,
-                                       nobs, nsim, diff=0)
+        fun = lambda: vasicek.simulate([1, 1], interval=interval,
+                                       ndiscr=ndiscr, nobs=nobs, nsim=nsim,
+                                       diff=0)
 
         self.assertRaises(ValueError, fun)
 
@@ -222,12 +227,13 @@ class SimulationTestCase(ut.TestCase):
         cir = CIR(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = cir.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = cir.simulate(start, interval=interval, ndiscr=ndiscr,
+                             nobs=nobs, nsim=nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        paths_new = cir.simulate(start, interval, ndiscr, nobs, nsim,
-                                 new_innov=False)
+        paths_new = cir.simulate(start, interval=interval, ndiscr=ndiscr,
+                                 nobs=nobs, nsim=nsim, new_innov=False)
 
         np.testing.assert_array_equal(paths, paths_new)
 
@@ -247,20 +253,24 @@ class SimulationTestCase(ut.TestCase):
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = heston.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+        paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        paths_new = heston.simulate(start, interval, ndiscr, nobs, nsim,
+        paths_new = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                    nobs=nobs, nsim=nsim,
                                     diff=0, new_innov=False)
 
         np.testing.assert_array_equal(paths, paths_new)
 
-        paths = heston.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        fun = lambda: heston.simulate(0, interval, ndiscr, nobs, nsim, diff=0)
+        fun = lambda: heston.simulate(0, interval=interval, ndiscr=ndiscr,
+                                      nobs=nobs, nsim=nsim, diff=0)
 
         self.assertRaises(ValueError, fun)
 
@@ -283,21 +293,24 @@ class SimulationTestCase(ut.TestCase):
         start = [1, mean_v, mean_v]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
         nobs = int(nperiods / interval)
-        paths = centtend.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+        paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                                  nobs=nobs, nsim=nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        paths_new = centtend.simulate(start, interval, ndiscr, nobs, nsim,
+        paths_new = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                                      nobs=nobs, nsim=nsim,
                                       diff=0, new_innov=False)
 
         np.testing.assert_array_equal(paths, paths_new)
 
-        paths = centtend.simulate(start, interval, ndiscr, nobs, nsim)
+        paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                                  nobs=nobs, nsim=nsim)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
 
-        fun = lambda: centtend.simulate(0, interval, ndiscr, nobs,
-                                        nsim, diff=0)
+        fun = lambda: centtend.simulate(0, interval=interval, ndiscr=ndiscr,
+                                        nobs=nobs, nsim=nsim, diff=0)
 
         self.assertRaises(ValueError, fun)
 
@@ -418,14 +431,11 @@ class RealizedSimTestCase(ut.TestCase):
         start_q = [1, param.mean_v]
         aggh = [1, 2]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
-        data_p, data_q = heston.sim_realized_pq(start_p, start_q,
-                                                interval=interval,
-                                                ndiscr=ndiscr,
-                                                nperiods=nperiods,
-                                                nsim=nsim, aggh=aggh, diff=0)
+        data = heston.sim_realized_pq(start_p, start_q, interval=interval,
+                                      ndiscr=ndiscr, nperiods=nperiods,
+                                      nsim=nsim, aggh=aggh, diff=0)
 
-        ret_p, rvar_p = data_p
-        ret_q, rvar_q = data_q
+        (ret_p, rvar_p), (ret_q, rvar_q) = data
 
         self.assertEqual(ret_p.shape, (nperiods-aggh[0]+1, ))
         self.assertEqual(ret_q.shape, (nperiods-aggh[1]+1, ))

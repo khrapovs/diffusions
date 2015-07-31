@@ -10,7 +10,8 @@ import seaborn as sns
 import numpy as np
 
 from diffusions import GBM, GBMparam
-from diffusions import plot_trajectories, plot_final_distr, plot_realized
+from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
+                                         plot_realized)
 
 
 def try_simulation():
@@ -22,7 +23,8 @@ def try_simulation():
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+                         nsim=nsim, diff=0)
     data = paths[:, 0, 0]
 
     plot_trajectories(data, interval, 'returns')
@@ -35,7 +37,8 @@ def try_marginal():
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 20
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+                         nsim=nsim, diff=0)
     data = paths[:, :, 0]
 
     plot_final_distr(data/interval, 'returns')
@@ -48,7 +51,8 @@ def try_gmm():
 
     start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 1
     nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval, ndiscr, nobs, nsim, diff=0)
+    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+                         nsim=nsim, diff=0)
     data = paths[:, 0, 0]
 
     plot_trajectories(data, interval, 'returns')
@@ -96,8 +100,8 @@ def try_integrated_gmm():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_simulation()
-#    try_marginal()
-#    try_sim_realized()
+    try_simulation()
+    try_marginal()
+    try_sim_realized()
 #    try_gmm()
-    try_integrated_gmm()
+#    try_integrated_gmm()
