@@ -26,7 +26,7 @@ class GenericModelTestCase(ut.TestCase):
         param_new = GBMparam(2*mean, 2*sigma)
         gbm.update_theta(param_new)
 
-        self.assertEqual(gbm.theta_true, param_new)
+        self.assertEqual(gbm.param, param_new)
 
 
 if __name__ == '__main__':

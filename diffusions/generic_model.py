@@ -22,7 +22,7 @@ class SDE(object):
 
     Attributes
     ----------
-    theta_true : parameter instance
+    param : parameter instance
         True parameters used for simulation of the data
 
     Methods
@@ -38,30 +38,30 @@ class SDE(object):
 
     """
 
-    def __init__(self, theta_true=None):
+    def __init__(self, param=None):
         """Initialize the class.
 
         Parameters
         ----------
-        theta_true : parameter instance
+        param : parameter instance
             True parameters used for simulation of the data
 
         """
         self.interval = None
         self.ndiscr = None
-        self.theta_true = theta_true
+        self.param = param
         self.errors = None
 
-    def update_theta(self, theta_true):
+    def update_theta(self, param):
         """Update model parameters.
 
         Parameters
         ----------
-        theta_true : parameter instance
+        param : parameter instance
             True parameters used for simulation of the data
 
         """
-        self.theta_true = theta_true
+        self.param = param
 
     def euler_loc(self, state, theta):
         """Euler location.
@@ -168,9 +168,9 @@ class SDE(object):
 
         """
         # (nsim, nvars) array_like
-        loc = self.euler_loc(state, self.theta_true)
+        loc = self.euler_loc(state, self.param)
         # (nsim, nvars, nvars) array_like
-        scale = self.euler_scale(state, self.theta_true)
+        scale = self.euler_scale(state, self.param)
 
         new_state = loc / self.ndiscr \
             + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T \
@@ -212,7 +212,7 @@ class SDE(object):
             Simulated data
 
         """
-        if np.size(self.theta_true.mat_k0) != np.size(start):
+        if np.size(self.param.mat_k0) != np.size(start):
             raise ValueError('Start for paths is of wrong dimension!')
         self.interval = interval
         self.ndiscr = ndiscr
