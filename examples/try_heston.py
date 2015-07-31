@@ -228,8 +228,8 @@ def try_integrated_gmm_single_rn():
     lmbd = 1.5
     lmbd_v = .1
     mean_v = .5
-    kappa = .05
-    eta = .2
+    kappa = .04
+    eta = .15
     rho = -.9
     # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
@@ -239,7 +239,7 @@ def try_integrated_gmm_single_rn():
 
     start = [1, param_true.mean_v]
     aggh = [1, 1]
-    nperiods, interval, ndiscr, nsim = 1000, 1/50, 1, 1
+    nperiods, interval, ndiscr, nsim = 2000, 1/100, 1, 1
 
     data_p, data_q = heston.sim_realized_pq(start, start, interval=interval,
                                   ndiscr=ndiscr, aggh=aggh, nperiods=nperiods,
@@ -365,8 +365,8 @@ if __name__ == '__main__':
 #    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-    try_sim_realized_pq()
+#    try_sim_realized_pq()
 #    try_integrated_gmm_single()
-#    try_integrated_gmm_single_rn()
+    try_integrated_gmm_single_rn()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()
