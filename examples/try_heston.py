@@ -254,12 +254,12 @@ def try_integrated_gmm_single_rn():
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
     subset = 'vol'
-    theta_start = param_true.get_theta(subset=subset) / 2
+    theta_start = param_true.get_theta(subset=subset)
     bounds = param_true.get_bounds(subset=subset)
 
     res = heston.integrated_gmm(theta_start, data=data_p, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[0],
-                                instr_choice='var', method='SLSQP',
+                                instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds)
 
     res.print_results()
@@ -267,7 +267,7 @@ def try_integrated_gmm_single_rn():
     time_start = time.time()
     res = heston.integrated_gmm(theta_start, data=data_q, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[1],
-                                instr_choice='var', method='SLSQP',
+                                instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds)
     res.print_results()
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
