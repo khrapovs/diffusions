@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-r"""
+"""
 CIR model class
 ~~~~~~~~~~~~~~~
 
@@ -18,16 +18,16 @@ class CIR(SDE):
 
     """
 
-    def __init__(self, theta_true=None):
+    def __init__(self, param=None):
         """Initialize the class.
 
         Parameters
         ----------
-        theta_true : parameter instance
+        param : parameter instance
             True parameters used for simulation of the data
 
         """
-        super(CIR, self).__init__(theta_true)
+        super(CIR, self).__init__(param)
 
     @staticmethod
     def drift(state, theta):

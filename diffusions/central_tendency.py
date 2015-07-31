@@ -25,16 +25,16 @@ class CentTend(SDE):
 
     """
 
-    def __init__(self, theta_true=None):
+    def __init__(self, param=None):
         """Initialize the class.
 
         Parameters
         ----------
-        theta_true : parameter instance
+        param : parameter instance
             True parameters used for simulation of the data
 
         """
-        super(CentTend, self).__init__(theta_true)
+        super(CentTend, self).__init__(param)
 
     @staticmethod
     def coef_big_as(param, aggh):
