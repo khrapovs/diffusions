@@ -399,6 +399,39 @@ class RealizedSimTestCase(ut.TestCase):
         np.testing.assert_array_equal(returns, returns_new)
         np.testing.assert_array_equal(rvol, rvol_new)
 
+    def test_heston_sim_realized_pq(self):
+        """Test simulation of realized data of Heston model under P and Q."""
+
+        riskfree = .0
+        lmbd = 1.5
+        lmbd_v = .5
+        mean_v = .5
+        kappa = .1
+        eta = .02**.5
+        rho = -.9
+        # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+        heston = Heston(param)
+        start_p = [1, param.mean_v]
+        # param.convert_to_q()
+        start_q = [1, param.mean_v]
+        aggh = [1, 2]
+        nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
+        data_p, data_q = heston.sim_realized_pq(start_p, start_q,
+                                                interval=interval,
+                                                ndiscr=ndiscr,
+                                                nperiods=nperiods,
+                                                nsim=nsim, aggh=aggh, diff=0)
+
+        ret_p, rvar_p = data_p
+        ret_q, rvar_q = data_q
+
+        self.assertEqual(ret_p.shape, (nperiods-aggh[0]+1, ))
+        self.assertEqual(ret_q.shape, (nperiods-aggh[1]+1, ))
+        self.assertEqual(rvar_p.shape, (nperiods-aggh[0]+1, ))
+        self.assertEqual(rvar_q.shape, (nperiods-aggh[1]+1, ))
+
     def test_ct_sim_realized(self):
         """Test simulation of realized values of the Central Tendency model."""
 

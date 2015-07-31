@@ -285,6 +285,35 @@ class SDE(object):
         returns = rolling_window(np.mean, returns, window=aggh)
         return returns, rvar
 
+    def sim_realized_pq(self, start_p, start_q, aggh=[1, 1], **kwargs):
+        """Simulate realized data from the model under both P and Q.
+
+        Parameters
+        ----------
+        start_p : array_like
+            Starting value for simulation under P
+        start_q : array_like
+            Starting value for simulation under Q
+        aggh : list
+            Aggregation windows for P and Q respectively
+
+        Returns
+        -------
+        data_p : tuple
+            Returns and realized variance under P
+        data_q : tuple
+            Returns and realized variance under Q
+
+        Notes
+        -----
+        See sim_realized
+
+        """
+        data_p = self.sim_realized(start_p, aggh=aggh[0], **kwargs)
+        self.param.convert_to_q()
+        data_q = self.sim_realized(start_q, aggh=aggh[1], **kwargs)
+        return data_p, data_q
+
     def gmmest(self, theta_start, **kwargs):
         """Estimate model parameters using GMM.
 

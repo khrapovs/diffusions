@@ -155,25 +155,20 @@ def try_sim_realized_pq():
     heston = Heston(param_true)
 
     start, nperiods, interval, ndiscr, nsim = [1, mean_v], 500, 1/10, 1, 1
-    aggh = 1
+    aggh = [1, 2]
 
-    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
-                               aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    returns, rvar = data
-    print(param_true)
-    param_true.convert_to_q()
-    print(param_true)
+    print(heston.param)
 
-    heston.update_theta(param_true)
-    start_q = [1, param_true.mean_v]
-    aggh = 1
-    data_new = heston.sim_realized(start_q, interval=interval, ndiscr=ndiscr,
-                                   aggh=aggh, nperiods=nperiods, nsim=nsim,
-                                   diff=0, new_innov=False)
-    returns_new, rvar_new = data_new
-    plot_realized([returns[aggh-1:], returns_new],
-                  [rvar[aggh-1:], rvar_new],
-                  suffix=['P', 'Q'])
+    data_p, data_q = heston.sim_realized_pq(start, start, interval=interval,
+                                  ndiscr=ndiscr, aggh=aggh, nperiods=nperiods,
+                                  nsim=nsim, diff=0)
+    ret_p, rvar_p = data_p
+    ret_q, rvar_q = data_q
+    print(heston.param)
+    nobs = np.min([ret_p.size, ret_q.size])
+
+    plot_realized([ret_p[-nobs:], ret_q[-nobs:]],
+                  [rvar_p[-nobs:], rvar_q[-nobs:]], suffix=['P', 'Q'])
 
 
 def try_integrated_gmm_single():
@@ -378,8 +373,8 @@ if __name__ == '__main__':
 #    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-#    try_sim_realized_pq()
+    try_sim_realized_pq()
 #    try_integrated_gmm_single()
-    try_integrated_gmm_single_rn()
+#    try_integrated_gmm_single_rn()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()
