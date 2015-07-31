@@ -85,8 +85,6 @@ class HestonParam(GenericParam):
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
-        if not self.is_valid():
-            warnings.warn('Feller condition is violated!')
 
     def convert_to_q(self):
         """Convert parameters to risk-neutral version.
@@ -159,8 +157,18 @@ class HestonParam(GenericParam):
 
         """
         posit = (self.mean_v > 0) & (self.kappa > 0) & (self.eta > 0)
-        feller = 2 * self.kappa * self.mean_v - self.eta**2 > 0
-        return posit & feller
+        return posit & self.feller()
+
+    def feller(self):
+        """Check Feller condition.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        return 2 * self.kappa * self.mean_v - self.eta**2 > 0
 
     @classmethod
     def from_theta(cls, theta, measure='P'):

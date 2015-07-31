@@ -47,6 +47,19 @@ class CIRparam(GenericParam):
         self.eta = eta
         self.update_ajd()
 
+    def is_valid(self):
+        """Check validity of parameters.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        posit = (self.kappa > 0) & (self.eta > 0)
+        feller = 2 * self.kappa * self.mean - self.eta**2 > 0
+        return posit & feller
+
     def update_ajd(self):
         """Update AJD representation.
 
@@ -56,17 +69,6 @@ class CIRparam(GenericParam):
         self.mat_k1 = -self.kappa
         self.mat_h0 = 0.
         self.mat_h1 = self.eta**2
-
-    def is_valid(self):
-        """Check Feller condition.
-
-        Returns
-        -------
-        bool
-            True for valid parameters, False for invalid
-
-        """
-        return 2 * self.kappa * self.mean - self.eta**2 > 0
 
     @classmethod
     def from_theta(cls, theta):

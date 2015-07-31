@@ -63,6 +63,10 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
+        self.assertTrue(param.is_valid())
+        param = GBMparam(mean, -sigma)
+        self.assertFalse(param.is_valid())
+
     def test_vasicekparam_class(self):
         """Test Vasicek parameter class."""
 
@@ -107,10 +111,16 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
 
+        self.assertTrue(param.is_valid())
+        param = VasicekParam(mean, -kappa, eta)
+        self.assertFalse(param.is_valid())
+        param = VasicekParam(mean, kappa, -eta)
+        self.assertFalse(param.is_valid())
+
     def test_cirparam_class(self):
         """Test CIR parameter class."""
 
-        mean, kappa, eta = 1.5, 1., .2
+        mean, kappa, eta = 1.5, 1., .1
         param = CIRparam(mean, kappa, eta)
 
         self.assertEqual(param.get_model_name(), 'CIR')
@@ -150,6 +160,12 @@ class SDEParameterTestCase(ut.TestCase):
         np.testing.assert_array_equal(param.mat_k1, mat_k1)
         np.testing.assert_array_equal(param.mat_h0, mat_h0)
         np.testing.assert_array_equal(param.mat_h1, mat_h1)
+
+        self.assertTrue(param.is_valid())
+        param = CIRparam(mean, -kappa, eta)
+        self.assertFalse(param.is_valid())
+        param = CIRparam(mean, kappa, -eta)
+        self.assertFalse(param.is_valid())
 
     def test_hestonparam_class(self):
         """Test Heston parameter class."""
@@ -305,6 +321,19 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(len(param.get_bounds()), 5)
         self.assertEqual(len(param.get_bounds(subset='vol')), 3)
 
+        self.assertTrue(param.is_valid())
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=-mean_v, kappa=kappa,
+                            eta=eta, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=-kappa,
+                            eta=eta, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
+                            mean_v=mean_v, kappa=-kappa,
+                            eta=-eta, rho=rho)
+        self.assertFalse(param.is_valid())
 
     def test_centtendparam_class(self):
         """Test CT parameter class."""
@@ -427,6 +456,28 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(len(param.get_bounds()), 7)
         self.assertEqual(len(param.get_bounds(subset='vol')), 5)
+
+        self.assertTrue(param.is_valid())
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=-mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=-kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=-kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=-eta_s, eta_y=eta_y, rho=rho)
+        self.assertFalse(param.is_valid())
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=-eta_y, rho=rho)
+        self.assertFalse(param.is_valid())
 
 
 if __name__ == '__main__':

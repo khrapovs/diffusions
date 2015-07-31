@@ -88,8 +88,6 @@ class CentTendParam(GenericParam):
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
-        if not self.is_valid():
-            warnings.warn('Feller condition is violated!')
 
     def convert_to_q(self):
         """Convert parameters to risk-neutral version.
@@ -119,7 +117,7 @@ class CentTendParam(GenericParam):
         self.mat_h1[1, 1] = [self.eta_s*self.rho, self.eta_s**2, 0]
         self.mat_h1[2, 2, 2] = self.eta_y**2
 
-    def is_valid(self):
+    def feller(self):
         """Check Feller condition.
 
         Returns
@@ -129,6 +127,19 @@ class CentTendParam(GenericParam):
 
         """
         return 2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0
+
+    def is_valid(self):
+        """Check validity of parameters.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        posit1 = (self.mean_v > 0) & (self.kappa_y > 0) & (self.eta_y > 0)
+        posit2 = (self.kappa_s > 0) & (self.eta_s > 0)
+        return posit1 & posit2 & self.feller()
 
     def get_model_name(self):
         """Return model name.

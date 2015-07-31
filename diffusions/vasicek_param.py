@@ -47,6 +47,17 @@ class VasicekParam(GenericParam):
         self.eta = eta
         self.update_ajd()
 
+    def is_valid(self):
+        """Check validity of parameters.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        return (self.kappa > 0) & (self.eta > 0)
+
     def update_ajd(self):
         """Update AJD representation.
 
