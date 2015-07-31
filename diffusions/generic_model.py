@@ -30,7 +30,9 @@ class SDE(object):
     simulate
         Simulate observations from the model
     sim_realized
-        Simulate realized returns and variance from the model
+        Simulate realized returns and variance
+    sim_realized_pq
+        Simulate realized returns and variance under both P and Q
     gmmest
         Estimate model parameters using GMM
     integrated_gmm
@@ -307,7 +309,7 @@ class SDE(object):
 
         Notes
         -----
-        See sim_realized
+        For argumentsts see sim_realized
 
         """
         data_p = self.sim_realized(start_p, aggh=aggh[0], **kwargs)
@@ -323,6 +325,10 @@ class SDE(object):
         theta_start : array
             Initial parameter values for estimation.
 
+        Notes
+        -----
+        For arguments see momcond
+
         """
         estimator = GMM(self.momcond)
         return estimator.gmmest(theta_start, **kwargs)
@@ -334,6 +340,10 @@ class SDE(object):
         ----------
         theta_start : array
             Initial parameter values for estimation.
+
+        Notes
+        -----
+        For arguments see integrated_mom
 
         """
         estimator = GMM(self.integrated_mom)
