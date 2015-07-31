@@ -28,7 +28,7 @@ def try_simulation():
     kappa = .1
     eta = .02**.5
     rho = -.9
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
@@ -56,9 +56,9 @@ def try_simulation_pq():
     lmbd_v = .5
     mean_v = .5
     kappa = .1
-    eta = .02**.5
+    eta = .15
     rho = -.9
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho, measure='P')
@@ -98,7 +98,7 @@ def try_marginal():
     kappa = .1
     eta = .02**.5
     rho = -.9
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
@@ -127,7 +127,7 @@ def try_sim_realized():
     kappa = .1
     eta = .02**.5
     rho = -.9
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
@@ -150,18 +150,18 @@ def try_sim_realized_pq():
     """
     riskfree = .0
     lmbd = 1.5
-    lmbd_v = .5
+    lmbd_v = .1
     mean_v = .5
-    kappa = .1
-    eta = .02**.5
+    kappa = .04
+    eta = .15
     rho = -.9
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                              kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
     heston = Heston(param_true)
 
     start = [1, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, 1/10, 1, 1
+    nperiods, interval, ndiscr, nsim = 500, 1/100, 1, 1
     aggh = [1, 2]
 
     print(heston.param)
@@ -188,7 +188,7 @@ def try_integrated_gmm_single():
     eta = .02**.5 # 0.1414
     lmbd = .3
     rho = -.5
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
@@ -285,7 +285,7 @@ def try_integrated_gmm_real():
 
     lmbd = .3
     rho = -.5
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_start = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)
@@ -324,7 +324,7 @@ def try_integrated_gmm():
     eta = .02**.5 # 0.1414
     lmbd = .3
     rho = -.5
-    # 2 * self.kappa * self.mean_v - self.eta**2 > 0
+    # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
                              mean_v=mean_v, kappa=kappa,
                              eta=eta, rho=rho)

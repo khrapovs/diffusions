@@ -150,7 +150,7 @@ class HestonParam(GenericParam):
             raise ValueError(subset + ' keyword variable is not supported!')
 
     def is_valid(self):
-        """Check Feller condition.
+        """Check validity of parameters.
 
         Returns
         -------
@@ -158,7 +158,9 @@ class HestonParam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return 2 * self.kappa * self.mean_v - self.eta**2 > 0
+        posit = (self.mean_v > 0) & (self.kappa > 0) & (self.eta > 0)
+        feller = 2 * self.kappa * self.mean_v - self.eta**2 > 0
+        return posit & feller
 
     @classmethod
     def from_theta(cls, theta, measure='P'):
