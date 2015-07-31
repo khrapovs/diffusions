@@ -25,16 +25,16 @@ class GBM(SDE):
 
     """
 
-    def __init__(self, theta_true=None):
+    def __init__(self, param=None):
         """Initialize the class.
 
         Parameters
         ----------
-        theta_true : parameter instance
+        param : parameter instance
             True parameters used for simulation of the data
 
         """
-        super(GBM, self).__init__(theta_true)
+        super(GBM, self).__init__(param)
 
     @staticmethod
     def drift(state, theta):
