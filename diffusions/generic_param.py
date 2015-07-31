@@ -25,6 +25,17 @@ class GenericParam(object):
         """
         pass
 
+    def is_valid(self):
+        """Check whether parameters are valid.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        return True
+
     def update_ajd(self):
         """Update AJD representation.
 
@@ -95,9 +106,14 @@ class GenericParam(object):
         """String representation.
 
         """
-        show = self.get_model_name() + ' parameters:\n'
+        show = self.get_model_name() + ' parameters'
+        if self.is_valid():
+            show += ' (valid)'
+        else:
+            show += ' (not valid)'
+        show += ':\n'
         for name, param in zip(self.get_names(), self.get_theta()):
-            show += name + ' = ' + str(param) + ', '
+            show += name + ' = %.4f' % param + ', '
         return show[:-2]
 
     def __repr__(self):
