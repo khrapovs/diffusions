@@ -29,9 +29,8 @@ def try_simulation():
     eta = .02**.5
     rho = -.9
     # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
     print(param_true.is_valid())
 
@@ -99,9 +98,8 @@ def try_marginal():
     eta = .02**.5
     rho = -.9
     # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
 
     start = [1, mean_v]
@@ -128,9 +126,8 @@ def try_sim_realized():
     eta = .02**.5
     rho = -.9
     # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
 
     start = [1, mean_v]
@@ -149,26 +146,24 @@ def try_sim_realized_pq():
 
     """
     riskfree = .0
-    lmbd = 1.5
-    lmbd_v = .1
     mean_v = .5
     kappa = .04
     eta = .15
     rho = -.9
+    lmbd = 1.5
+    lmbd_v = .2
     # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                              kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
     heston = Heston(param_true)
 
-    start = [1, mean_v]
     nperiods, interval, ndiscr, nsim = 500, 1/100, 1, 1
     aggh = [1, 2]
 
     print(heston.param)
 
-    data = heston.sim_realized_pq(start, start, interval=interval,
-                                  ndiscr=ndiscr, aggh=aggh, nperiods=nperiods,
-                                  nsim=nsim, diff=0)
+    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+                                  nperiods=nperiods, nsim=nsim, diff=0)
     (ret_p, rvar_p), (ret_q, rvar_q) = data
     print(heston.param)
     nobs = np.min([ret_p.size, ret_q.size])
@@ -185,30 +180,27 @@ def try_integrated_gmm_single():
 
     mean_v = .5
     kappa = .1
-    eta = .02**.5 # 0.1414
+    eta = .15
     lmbd = .3
     rho = -.5
     # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
 
-    start = [1, mean_v]
     nperiods, interval, ndiscr, nsim = 1000, 1/10, 1, 1
     aggh = 1
-    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    data = heston.sim_realized(interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
     plot_realized(ret, rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    param_start = param_true
-    param_start.update(param_true.get_theta()/2)
     subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
-    bounds = param_start.get_bounds(subset=subset)
+    measure = 'P'
+    theta_start = param_true.get_theta(subset=subset, measure=measure)
+    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
     time_start = time.time()
     res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
@@ -225,26 +217,25 @@ def try_integrated_gmm_single_rn():
 
     """
     riskfree = .0
-    lmbd = 1.5
-    lmbd_v = .1
     mean_v = .5
     kappa = .04
     eta = .15
     rho = -.9
+    lmbd = 1.5
+    lmbd_v = .1
     # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                              kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
     print('P parameters:\n', param_true)
     heston = Heston(param_true)
 
-    start = [1, param_true.mean_v]
     aggh = [1, 1]
     nperiods, interval, ndiscr, nsim = 2000, 1/100, 1, 1
 
-    data_p, data_q = heston.sim_realized_pq(start, start, interval=interval,
-                                  ndiscr=ndiscr, aggh=aggh, nperiods=nperiods,
-                                  nsim=nsim, diff=0)
+    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+                                  nperiods=nperiods, nsim=nsim, diff=0)
     print('Q parameters:\n', param_true)
+    data_p, data_q = data
     ret_p, rvar_p = data_p
     ret_q, rvar_q = data_q
     nobs = np.min([ret_p.size, ret_q.size])
@@ -254,13 +245,15 @@ def try_integrated_gmm_single_rn():
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
     subset = 'vol'
-    theta_start = param_true.get_theta(subset=subset)
-    bounds = param_true.get_bounds(subset=subset)
+    measure = 'P'
+    theta_start = param_true.get_theta(subset=subset, measure=measure)
+    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
     res = heston.integrated_gmm(theta_start, data=data_p, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[0],
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds)
+                                subset=subset, iter=3, bounds=bounds,
+                                measure=measure)
 
     res.print_results()
 
@@ -268,9 +261,60 @@ def try_integrated_gmm_single_rn():
     res = heston.integrated_gmm(theta_start, data=data_q, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[1],
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds)
+                                subset=subset, iter=3, bounds=bounds,
+                                measure=measure)
     res.print_results()
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+
+
+def try_integrated_gmm_joint():
+    """Simulate realized data from risk-neutral Heston model.
+    Estimate parameters.
+
+    """
+    riskfree = .0
+    mean_v = .5
+    kappa = .04
+    eta = .15
+    rho = -.9
+    lmbd = 1.5
+    lmbd_v = .1
+    # 2 * kappa * mean_v - eta**2 > 0
+    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+    print('P parameters:\n', param_true)
+    heston = Heston(param_true)
+
+    aggh = [1, 1]
+    nperiods, interval, ndiscr, nsim = 500, 1/100, 1, 1
+
+    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+                                  nperiods=nperiods, nsim=nsim, diff=0)
+    print('Q parameters:\n', param_true)
+    data_p, data_q = data
+    ret_p, rvar_p = data_p
+    ret_q, rvar_q = data_q
+    nobs = np.min([ret_p.size, ret_q.size])
+    plot_realized([ret_p[-nobs:], ret_q[-nobs:]],
+                  [rvar_p[-nobs:], rvar_q[-nobs:]], suffix=['P', 'Q'])
+
+    instr_data = np.vstack([rvar_p, rvar_p**2])
+
+    subset = 'vol'
+    measure = 'PQ'
+    theta_start = param_true.get_theta(subset=subset, measure=measure)
+    bounds = param_true.get_bounds(subset=subset, measure=measure)
+
+    time_start = time.time()
+    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
+                                instr_data=instr_data, aggh=aggh,
+                                instr_choice='var', method='TNC',
+                                subset=subset, iter=3, bounds=bounds,
+                                measure=measure)
+    res.print_results()
+    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+
+    return res
 
 
 def try_integrated_gmm_real():
@@ -286,9 +330,8 @@ def try_integrated_gmm_real():
     lmbd = .3
     rho = -.5
     # 2 * kappa * mean_v - eta**2 > 0
-    param_start = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                             mean_v=mean_v, kappa=kappa,
-                             eta=eta, rho=rho)
+    param_start = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                              kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_start)
 
     aggh = 1
@@ -367,6 +410,7 @@ if __name__ == '__main__':
 #    try_sim_realized()
 #    try_sim_realized_pq()
 #    try_integrated_gmm_single()
-    try_integrated_gmm_single_rn()
+#    try_integrated_gmm_single_rn()
+    res = try_integrated_gmm_joint()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

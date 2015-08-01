@@ -222,7 +222,7 @@ class HestonParam(GenericParam):
         if subset == 'all' and measure == 'PQ':
             [self.rho, self.lmbd, self.lmbd_v] = theta[3:]
         elif subset == 'all' and measure in ('P', 'Q'):
-            [self.rho, self.lmbd] = theta[3:]
+            [self.rho, self.lmbd] = theta[3:5]
         elif subset == 'vol' and measure == 'PQ':
             [self.lmbd_v] = theta[3:]
         elif subset == 'vol' and measure in ('P', 'Q'):

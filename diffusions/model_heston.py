@@ -34,7 +34,20 @@ class Heston(SDE):
             True parameters used for simulation of the data
 
         """
+        if param is None:
+            param = HestonParam()
         super(Heston, self).__init__(param)
+
+    def get_start(self):
+        """Get starting values for simulation.
+
+        Returns
+        -------
+        array_like
+            Starting values for price and variance
+
+        """
+        return [1, self.param.mean_v]
 
     @staticmethod
     def coef_big_a(param, aggh):
@@ -307,36 +320,3 @@ class Heston(SDE):
         ret, rvar = data
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=2, original='in')
-
-    @staticmethod
-    def convert(theta, subset='all', measure='P'):
-        """Convert parameter vector to instance.
-
-        Parameters
-        ----------
-        theta : array
-            Model parameters
-        subset : str
-            Which parameters to estimate. Belongs to
-                - 'all' : all parameters, including those related to returns
-                - 'vol' : only those related to volatility
-        measure : str
-            Under which measure to estimate:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
-                - 'PQ' : both
-
-        Returns
-        -------
-        param : HestonParam instance
-            Model parameters
-        subset_sl : slice
-            Which moments to use
-
-        """
-        param = HestonParam()
-        param.update(theta=theta, subset=subset, measure=measure)
-        subset_sl = None
-        if subset == 'vol':
-            subset_sl = slice(2)
-        return param, subset_sl

@@ -247,13 +247,21 @@ class SimulationTestCase(ut.TestCase):
 
         nvars = 2
         riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                            mean_v=mean_v, kappa=kappa,
-                            eta=eta, rho=rho)
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho)
         heston = Heston(param)
+
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
+
+        self.assertEquals(heston.get_start(), start)
+
         nobs = int(nperiods / interval)
         paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0)
+
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        paths = heston.simulate(interval=interval, ndiscr=ndiscr,
                                 nobs=nobs, nsim=nsim, diff=0)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
@@ -396,6 +404,9 @@ class RealizedSimTestCase(ut.TestCase):
                             eta=eta, rho=rho)
         heston = Heston(param)
         start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
+
+        self.assertEquals(heston.get_start(), start)
+
         aggh = 2
         returns, rvol = heston.sim_realized(start, interval=interval,
                                             ndiscr=ndiscr, nperiods=nperiods,
@@ -426,12 +437,23 @@ class RealizedSimTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
+
         start_p = [1, param.mean_v]
-        # param.convert_to_q()
-        start_q = [1, param.mean_v]
+
+        self.assertEquals(heston.get_start(), start_p)
+
+        param.convert_to_q()
+        start_q = [1, mean_v * kappa / (kappa - lmbd_v * eta)]
+
+        self.assertEquals(heston.get_start(), start_q)
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+        heston = Heston(param)
+
         aggh = [1, 2]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
-        data = heston.sim_realized_pq(start_p, start_q, interval=interval,
+        data = heston.sim_realized_pq(interval=interval,
                                       ndiscr=ndiscr, nperiods=nperiods,
                                       nsim=nsim, aggh=aggh, diff=0)
 

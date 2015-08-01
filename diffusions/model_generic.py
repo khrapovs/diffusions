@@ -185,7 +185,7 @@ class SDE(object):
 
         return new_state
 
-    def simulate(self, start, interval=1/80, ndiscr=1, nobs=500, nsim=1,
+    def simulate(self, start=None, interval=1/80, ndiscr=1, nobs=500, nsim=1,
                  diff=None, new_innov=True):
         """Simulate observations from the model.
 
@@ -214,6 +214,8 @@ class SDE(object):
             Simulated data
 
         """
+        if start is None:
+            start = self.get_start()
         if np.size(self.param.mat_k0) != np.size(start):
             raise ValueError('Start for paths is of wrong dimension!')
         self.interval = interval
@@ -241,7 +243,7 @@ class SDE(object):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(self, start, interval=1/80, ndiscr=1, aggh=1,
+    def sim_realized(self, start=None, interval=1/80, ndiscr=1, aggh=1,
                      nperiods=500, nsim=1, diff=None, new_innov=True):
         """Simulate realized returns and variance from the model.
 
@@ -274,6 +276,8 @@ class SDE(object):
             Simulated realized variance
 
         """
+        if start is None:
+            start = self.get_start()
         intervals = int(1 / interval)
         nobs = nperiods * intervals
         paths = self.simulate(start, interval=interval, ndiscr=ndiscr,
@@ -288,7 +292,8 @@ class SDE(object):
         returns = rolling_window(np.mean, returns, window=aggh)
         return returns, rvar
 
-    def sim_realized_pq(self, start_p, start_q, aggh=[1, 1], **kwargs):
+    def sim_realized_pq(self, start_p=None, start_q=None,
+                        aggh=[1, 1], **kwargs):
         """Simulate realized data from the model under both P and Q.
 
         Parameters
@@ -312,9 +317,15 @@ class SDE(object):
         For argumentsts see sim_realized
 
         """
-        data_p = self.sim_realized(start_p, aggh=aggh[0], **kwargs)
+        if start_p is None:
+            start_p = self.get_start()
+        data_p = self.sim_realized(start_p, aggh=aggh[0],
+                                   new_innov=True, **kwargs)
         self.param.convert_to_q()
-        data_q = self.sim_realized(start_q, aggh=aggh[1], **kwargs)
+        if start_q is None:
+            start_q = self.get_start()
+        data_q = self.sim_realized(start_q, aggh=aggh[1],
+                                   new_innov=False, **kwargs)
         return data_p, data_q
 
     def gmmest(self, theta_start, **kwargs):
@@ -388,21 +399,35 @@ class SDE(object):
             Average derivative of the moment restrictions
 
         """
-        # Convert parameter vector to instance
-        param, subset_sl = self.convert(theta, subset=subset, measure=measure)
+        subset_sl = None
+        if subset == 'vol':
+            subset_sl = slice(2)
 
-        ret, rvar = data
+        self.param.update(theta=theta, subset=subset, measure=measure)
         lag = 2
-        self.aggh = aggh
-        # self.realized_depvar(data): (nobs, 3*nmoms)
-        depvar = self.realized_depvar(data)[lag:]
-        # (nobs - lag, 4) array
-        error = depvar.dot(self.mat_a(param, subset_sl).T) \
-            - self.realized_const(param, aggh, subset_sl)
 
+        if measure == 'PQ':
+            error = []
+            for data_x, agg, meas in zip(data, aggh, measure):
+                if meas == 'Q':
+                    self.param.convert_to_q()
+                depvar = self.realized_depvar(data_x)[lag:]
+                # (nobs - lag, 4) array
+                error.append(depvar.dot(self.mat_a(self.param, subset_sl).T) \
+                    - self.realized_const(self.param, agg, subset_sl))
+
+            error = np.hstack(error)
+
+        else:
+            depvar = self.realized_depvar(data)[lag:]
+            # (nobs - lag, 4) array
+            error = depvar.dot(self.mat_a(self.param, subset_sl).T) \
+                - self.realized_const(self.param, aggh, subset_sl)
+
+        nobs = error.shape[0] + lag
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
-        instr = instruments(instr_data, nobs=rvar.size, instrlag=instrlag,
+        instr = instruments(instr_data, nobs=nobs, instrlag=instrlag,
                             instr_choice=instr_choice)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(error, instr)

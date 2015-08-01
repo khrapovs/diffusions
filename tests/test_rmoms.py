@@ -50,10 +50,12 @@ class RealizedMomentsTestCase(ut.TestCase):
 
     def test_heston_relized_mom(self):
         """Test realized moments of Heston model."""
-        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
-        param = HestonParam(riskfree=riskfree, lmbd=lmbd,
-                            mean_v=mean_v, kappa=kappa,
-                            eta=eta, rho=rho)
+
+        riskfree = 0.
+        lmbd, mean_v, kappa, eta, rho = .01, .2, 1.5, .2**.5, -.5
+        lmbd_v = .2
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
         heston.interval = .5
         nmoms = 4
@@ -82,19 +84,17 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(mom.shape, mom_shape)
         self.assertIsNone(dmom)
 
-        mom, dmom = heston.integrated_mom(theta,
-                                          instr_choice='const',
+        mom, dmom = heston.integrated_mom(theta, instr_choice='const',
                                           data=data, instrlag=instrlag)
         nmoms_all = nmoms
         mom_shape = (nperiods - instrlag, nmoms_all)
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
-        self.assertIsNone(dmom)
 
         subset = 'vol'
-        mom, dmom = heston.integrated_mom(param.get_theta(subset=subset),
-                                          subset=subset,
+        theta = param.get_theta(subset=subset)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
                                           instr_choice='const',
                                           data=data, instrlag=instrlag)
         nmoms = 2
@@ -102,11 +102,12 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
-        self.assertIsNone(dmom)
 
         subset = 'vol'
-        mom, dmom = heston.integrated_mom(param.get_theta(subset=subset),
-                                          subset=subset, measure='Q',
+        measure = 'Q'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
                                           instr_choice='const',
                                           data=data, instrlag=instrlag)
         nmoms = 2
@@ -114,7 +115,85 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
-        self.assertIsNone(dmom)
+
+        subset = 'vol'
+        measure = 'P'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms = 2
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+        heston = Heston(param)
+        subset = 'vol'
+        measure = 'PQ'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const', aggh=[1, 1],
+                                          data=[data, data], instrlag=instrlag)
+        nmoms = 2
+        mom_shape = (nperiods - instrlag, nmoms*2)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=2*lmbd_v)
+        heston = Heston(param)
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom2, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const', aggh=[1, 1],
+                                          data=[data, data], instrlag=instrlag)
+
+        self.assertFalse(np.allclose(mom, mom2))
+
+        subset = 'all'
+        measure = 'Q'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms = 4
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+
+        subset = 'all'
+        measure = 'P'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const',
+                                          data=data, instrlag=instrlag)
+        nmoms = 4
+        mom_shape = (nperiods - instrlag, nmoms)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
+
+        subset = 'all'
+        measure = 'PQ'
+        theta = param.get_theta(subset=subset, measure=measure)
+        mom, dmom = heston.integrated_mom(theta, subset=subset,
+                                          measure=measure,
+                                          instr_choice='const', aggh=[1, 1],
+                                          data=[data, data], instrlag=instrlag)
+        nmoms = 4
+        mom_shape = (nperiods - instrlag, nmoms*2)
+
+        # Test the shape of moment functions
+        self.assertEqual(mom.shape, mom_shape)
 
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
