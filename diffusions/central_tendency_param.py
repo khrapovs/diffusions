@@ -38,6 +38,8 @@ class CentTendParam(GenericParam):
         Equity risk premium
     rho : float
         Correlation
+    measure : str
+        Under which measure (P or Q)
 
     """
 

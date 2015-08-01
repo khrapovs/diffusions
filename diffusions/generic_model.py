@@ -378,6 +378,7 @@ class SDE(object):
             Under which measure to estimate:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
@@ -388,7 +389,7 @@ class SDE(object):
 
         """
         # Convert parameter vector to instance
-        param, subset_sl = self.convert(theta, subset=subset)
+        param, subset_sl = self.convert(theta, subset=subset, measure=measure)
 
         ret, rvar = data
         lag = 2

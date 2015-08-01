@@ -48,8 +48,8 @@ class HestonParam(GenericParam):
 
     """
 
-    def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1,
-                 lmbd=.1, lmbd_v=.0, rho=-.5, measure='P'):
+    def __init__(self, riskfree=.0, mean_v=.5, kappa=1.5, eta=.1, rho=-.5,
+                 lmbd=.1, lmbd_v=.0, measure='P'):
         """Initialize class.
 
         Parameters
@@ -77,10 +77,10 @@ class HestonParam(GenericParam):
         self.riskfree = riskfree
         self.kappa = kappa
         self.mean_v = mean_v
-        self.lmbd = lmbd
-        self.lmbd_v = lmbd_v
         self.eta = eta
         self.rho = rho
+        self.lmbd = lmbd
+        self.lmbd_v = lmbd_v
         self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
@@ -123,7 +123,7 @@ class HestonParam(GenericParam):
         """
         return 'Heston'
 
-    def get_names(self, subset='all'):
+    def get_names(self, subset='all', measure='PQ'):
         """Return parameter names.
 
         Parameters
@@ -132,6 +132,11 @@ class HestonParam(GenericParam):
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+        measure : str
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
@@ -139,13 +144,18 @@ class HestonParam(GenericParam):
             Parameter names
 
         """
-        names = ['mean_v', 'kappa', 'eta', 'lmbd', 'rho']
-        if subset == 'all':
+        names = ['mean_v', 'kappa', 'eta', 'rho', 'lmbd', 'lmbd_v']
+
+        if subset == 'all' and measure == 'PQ':
             return names
-        elif subset == 'vol':
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return names[:-1]
+        elif subset == 'vol' and measure == 'PQ':
+            return names[:3] + names[5:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
             return names[:3]
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')
 
     def is_valid(self):
         """Check validity of parameters.
@@ -186,10 +196,10 @@ class HestonParam(GenericParam):
 
         """
         return cls(riskfree=theta[0], mean_v=theta[1], kappa=theta[2],
-                   eta=theta[3], lmbd=theta[4], lmbd_v=theta[5],
-                   rho=theta[6], measure=measure)
+                   eta=theta[3], rho=theta[4], lmbd=theta[5], lmbd_v=theta[6],
+                   measure=measure)
 
-    def update(self, theta, subset='all', measure='P'):
+    def update(self, theta, subset='all', measure='PQ'):
         """Update attributes from parameter vector.
 
         Parameters
@@ -204,20 +214,28 @@ class HestonParam(GenericParam):
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
+                - 'PQ' : both
 
         """
-        if subset == 'all':
-            [self.mean_v, self.kappa, self.eta, self.lmbd, self.rho] = theta
-        elif subset == 'vol':
-            [self.mean_v, self.kappa, self.eta] = theta
+        [self.mean_v, self.kappa, self.eta] = theta[:3]
+
+        if subset == 'all' and measure == 'PQ':
+            [self.rho, self.lmbd, self.lmbd_v] = theta[3:]
+        elif subset == 'all' and measure in ('P', 'Q'):
+            [self.rho, self.lmbd] = theta[3:]
+        elif subset == 'vol' and measure == 'PQ':
+            [self.lmbd_v] = theta[3:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
+            pass
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')
+
         self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, subset='all'):
+    def get_theta(self, subset='all', measure='PQ'):
         """Return vector of model parameters.
 
         Parameters
@@ -226,6 +244,11 @@ class HestonParam(GenericParam):
             Which parameters to update. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+        measure : str
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
@@ -233,16 +256,20 @@ class HestonParam(GenericParam):
             Parameter vector
 
         """
-        theta = np.array([self.mean_v, self.kappa, self.eta,
-                          self.lmbd, self.rho])
-        if subset == 'all':
+        theta = np.array([self.mean_v, self.kappa, self.eta, self.rho,
+                          self.lmbd, self.lmbd_v])
+        if subset == 'all' and measure == 'PQ':
             return theta
-        elif subset == 'vol':
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return theta[:-1]
+        elif subset == 'vol' and measure == 'PQ':
+            return np.concatenate((theta[:3], theta[5:]))
+        elif subset == 'vol' and measure in ('P', 'Q'):
             return theta[:3]
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')
 
-    def get_bounds(self, subset='all'):
+    def get_bounds(self, subset='all', measure='PQ'):
         """Bounds on parameters.
 
         Parameters
@@ -251,17 +278,29 @@ class HestonParam(GenericParam):
             Which parameters to update. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+        measure : str
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
         sequence of (min, max) tuples
 
         """
-        lb = [1e-5, 1e-5, 1e-5, None, -1]
-        ub = [None, None, None, None, 1]
-        if subset == 'all':
-            return list(zip(lb, ub))
-        elif subset == 'vol':
-            return list(zip(lb, ub))[:3]
+        # ['mean_v', 'kappa', 'eta', 'rho', 'lmbd', 'lmbd_v']
+        lb = [1e-5, 1e-5, 1e-5, -1, None, None]
+        ub = [None, None, None, 1, None, None]
+        bounds = list(zip(lb, ub))
+
+        if subset == 'all' and measure == 'PQ':
+            return bounds
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return bounds[:-1]
+        elif subset == 'vol' and measure == 'PQ':
+            return bounds[:3] + bounds[5:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
+            return bounds[:3]
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')

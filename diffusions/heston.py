@@ -309,7 +309,7 @@ class Heston(SDE):
         return lagmat(var.T, maxlag=2, original='in')
 
     @staticmethod
-    def convert(theta, subset='all'):
+    def convert(theta, subset='all', measure='P'):
         """Convert parameter vector to instance.
 
         Parameters
@@ -320,6 +320,11 @@ class Heston(SDE):
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+        measure : str
+            Under which measure to estimate:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
@@ -330,7 +335,7 @@ class Heston(SDE):
 
         """
         param = HestonParam()
-        param.update(theta=theta, subset=subset)
+        param.update(theta=theta, subset=subset, measure=measure)
         subset_sl = None
         if subset == 'vol':
             subset_sl = slice(2)
