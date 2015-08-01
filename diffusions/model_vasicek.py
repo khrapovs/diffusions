@@ -7,7 +7,7 @@ Vasicek model class
 """
 from __future__ import print_function, division
 
-from .generic_model import SDE
+from .model_generic import SDE
 
 __all__ = ['Vasicek']
 

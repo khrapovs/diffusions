@@ -12,8 +12,8 @@ from math import exp
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .generic_model import SDE
-from .central_tendency_param import CentTendParam
+from .model_generic import SDE
+from .param_ct import CentTendParam
 from .helper_functions import poly_coef
 
 __all__ = ['CentTend']

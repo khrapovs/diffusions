@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Vasicek parameter class
-~~~~~~~~~~~~~~~~~~~~~~~
+CIR parameter class
+~~~~~~~~~~~~~~~~~~~
 
 """
 from __future__ import print_function, division
 
 import numpy as np
 
-from .generic_param import GenericParam
+from .param_generic import GenericParam
 
-__all__ = ['VasicekParam']
+__all__ = ['CIRparam']
 
 
-class VasicekParam(GenericParam):
+class CIRparam(GenericParam):
 
-    """Parameter storage for Vasicek model.
+    """Parameter storage for CIR model.
 
     Attributes
     ----------
@@ -56,7 +56,9 @@ class VasicekParam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return (self.kappa > 0) & (self.eta > 0)
+        posit = (self.kappa > 0) & (self.eta > 0)
+        feller = 2 * self.kappa * self.mean - self.eta**2 > 0
+        return posit & feller
 
     def update_ajd(self):
         """Update AJD representation.
@@ -65,8 +67,8 @@ class VasicekParam(GenericParam):
         # AJD parameters
         self.mat_k0 = self.kappa * self.mean
         self.mat_k1 = -self.kappa
-        self.mat_h0 = self.eta**2
-        self.mat_h1 = 0
+        self.mat_h0 = 0.
+        self.mat_h1 = self.eta**2
 
     @classmethod
     def from_theta(cls, theta):
@@ -103,7 +105,7 @@ class VasicekParam(GenericParam):
             Parameter vector
 
         """
-        return 'Vasicek'
+        return 'CIR'
 
     def get_names(self):
         """Return parameter names.

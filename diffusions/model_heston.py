@@ -10,8 +10,8 @@ from __future__ import print_function, division
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .generic_model import SDE
-from .heston_param import HestonParam
+from .model_generic import SDE
+from .param_heston import HestonParam
 
 __all__ = ['Heston']
 

@@ -12,9 +12,9 @@ import numdifftools as nd
 
 from statsmodels.tsa.tsatools import lagmat
 
-from .generic_model import SDE
+from .model_generic import SDE
 from .helper_functions import columnwise_prod
-from .gbm_param import GBMparam
+from .param_gbm import GBMparam
 
 __all__ = ['GBM']
 

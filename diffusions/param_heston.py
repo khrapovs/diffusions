@@ -11,7 +11,7 @@ import warnings
 
 import numpy as np
 
-from .generic_param import GenericParam
+from .param_generic import GenericParam
 
 __all__ = ['HestonParam']
 

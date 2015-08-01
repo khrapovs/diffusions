@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-CIR parameter class
+GBM parameter class
 ~~~~~~~~~~~~~~~~~~~
 
 """
@@ -9,42 +9,37 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from .generic_param import GenericParam
+from .param_generic import GenericParam
 
-__all__ = ['CIRparam']
+__all__ = ['GBMparam']
 
 
-class CIRparam(GenericParam):
+class GBMparam(GenericParam):
 
-    """Parameter storage for CIR model.
+    """Parameter storage for GBM model.
 
     Attributes
     ----------
     mean : float
         Mean of the process
-    kappa : float
-        Mean reversion speed
-    eta : float
+    sigma : float
         Instantaneous standard deviation
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, eta=.1):
+    def __init__(self, mean=0, sigma=.2):
         """Initialize class.
 
         Parameters
         ----------
         mean : float
             Mean of the process
-        kappa : float
-            Mean reversion speed
-        eta : float
+        sigma : float
             Instantaneous standard deviation
 
         """
         self.mean = mean
-        self.kappa = kappa
-        self.eta = eta
+        self.sigma = sigma
         self.update_ajd()
 
     def is_valid(self):
@@ -56,19 +51,17 @@ class CIRparam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        posit = (self.kappa > 0) & (self.eta > 0)
-        feller = 2 * self.kappa * self.mean - self.eta**2 > 0
-        return posit & feller
+        return self.sigma > 0
 
     def update_ajd(self):
         """Update AJD representation.
 
         """
         # AJD parameters
-        self.mat_k0 = self.kappa * self.mean
-        self.mat_k1 = -self.kappa
-        self.mat_h0 = 0.
-        self.mat_h1 = self.eta**2
+        self.mat_k0 = self.mean - self.sigma**2/2
+        self.mat_k1 = 0.
+        self.mat_h0 = self.sigma**2
+        self.mat_h1 = 0.
 
     @classmethod
     def from_theta(cls, theta):
@@ -80,7 +73,7 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
+        param = cls(mean=theta[0], sigma=theta[1])
         param.update_ajd()
         return param
 
@@ -93,7 +86,7 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        self.mean, self.kappa, self.eta = theta
+        self.mean, self.sigma = theta
         self.update_ajd()
 
     def get_model_name(self):
@@ -105,26 +98,26 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        return 'CIR'
+        return 'GBM'
 
     def get_names(self):
         """Return parameter names.
 
         Returns
         -------
-        (3, ) list of str
+        (2, ) list of str
             Parameter names
 
         """
-        return ['mean', 'kappa', 'eta']
+        return ['mean', 'sigma']
 
     def get_theta(self):
         """Return vector of parameters.
 
         Returns
         -------
-        (3, ) array
+        (2, ) array
             Parameter vector
 
         """
-        return np.array([self.mean, self.kappa, self.eta])
+        return np.array([self.mean, self.sigma])

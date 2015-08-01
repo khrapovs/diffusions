@@ -1,45 +1,50 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-GBM parameter class
-~~~~~~~~~~~~~~~~~~~
+Vasicek parameter class
+~~~~~~~~~~~~~~~~~~~~~~~
 
 """
 from __future__ import print_function, division
 
 import numpy as np
 
-from .generic_param import GenericParam
+from .param_generic import GenericParam
 
-__all__ = ['GBMparam']
+__all__ = ['VasicekParam']
 
 
-class GBMparam(GenericParam):
+class VasicekParam(GenericParam):
 
-    """Parameter storage for GBM model.
+    """Parameter storage for Vasicek model.
 
     Attributes
     ----------
     mean : float
         Mean of the process
-    sigma : float
+    kappa : float
+        Mean reversion speed
+    eta : float
         Instantaneous standard deviation
 
     """
 
-    def __init__(self, mean=0, sigma=.2):
+    def __init__(self, mean=.5, kappa=1.5, eta=.1):
         """Initialize class.
 
         Parameters
         ----------
         mean : float
             Mean of the process
-        sigma : float
+        kappa : float
+            Mean reversion speed
+        eta : float
             Instantaneous standard deviation
 
         """
         self.mean = mean
-        self.sigma = sigma
+        self.kappa = kappa
+        self.eta = eta
         self.update_ajd()
 
     def is_valid(self):
@@ -51,17 +56,17 @@ class GBMparam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return self.sigma > 0
+        return (self.kappa > 0) & (self.eta > 0)
 
     def update_ajd(self):
         """Update AJD representation.
 
         """
         # AJD parameters
-        self.mat_k0 = self.mean - self.sigma**2/2
-        self.mat_k1 = 0.
-        self.mat_h0 = self.sigma**2
-        self.mat_h1 = 0.
+        self.mat_k0 = self.kappa * self.mean
+        self.mat_k1 = -self.kappa
+        self.mat_h0 = self.eta**2
+        self.mat_h1 = 0
 
     @classmethod
     def from_theta(cls, theta):
@@ -73,7 +78,7 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=theta[0], sigma=theta[1])
+        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
         param.update_ajd()
         return param
 
@@ -86,7 +91,7 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
-        self.mean, self.sigma = theta
+        self.mean, self.kappa, self.eta = theta
         self.update_ajd()
 
     def get_model_name(self):
@@ -98,26 +103,26 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
-        return 'GBM'
+        return 'Vasicek'
 
     def get_names(self):
         """Return parameter names.
 
         Returns
         -------
-        (2, ) list of str
+        (3, ) list of str
             Parameter names
 
         """
-        return ['mean', 'sigma']
+        return ['mean', 'kappa', 'eta']
 
     def get_theta(self):
         """Return vector of parameters.
 
         Returns
         -------
-        (2, ) array
+        (3, ) array
             Parameter vector
 
         """
-        return np.array([self.mean, self.sigma])
+        return np.array([self.mean, self.kappa, self.eta])
