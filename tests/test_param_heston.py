@@ -11,8 +11,7 @@ import warnings
 import unittest as ut
 import numpy as np
 
-from diffusions import (GBMparam, VasicekParam, CIRparam,
-                        HestonParam, CentTendParam)
+from diffusions import HestonParam
 
 
 class SDEParameterTestCase(ut.TestCase):

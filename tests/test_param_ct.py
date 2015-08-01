@@ -6,8 +6,6 @@ Test suite for CT parameter class.
 """
 from __future__ import print_function, division
 
-import warnings
-
 import unittest as ut
 import numpy as np
 
