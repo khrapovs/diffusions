@@ -286,7 +286,7 @@ def try_integrated_gmm_joint():
     heston = Heston(param_true)
 
     aggh = [1, 1]
-    nperiods, interval, ndiscr, nsim = 500, 1/100, 1, 1
+    nperiods, interval, ndiscr, nsim = 1000, 1/100, 1, 1
 
     data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
                                   nperiods=nperiods, nsim=nsim, diff=0)
