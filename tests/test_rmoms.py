@@ -187,7 +187,8 @@ class RealizedMomentsTestCase(ut.TestCase):
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(theta, subset=subset,
                                           measure=measure,
-                                          instr_choice='const', aggh=[1, 1],
+                                          instr_choice='const',
+                                          aggh=[aggh, aggh],
                                           data=[data, data], instrlag=instrlag)
         nmoms = 2
         mom_shape = (nperiods - instrlag, nmoms*2)
@@ -196,17 +197,29 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(mom.shape, mom_shape)
 
         subset_sl = slice(2)
-        aggh = 2
+        aggh = 10
         means = [heston.mean_vol(param, aggh),
                  heston.mean_vol2(param, aggh),
                  heston.mean_ret(param, aggh),
                  heston.mean_cross(param, aggh)]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 3)
-        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+        error_q = depvar.dot(heston.mat_a(param, subset_sl).T) \
                 - heston.realized_const(param, aggh, subset_sl)
 
-        npt.assert_array_almost_equal(np.hstack((error, error)),
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error_p = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(np.hstack((error_p, error_q)),
                                       np.zeros(mom_shape))
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
@@ -215,13 +228,16 @@ class RealizedMomentsTestCase(ut.TestCase):
         theta = param.get_theta(subset=subset, measure=measure)
         mom2, dmom = heston.integrated_mom(theta, subset=subset,
                                           measure=measure,
-                                          instr_choice='const', aggh=[1, 1],
+                                          instr_choice='const',
+                                          aggh=[aggh, aggh],
                                           data=[data, data], instrlag=instrlag)
 
         self.assertFalse(np.allclose(mom, mom2))
 
         subset = 'all'
         measure = 'Q'
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(theta, subset=subset,
                                           measure=measure,
@@ -248,6 +264,8 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         subset = 'all'
         measure = 'P'
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(theta, subset=subset,
                                           measure=measure,
@@ -274,10 +292,13 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         subset = 'all'
         measure = 'PQ'
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(theta, subset=subset,
                                           measure=measure,
-                                          instr_choice='const', aggh=[1, 1],
+                                          instr_choice='const',
+                                          aggh=[aggh, aggh],
                                           data=[data, data], instrlag=instrlag)
         nmoms = 4
         mom_shape = (nperiods - instrlag, nmoms*2)
@@ -293,10 +314,21 @@ class RealizedMomentsTestCase(ut.TestCase):
                  heston.mean_cross(param, aggh)]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 3)
-        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+        error_q = depvar.dot(heston.mat_a(param, subset_sl).T) \
                 - heston.realized_const(param, aggh, subset_sl)
 
-        npt.assert_array_almost_equal(np.hstack((error, error)),
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error_p = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(np.hstack((error_p, error_q)),
                                       np.zeros(mom_shape))
 
     def test_heston_coefs(self):
