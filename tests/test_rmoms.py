@@ -8,6 +8,9 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
+
+from statsmodels.tsa.tsatools import lagmat
 
 from diffusions import GBM, GBMparam
 from diffusions import Heston, HestonParam
@@ -61,8 +64,8 @@ class RealizedMomentsTestCase(ut.TestCase):
         nmoms = 4
 
         nperiods = 5
-        ret = np.arange(nperiods)
-        rvar = ret ** 2
+        ret = np.ones(nperiods) * (lmbd - .5) * mean_v
+        rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
         theta = param.get_theta(subset='all', measure='P')
@@ -89,6 +92,19 @@ class RealizedMomentsTestCase(ut.TestCase):
         nmoms_all = nmoms
         mom_shape = (nperiods - instrlag, nmoms_all)
 
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, None).T) \
+                - heston.realized_const(param, aggh, None)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
+
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
@@ -103,6 +119,14 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        subset_sl = slice(2)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
+
         subset = 'vol'
         measure = 'Q'
         theta = param.get_theta(subset=subset, measure=measure)
@@ -116,6 +140,19 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
+        subset_sl = slice(2)
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
+
         subset = 'vol'
         measure = 'P'
         theta = param.get_theta(subset=subset, measure=measure)
@@ -128,6 +165,19 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
+
+        subset_sl = slice(2)
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
@@ -144,6 +194,20 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
+
+        subset_sl = slice(2)
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(np.hstack((error, error)),
+                                      np.zeros(mom_shape))
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=2*lmbd_v)
@@ -169,6 +233,19 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
+        subset_sl = None
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
+
         subset = 'all'
         measure = 'P'
         theta = param.get_theta(subset=subset, measure=measure)
@@ -182,6 +259,19 @@ class RealizedMomentsTestCase(ut.TestCase):
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
 
+        subset_sl = None
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(error, np.zeros(mom_shape))
+
         subset = 'all'
         measure = 'PQ'
         theta = param.get_theta(subset=subset, measure=measure)
@@ -194,6 +284,20 @@ class RealizedMomentsTestCase(ut.TestCase):
 
         # Test the shape of moment functions
         self.assertEqual(mom.shape, mom_shape)
+
+        subset_sl = None
+        aggh = 2
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.tile(depvar, 3)
+        error = depvar.dot(heston.mat_a(param, subset_sl).T) \
+                - heston.realized_const(param, aggh, subset_sl)
+
+        npt.assert_array_almost_equal(np.hstack((error, error)),
+                                      np.zeros(mom_shape))
 
     def test_heston_coefs(self):
         """Test coefficients in descretization of Heston model.
@@ -221,19 +325,32 @@ class RealizedMomentsTestCase(ut.TestCase):
         self.assertEqual(heston.realized_const(param, aggh).shape, (4, ))
         self.assertEqual(heston.realized_const(param, aggh)[2], 0)
 
-        res = heston.depvar_unc_mean(param, aggh)[0] \
+        means = [heston.mean_vol(param, aggh),
+                 heston.mean_vol2(param, aggh),
+                 heston.mean_ret(param, aggh),
+                 heston.mean_cross(param, aggh)]
+
+        npt.assert_array_equal(heston.depvar_unc_mean(param, aggh), means)
+
+        res = heston.mean_vol(param, aggh) \
             * (1 - heston.coef_big_a(param, 1))
 
         self.assertEqual(heston.realized_const(param, aggh)[0], res)
 
-        res = heston.depvar_unc_mean(param, aggh)[1] \
+        res = heston.mean_vol2(param, aggh) \
             * (1 - heston.coef_big_a(param, 1)) \
             * (1 - heston.coef_big_a(param, 1)**2)
 
         self.assertEqual(heston.realized_const(param, aggh)[1], res)
 
-        res = (heston.depvar_unc_mean(param, aggh)[1] * (.5 - param.lmbd) \
-            + heston.depvar_unc_mean(param, aggh)[3]) \
+        res = heston.mean_ret(param, aggh) \
+            + heston.mean_vol(param, aggh) * (.5 - lmbd)
+
+        self.assertEqual(heston.realized_const(param, aggh)[2], res)
+
+        res = heston.mean_vol2(param, aggh) * (.5 - lmbd) \
+            * (1 - heston.coef_big_a(param, 1)) \
+            + heston.mean_cross(param, aggh) \
             * (1 - heston.coef_big_a(param, 1))
 
         self.assertAlmostEqual(heston.realized_const(param, aggh)[3], res)
