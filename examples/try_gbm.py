@@ -60,7 +60,7 @@ def try_gmm():
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
     res = gbm.gmmest(theta_start, data=data, instrlag=2)
-    res.print_results()
+    print(res)
 
 
 def try_sim_realized():
@@ -94,7 +94,7 @@ def try_integrated_gmm():
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
     res = gbm.integrated_gmm(theta_start, data=data, instrlag=2)
-    res.print_results()
+    print(res)
 
 
 if __name__ == '__main__':

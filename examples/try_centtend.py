@@ -286,7 +286,7 @@ def try_integrated_gmm_single():
                                   instr_choice='var', method='TNC',
                                   subset=subset, iter=2, bounds=bounds,
                                   constraints=cons)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
@@ -338,7 +338,7 @@ def try_integrated_gmm_real():
                                   instr_choice='var', method='TNC',
                                   subset=subset, iter=2, bounds=bounds,
                                   constraints=cons)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
@@ -388,7 +388,7 @@ def try_integrated_gmm():
                                     instr_data=instr_data, aggh=aggh,
                                     instr_choice='var', method=method,
                                     subset='vol', bounds=bounds, iter=3)
-        res.print_results()
+        print(res)
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 

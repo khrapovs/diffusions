@@ -207,7 +207,7 @@ def try_integrated_gmm_single():
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
@@ -255,7 +255,7 @@ def try_integrated_gmm_single_rn():
                                 subset=subset, iter=3, bounds=bounds,
                                 measure=measure)
 
-    res.print_results()
+    print(res)
 
     time_start = time.time()
     res = heston.integrated_gmm(theta_start, data=data_q, instrlag=2,
@@ -263,7 +263,7 @@ def try_integrated_gmm_single_rn():
                                 instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds,
                                 measure=measure)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
@@ -311,7 +311,7 @@ def try_integrated_gmm_joint():
                                 instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds,
                                 measure=measure)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
     return res
@@ -351,7 +351,7 @@ def try_integrated_gmm_real():
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
                                 subset=subset, iter=3, bounds=bounds)
-    res.print_results()
+    print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
@@ -395,7 +395,7 @@ def try_integrated_gmm():
                                     instr_data=instr_data, aggh=aggh,
                                     instr_choice='var', method=method,
                                     subset='vol', bounds=bounds, iter=3)
-        res.print_results()
+        print(res)
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
