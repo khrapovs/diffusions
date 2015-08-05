@@ -7,10 +7,10 @@ Suppose that :math:`r_{t}` evolves according to
     dr_{t}=\kappa\left(\mu-r_{t}\right)dt+\eta dW_{t}.
 
 
-.. automodule:: diffusions.vasicek_param
+.. automodule:: diffusions.param_vasicek
 
-.. autoclass:: diffusions.vasicek_param.VasicekParam
+.. autoclass:: diffusions.param_vasicek.VasicekParam
 
-.. automodule:: diffusions.vasicek
+.. automodule:: diffusions.model_vasicek
 
-.. autoclass:: diffusions.vasicek.Vasicek
+.. autoclass:: diffusions.model_vasicek.Vasicek

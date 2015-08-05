@@ -45,11 +45,11 @@ captures both the distribution
 of :math:`Y` as well as the effects of any discounting.
 
 
-.. automodule:: diffusions.generic_param
+.. automodule:: diffusions.param_generic
 
-.. autoclass:: diffusions.generic_param.GenericParam
+.. autoclass:: diffusions.param_generic.GenericParam
 
-.. automodule:: diffusions.generic_model
+.. automodule:: diffusions.model_generic
 
-.. autoclass:: diffusions.generic_model.SDE
+.. autoclass:: diffusions.model_generic.SDE
 	:members: simulate, sim_realized, sim_realized_pq, gmmest, integrated_gmm

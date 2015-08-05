@@ -21,10 +21,10 @@ After integration on the interval :math:`\left[t,t+h\right]`:
 where :math:`\varepsilon_{t}\sim N\left(0,1\right)`.
 
 
-.. automodule:: diffusions.gbm_param
+.. automodule:: diffusions.param_gbm
 
-.. autoclass:: diffusions.gbm_param.GBMparam
+.. autoclass:: diffusions.param_gbm.GBMparam
 
-.. automodule:: diffusions.gbm
+.. automodule:: diffusions.model_gbm
 
-.. autoclass:: diffusions.gbm.GBM
+.. autoclass:: diffusions.model_gbm.GBM
