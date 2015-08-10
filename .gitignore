@@ -23,5 +23,7 @@
 *.npy
 *.token
 .ipynb_checkpoints
+*.c
+*.so
 build/
 *.egg-info

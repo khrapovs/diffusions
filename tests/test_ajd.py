@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 
 from diffusions import (GBMparam, VasicekParam, CIRparam,
                         HestonParam, CentTendParam)
@@ -28,7 +29,7 @@ class DriftTestCase(ut.TestCase):
         drift = state * (mean - sigma**2/2)
 
         self.assertEqual(ajd_drift(state, param).shape, size)
-        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+        npt.assert_array_equal(ajd_drift(state, param), drift)
 
     def test_ajd_drift_vasicek(self):
         """Test AJD drift function for Vasicek model."""
@@ -41,7 +42,7 @@ class DriftTestCase(ut.TestCase):
         drift = kappa * (mean - state)
 
         self.assertEqual(ajd_drift(state, param).shape, size)
-        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+        npt.assert_array_equal(ajd_drift(state, param), drift)
 
     def test_ajd_drift_cir(self):
         """Test AJD drift function for CIR model."""
@@ -54,7 +55,7 @@ class DriftTestCase(ut.TestCase):
         drift = kappa * (mean - state)
 
         self.assertEqual(ajd_drift(state, param).shape, size)
-        np.testing.assert_array_equal(ajd_drift(state, param), drift)
+        npt.assert_array_equal(ajd_drift(state, param), drift)
 
     def test_ajd_drift_heston(self):
         """Test AJD drift function for Heston model."""
@@ -72,7 +73,7 @@ class DriftTestCase(ut.TestCase):
         drift = np.vstack([drift_r, drift_v]).T
 
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
-        np.testing.assert_almost_equal(ajd_drift(state, param), drift)
+        npt.assert_almost_equal(ajd_drift(state, param), drift)
 
     def test_ajd_drift_ct(self):
         """Test AJD drift function for CT model."""
@@ -92,7 +93,7 @@ class DriftTestCase(ut.TestCase):
         drift = np.vstack([drift_r, drift_s, drift_y]).T
 
         self.assertEqual(ajd_drift(state, param).shape, drift.shape)
-        np.testing.assert_almost_equal(ajd_drift(state, param), drift)
+        npt.assert_almost_equal(ajd_drift(state, param), drift)
 
 
 class DiffusionTestCase(ut.TestCase):
@@ -109,7 +110,7 @@ class DiffusionTestCase(ut.TestCase):
         diff = np.ones((nsim, nvars, nvars)) * sigma
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+        npt.assert_array_equal(ajd_diff(state, param), diff)
 
     def test_ajd_diff_vasicek(self):
         """Test AJD diffusion function for Vasicek model."""
@@ -122,7 +123,7 @@ class DiffusionTestCase(ut.TestCase):
         diff = np.ones((nsim, nvars, nvars)) * eta
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+        npt.assert_array_equal(ajd_diff(state, param), diff)
 
     def test_ajd_diff_cir(self):
         """Test AJD diffusion function for CIR model."""
@@ -136,7 +137,7 @@ class DiffusionTestCase(ut.TestCase):
         diff = eta * state_val**.5 * np.ones((nsim, nvars, nvars))
 
         self.assertEqual(ajd_diff(state, param).shape, (nsim, nvars, nvars))
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+        npt.assert_array_equal(ajd_diff(state, param), diff)
 
 
     def test_ajd_diff_heston(self):
@@ -155,7 +156,7 @@ class DiffusionTestCase(ut.TestCase):
         diff = np.linalg.cholesky(var)
 
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+        npt.assert_array_equal(ajd_diff(state, param), diff)
 
     def test_ajd_diff_ct(self):
         """Test AJD diffusion function for CT model."""
@@ -180,7 +181,7 @@ class DiffusionTestCase(ut.TestCase):
         diff = np.linalg.cholesky(var)
 
         self.assertEqual(ajd_diff(state, param).shape, diff.shape)
-        np.testing.assert_array_equal(ajd_diff(state, param), diff)
+        npt.assert_array_equal(ajd_diff(state, param), diff)
 
 
 if __name__ == '__main__':

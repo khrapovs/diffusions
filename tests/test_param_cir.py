@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 
 from diffusions import CIRparam
 
@@ -28,36 +29,36 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.kappa, kappa)
         self.assertEqual(param.eta, eta)
 
-        np.testing.assert_array_equal(param.get_theta(),
-                                      np.array([mean, kappa, eta]))
+        npt.assert_array_equal(param.get_theta(),
+                               np.array([mean, kappa, eta]))
 
         theta = np.ones(3)
         param = CIRparam.from_theta(theta)
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
         mat_k1 = -param.kappa
         mat_h0 = 0.
         mat_h1 = param.eta**2
 
-        np.testing.assert_array_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         theta *= 2
         param.update(theta)
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
         mat_k1 = -param.kappa
         mat_h0 = 0.
         mat_h1 = param.eta**2
 
-        np.testing.assert_array_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         self.assertTrue(param.is_valid())
         param = CIRparam(mean, -kappa, eta)

@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 
 from diffusions import CentTendParam
 
@@ -95,22 +96,22 @@ class SDEParameterTestCase(ut.TestCase):
         mat_h1[1, 1] = [eta_s*param.rho, eta_s**2, 0]
         mat_h1[2, 2, 2] = eta_yq**2
 
-        np.testing.assert_array_almost_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_almost_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         theta = np.array([mean_v, kappa_s, kappa_y, eta_s, eta_y, lmbd, rho])
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(7)
         param = CentTendParam()
         param.update(theta=theta)
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = [param.riskfree, 0., param.kappa_y * param.mean_v]
         mat_k1 = [[0, param.lmbd - .5, 0],
@@ -122,17 +123,17 @@ class SDEParameterTestCase(ut.TestCase):
         mat_h1[1, 1] = [param.eta_s*param.rho, param.eta_s**2, 0]
         mat_h1[2, 2, 2] = param.eta_y**2
 
-        np.testing.assert_array_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         theta = np.arange(7)
         param.update(theta=theta)
         theta_vol = np.ones(5) * 2
         param.update(theta=theta_vol, subset='vol')
         theta[:5] = theta_vol
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         self.assertEqual(len(param.get_bounds()), 7)
         self.assertEqual(len(param.get_bounds(subset='vol')), 5)

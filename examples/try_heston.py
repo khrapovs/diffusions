@@ -411,6 +411,6 @@ if __name__ == '__main__':
 #    try_sim_realized_pq()
 #    try_integrated_gmm_single()
 #    try_integrated_gmm_single_rn()
-    res = try_integrated_gmm_joint()
+#    res = try_integrated_gmm_joint()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

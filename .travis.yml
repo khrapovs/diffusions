@@ -6,6 +6,7 @@ notifications:
   email:
     on_success: change
     on_failure: always
+sudo: false
 
 # Setup anaconda
 before_install:
@@ -16,18 +17,20 @@ before_install:
   - conda update --yes conda
   - conda update --yes openssl
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
+  # - sudo rm -rf /dev/shm
+  # - sudo ln -s /run/shm /dev/shm
   # BLAS/ATLAS libraries
   - sudo apt-get install liblapack3gf libblas3gf liblapack-dev libblas-dev libatlas-base-dev
 # Install packages
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose seaborn statsmodels
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION cython numpy scipy matplotlib nose seaborn statsmodels
   - conda install --yes -c https://conda.binstar.org/omnia numdifftools
   - pip install git+git://github.com/khrapovs/mygmm
+  - python setup.py build
 
 # Run test
 script:
+  - python setup.py develop
   - nosetests
 
 # Calculate coverage

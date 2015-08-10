@@ -8,10 +8,76 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 
 from diffusions import (GBM, GBMparam, Vasicek, VasicekParam,
                         CIR, CIRparam, Heston, HestonParam,
                         CentTend, CentTendParam)
+from diffusions.simulate import simulate
+
+
+class CythonTestCase(ut.TestCase):
+    """Test cython simulate."""
+
+    def test_cython_simulate_gbm(self):
+        """Test cython simulation."""
+
+        nvars = 1
+        mean, sigma = 1.5, .2
+        param = GBMparam(mean, sigma)
+        gbm = GBM(param)
+        start = np.array([1.])
+        nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
+        nobs = int(nperiods / interval)
+        dt = interval / ndiscr
+        paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                             nobs=nobs, nsim=nsim, diff=0)
+
+        self.assertEqual(gbm.errors.shape, (ndiscr * nobs, 2*nsim, nvars))
+        self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+
+        paths_cython = simulate(gbm.errors, start, np.atleast_1d(param.mat_k0),
+                                np.atleast_2d(param.mat_k1),
+                                np.atleast_2d(param.mat_h0),
+                                np.atleast_3d(param.mat_h1), dt)
+        paths_cython = paths_cython[::ndiscr]
+        paths_cython[1:, :, 0] = paths_cython[1:, :, 0] \
+            - paths_cython[:-1, :, 0]
+        paths_cython = paths_cython[1:]
+
+        self.assertEqual(paths_cython.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths, paths_cython)
+
+    def test_cython_simulate_heston(self):
+        """Test cython simulation."""
+
+        nvars = 2
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho)
+        heston = Heston(param)
+
+        start = np.array([1, mean_v])
+        nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
+        dt = interval / ndiscr
+        nobs = int(nperiods / interval)
+
+        heston.errors = np.ones((nobs*ndiscr, 2*nsim, nvars))
+        paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0, new_innov=False)
+
+        paths_cython = simulate(heston.errors, start,
+                                np.atleast_1d(param.mat_k0),
+                                np.atleast_2d(param.mat_k1),
+                                np.atleast_2d(param.mat_h0),
+                                np.atleast_3d(param.mat_h1), dt)
+        paths_cython = paths_cython[::ndiscr]
+        paths_cython[1:, :, 0] = paths_cython[1:, :, 0] \
+            - paths_cython[:-1, :, 0]
+        paths_cython = paths_cython[1:]
+
+        self.assertEqual(paths_cython.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths, paths_cython)
 
 
 class GBMTestCase(ut.TestCase):
@@ -36,7 +102,7 @@ class GBMTestCase(ut.TestCase):
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
-        np.testing.assert_array_equal(new_state, new_state_compute)
+        npt.assert_array_equal(new_state, new_state_compute)
 
     def test_vasicek_simupdate(self):
         """Test simulation update of the Vasicek model."""
@@ -57,7 +123,7 @@ class GBMTestCase(ut.TestCase):
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
-        np.testing.assert_array_equal(new_state, new_state_compute)
+        npt.assert_array_equal(new_state, new_state_compute)
 
     def test_cir_simupdate(self):
         """Test simulation update of the CIR model."""
@@ -79,7 +145,7 @@ class GBMTestCase(ut.TestCase):
         new_state_compute = loc * delta + (scale * error).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
-        np.testing.assert_array_equal(new_state, new_state_compute)
+        npt.assert_array_equal(new_state, new_state_compute)
 
     def test_heston_simupdate(self):
         """Test simulation update of the Heston model."""
@@ -110,7 +176,7 @@ class GBMTestCase(ut.TestCase):
             new_state_compute[i] += (scale[i] * error[i]).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
-        np.testing.assert_almost_equal(new_state, new_state_compute)
+        npt.assert_almost_equal(new_state, new_state_compute)
 
     def test_ct_simupdate(self):
         """Test simulation update of the Central Tendency model."""
@@ -153,7 +219,7 @@ class GBMTestCase(ut.TestCase):
             new_state_compute[i] += (scale[i] * error[i]).sum(1) * delta**.5
 
         self.assertEqual(new_state.shape, size)
-        np.testing.assert_almost_equal(new_state, new_state_compute)
+        npt.assert_almost_equal(new_state, new_state_compute)
 
 
 class SimulationTestCase(ut.TestCase):
@@ -168,21 +234,32 @@ class SimulationTestCase(ut.TestCase):
         gbm = GBM(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
+
+        paths_cy = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0)
         paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
-                             nobs=nobs, nsim=nsim, diff=0)
+                             nobs=nobs, nsim=nsim, diff=0,
+                             new_innov=False, cython=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths, paths_cy)
 
         nsim = 1
+        paths_cy = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0)
         paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
-                             nobs=nobs, nsim=nsim, diff=0)
+                             nobs=nobs, nsim=nsim, diff=0, new_innov=False,
+                             cython=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths, paths_cy)
 
         paths_new = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
                                  nobs=nobs, nsim=nsim, diff=0, new_innov=False)
 
-        np.testing.assert_array_equal(paths, paths_new)
+        npt.assert_array_equal(paths_cy, paths_new)
 
         paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr,
                              nobs=nobs, nsim=nsim)
@@ -202,15 +279,21 @@ class SimulationTestCase(ut.TestCase):
         vasicek = Vasicek(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
+
+        paths_cy = vasicek.simulate(start, interval=interval, ndiscr=ndiscr,
+                                    nobs=nobs, nsim=nsim)
         paths = vasicek.simulate(start, interval=interval, ndiscr=ndiscr,
-                                 nobs=nobs, nsim=nsim)
+                                 nobs=nobs, nsim=nsim,
+                                 cython=False, new_innov=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths, paths_cy)
 
         paths_new = vasicek.simulate(start, interval=interval, ndiscr=ndiscr,
                                      nobs=nobs, nsim=nsim, new_innov=False)
 
-        np.testing.assert_array_equal(paths, paths_new)
+        npt.assert_array_almost_equal(paths_new, paths_cy)
 
         fun = lambda: vasicek.simulate([1, 1], interval=interval,
                                        ndiscr=ndiscr, nobs=nobs, nsim=nsim,
@@ -227,15 +310,21 @@ class SimulationTestCase(ut.TestCase):
         cir = CIR(param)
         start, nperiods, interval, ndiscr, nsim = 1, 5, .5, 3, 4
         nobs = int(nperiods / interval)
+
+        paths_cy = cir.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim)
         paths = cir.simulate(start, interval=interval, ndiscr=ndiscr,
-                             nobs=nobs, nsim=nsim)
+                             nobs=nobs, nsim=nsim,
+                             new_innov=False, cython=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths_cy, paths)
 
         paths_new = cir.simulate(start, interval=interval, ndiscr=ndiscr,
                                  nobs=nobs, nsim=nsim, new_innov=False)
 
-        np.testing.assert_array_equal(paths, paths_new)
+        npt.assert_array_almost_equal(paths_new, paths_cy)
 
         fun = lambda: cir.simulate([1, 1], interval, ndiscr,
                                    nobs, nsim, diff=0)
@@ -246,31 +335,40 @@ class SimulationTestCase(ut.TestCase):
         """Test simulation of the Heston model."""
 
         nvars = 2
-        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
+        riskfree, lmbd, mean_v, kappa, eta, rho = 0., .25, .2, 1.5, .2**.5, -.5
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho)
         heston = Heston(param)
 
-        start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .5, 3, 4
+        start, nperiods, interval, ndiscr, nsim = [1, mean_v], 5, .1, 10, 4
+        nobs = int(nperiods / interval)
+
+        paths_cy = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                   nobs=nobs, nsim=nsim, diff=0)
+        paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim, diff=0,
+                                new_innov=False, cython=False)
 
         self.assertEquals(heston.get_start(), start)
-
-        nobs = int(nperiods / interval)
-        paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
-                                nobs=nobs, nsim=nsim, diff=0)
-
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths_cy, paths)
 
+        paths_cy = heston.simulate(interval=interval, ndiscr=ndiscr,
+                                   nobs=nobs, nsim=nsim, diff=0)
         paths = heston.simulate(interval=interval, ndiscr=ndiscr,
-                                nobs=nobs, nsim=nsim, diff=0)
+                                nobs=nobs, nsim=nsim, diff=0,
+                                new_innov=False, cython=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths_cy, paths)
 
         paths_new = heston.simulate(start, interval=interval, ndiscr=ndiscr,
                                     nobs=nobs, nsim=nsim,
                                     diff=0, new_innov=False)
 
-        np.testing.assert_array_equal(paths, paths_new)
+        npt.assert_array_equal(paths_cy, paths_new)
 
         paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
                                 nobs=nobs, nsim=nsim)
@@ -301,16 +399,22 @@ class SimulationTestCase(ut.TestCase):
         start = [1, mean_v, mean_v]
         nperiods, interval, ndiscr, nsim = 5, .5, 3, 4
         nobs = int(nperiods / interval)
+
+        paths_cy = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                                     nobs=nobs, nsim=nsim, diff=0)
         paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
-                                  nobs=nobs, nsim=nsim, diff=0)
+                                  nobs=nobs, nsim=nsim, diff=0,
+                                  new_innov=False, cython=False)
 
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
+        self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
+        npt.assert_array_almost_equal(paths_cy, paths)
 
         paths_new = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
                                       nobs=nobs, nsim=nsim,
                                       diff=0, new_innov=False)
 
-        np.testing.assert_array_equal(paths, paths_new)
+        npt.assert_array_equal(paths_cy, paths_new)
 
         paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
                                   nobs=nobs, nsim=nsim)
@@ -346,8 +450,8 @@ class RealizedSimTestCase(ut.TestCase):
                                 nsim=nsim, diff=0, new_innov=False)
         returns_new, rvol_new = data
 
-        np.testing.assert_array_equal(returns, returns_new)
-        np.testing.assert_array_equal(rvol, rvol_new)
+        npt.assert_array_equal(returns, returns_new)
+        npt.assert_array_equal(rvol, rvol_new)
 
     def test_vasicek_sim_realized(self):
         """Test simulation of realized values of the Vasicek model."""
@@ -369,8 +473,8 @@ class RealizedSimTestCase(ut.TestCase):
                                     nsim=nsim, diff=0, new_innov=False)
         returns_new, rvol_new = data
 
-        np.testing.assert_array_equal(returns, returns_new)
-        np.testing.assert_array_equal(rvol, rvol_new)
+        npt.assert_array_equal(returns, returns_new)
+        npt.assert_array_equal(rvol, rvol_new)
 
     def test_cir_sim_realized(self):
         """Test simulation of realized values of the CIR model."""
@@ -392,8 +496,8 @@ class RealizedSimTestCase(ut.TestCase):
                                 nsim=nsim, diff=0, new_innov=False)
         returns_new, rvol_new = data
 
-        np.testing.assert_array_equal(returns, returns_new)
-        np.testing.assert_array_equal(rvol, rvol_new)
+        npt.assert_array_equal(returns, returns_new)
+        npt.assert_array_equal(rvol, rvol_new)
 
     def test_heston_sim_realized(self):
         """Test simulation of realized values of the Heston model."""
@@ -420,8 +524,8 @@ class RealizedSimTestCase(ut.TestCase):
                                    nsim=nsim, diff=0, new_innov=False)
         returns_new, rvol_new = data
 
-        np.testing.assert_array_equal(returns, returns_new)
-        np.testing.assert_array_equal(rvol, rvol_new)
+        npt.assert_array_equal(returns, returns_new)
+        npt.assert_array_equal(rvol, rvol_new)
 
     def test_heston_sim_realized_pq(self):
         """Test simulation of realized data of Heston model under P and Q."""
@@ -494,8 +598,8 @@ class RealizedSimTestCase(ut.TestCase):
                                      nsim=nsim, diff=0, new_innov=False)
         returns_new, rvol_new = data
 
-        np.testing.assert_array_equal(returns, returns_new)
-        np.testing.assert_array_equal(rvol, rvol_new)
+        npt.assert_array_equal(returns, returns_new)
+        npt.assert_array_equal(rvol, rvol_new)
 
 
 if __name__ == '__main__':

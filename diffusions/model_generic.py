@@ -12,6 +12,11 @@ import numpy as np
 from mygmm import GMM
 from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
                                rolling_window, columnwise_prod, instruments)
+try:
+    from .simulate import simulate
+except:
+    print('Failed to import cython modules. '
+          + 'Temporary hack to compile documentation.')
 
 __all__ = ['SDE']
 
@@ -186,7 +191,7 @@ class SDE(object):
         return new_state
 
     def simulate(self, start=None, interval=1/80, ndiscr=1, nobs=500, nsim=1,
-                 diff=None, new_innov=True):
+                 diff=None, new_innov=True, cython=True):
         """Simulate observations from the model.
 
         Parameters
@@ -207,6 +212,8 @@ class SDE(object):
         new_innov : bool
             Whether to generate new innovations (True),
             or use already stored (False)
+        cython : bool
+            Whether to use cython-optimized simulation (True) or not (False)
 
         Returns
         -------
@@ -229,13 +236,22 @@ class SDE(object):
             # Standardize the errors
             self.errors = nice_errors(self.errors, 1)
 
-        nsim = self.errors.shape[1]
+        if cython:
+            dt = interval / ndiscr
+            paths = simulate(self.errors, np.atleast_1d(start).astype(float),
+                             np.atleast_1d(self.param.mat_k0).astype(float),
+                             np.atleast_2d(self.param.mat_k1).astype(float),
+                             np.atleast_2d(self.param.mat_h0).astype(float),
+                             np.atleast_3d(self.param.mat_h1).astype(float),
+                             float(dt))
 
-        paths = start * np.ones((npoints + 1, nsim, nvars))
+        else:
+            nsim = self.errors.shape[1]
+            paths = start * np.ones((npoints + 1, nsim, nvars))
 
-        for i in range(npoints):
-            # (nsim, nvars)
-            paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
+            for i in range(npoints):
+                # (nsim, nvars)
+                paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
 
         # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]

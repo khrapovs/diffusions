@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 from statsmodels.tsa.tsatools import lagmat
 
 from diffusions.helper_functions import (columnwise_prod, rolling_window,
@@ -27,19 +28,19 @@ class HelperFunctionTestCase(ut.TestCase):
         prod = np.vstack(prod).T
         expected = columnwise_prod(left, right)
 
-        np.testing.assert_array_equal(prod, expected)
+        npt.assert_array_equal(prod, expected)
 
     def test_rolling_window(self):
         """Test rolling window apply."""
 
         mat = rolling_window(np.sum, np.ones(5), window=2)
 
-        np.testing.assert_array_equal(mat, np.ones(4) * 2)
-        mat = np.arange(10).reshape((2,5))
+        npt.assert_array_equal(mat, np.ones(4) * 2)
+        mat = np.arange(10).reshape((2, 5))
         mat = rolling_window(np.mean, mat, window=2)
-        expect = np.array([[ 0.5,  1.5,  2.5,  3.5], [ 5.5,  6.5,  7.5,  8.5]])
+        expect = np.array([[0.5,  1.5,  2.5,  3.5], [5.5,  6.5,  7.5,  8.5]])
 
-        np.testing.assert_array_equal(mat, expect)
+        npt.assert_array_equal(mat, expect)
 
     def test_nice_errors(self):
         """Test nice errors function."""
@@ -52,9 +53,9 @@ class HelperFunctionTestCase(ut.TestCase):
         treated_errors = nice_errors(errors, sim)
 
         self.assertEqual(treated_errors.shape, new_size)
-        np.testing.assert_almost_equal(treated_errors.mean(sim), 0)
-        np.testing.assert_almost_equal(treated_errors.std(sim),
-                                       np.ones((nobs, nvars)))
+        npt.assert_almost_equal(treated_errors.mean(sim), 0)
+        npt.assert_almost_equal(treated_errors.std(sim),
+                                np.ones((nobs, nvars)))
 
     def test_poly_coef(self):
         """Test polynomial coefficients."""
@@ -76,16 +77,16 @@ class HelperFunctionTestCase(ut.TestCase):
         instrlag = 2
 
         instrmnts = instruments(nobs=nperiods)
-        np.testing.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
+        npt.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
 
         ninstr = 2
         data = np.arange(nperiods*ninstr).reshape((ninstr, nperiods))
         instrmnts = instruments(data=data, instr_choice='const')
-        np.testing.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
+        npt.assert_array_equal(instrmnts, np.ones((nperiods, 1)))
 
         instrmnts = instruments(data=data, instr_choice='var')
         expect = np.hstack([np.ones((nperiods, 1)), lagmat(data.T, maxlag=1)])
-        np.testing.assert_array_equal(instrmnts, expect)
+        npt.assert_array_equal(instrmnts, expect)
 
         instrmnts = instruments(data[0], instrlag=instrlag, instr_choice='var')
         ninstr = 1

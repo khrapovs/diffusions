@@ -8,6 +8,7 @@ from __future__ import print_function, division
 
 import unittest as ut
 import numpy as np
+import numpy.testing as npt
 
 from diffusions import GBMparam
 
@@ -26,39 +27,39 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(param.mean, mean)
         self.assertEqual(param.sigma, sigma)
-        np.testing.assert_array_equal(param.get_theta(),
-                                      np.array([mean, sigma]))
+        npt.assert_array_equal(param.get_theta(),
+                               np.array([mean, sigma]))
 
         theta = np.array([mean, sigma])
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(2)
         param = GBMparam.from_theta(theta)
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.mean - param.sigma**2/2
         mat_k1 = 0.
         mat_h0 = param.sigma**2
         mat_h1 = 0.
 
-        np.testing.assert_array_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         theta *= 2
         param.update(theta=theta)
-        np.testing.assert_array_equal(param.get_theta(), theta)
+        npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.mean - param.sigma**2/2
         mat_k1 = 0.
         mat_h0 = param.sigma**2
         mat_h1 = 0.
 
-        np.testing.assert_array_equal(param.mat_k0, mat_k0)
-        np.testing.assert_array_equal(param.mat_k1, mat_k1)
-        np.testing.assert_array_equal(param.mat_h0, mat_h0)
-        np.testing.assert_array_equal(param.mat_h1, mat_h1)
+        npt.assert_array_equal(param.mat_k0, mat_k0)
+        npt.assert_array_equal(param.mat_k1, mat_k1)
+        npt.assert_array_equal(param.mat_h0, mat_h0)
+        npt.assert_array_equal(param.mat_h1, mat_h1)
 
         self.assertTrue(param.is_valid())
         param = GBMparam(mean, -sigma)
