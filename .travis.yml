@@ -7,6 +7,15 @@ notifications:
     on_success: change
     on_failure: always
 sudo: false
+addons:
+  apt:
+    packages:
+    # BLAS support
+    - liblapack3gf
+    - libblas3gf
+    - liblapack-dev
+    - libblas-dev
+    - libatlas-base-dev
 
 # Setup anaconda
 before_install:
@@ -19,8 +28,6 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   # - sudo rm -rf /dev/shm
   # - sudo ln -s /run/shm /dev/shm
-  # BLAS/ATLAS libraries
-  - sudo apt-get install liblapack3gf libblas3gf liblapack-dev libblas-dev libatlas-base-dev
 # Install packages
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION cython numpy scipy matplotlib nose seaborn statsmodels
