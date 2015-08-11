@@ -46,7 +46,7 @@ def simulate(double[:, :, :] errors, double[:] start,
         double[:] drift = np.empty(nvars, float)
         double[:] diff = np.empty(nvars, float)
         double[:, :] var = np.empty((nvars, nvars), float)
-        double[:, :, :] paths = np.ones((npoints + 1, nsim, nvars), float)
+        double[:, :, :] paths = np.empty((npoints + 1, nsim, nvars), float)
 
     for s in range(nsim):
         for i in range(nvars):

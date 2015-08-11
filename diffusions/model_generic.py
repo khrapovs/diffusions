@@ -244,7 +244,6 @@ class SDE(object):
                              np.atleast_2d(self.param.mat_h0).astype(float),
                              np.atleast_3d(self.param.mat_h1).astype(float),
                              float(dt))
-
         else:
             nsim = self.errors.shape[1]
             paths = start * np.ones((npoints + 1, nsim, nvars))
@@ -260,7 +259,8 @@ class SDE(object):
         return paths[1:]
 
     def sim_realized(self, start=None, interval=1/80, ndiscr=1, aggh=1,
-                     nperiods=500, nsim=1, diff=None, new_innov=True):
+                     nperiods=500, nsim=1, diff=None, new_innov=True,
+                     cython=True):
         """Simulate realized returns and variance from the model.
 
         Parameters
@@ -283,6 +283,8 @@ class SDE(object):
         new_innov : bool
             Whether to generate new innovations (True),
             or use already stored (False)
+        cython : bool
+            Whether to use cython-optimized simulation (True) or not (False)
 
         Returns
         -------
@@ -298,7 +300,7 @@ class SDE(object):
         nobs = nperiods * intervals
         paths = self.simulate(start, interval=interval, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=diff,
-                              new_innov=new_innov)
+                              new_innov=new_innov, cython=cython)
         returns = paths[:, 0, 0].reshape((nperiods, intervals))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
@@ -320,6 +322,8 @@ class SDE(object):
             Starting value for simulation under Q
         aggh : list
             Aggregation windows for P and Q respectively
+        kwargs : dict
+            Anything that needs to go through sim_realized
 
         Returns
         -------
@@ -350,7 +354,9 @@ class SDE(object):
         Parameters
         ----------
         theta_start : array
-            Initial parameter values for estimation.
+            Initial parameter values for estimation
+        kwargs : dict
+            Anything that needs to go through mygmm
 
         Notes
         -----
@@ -366,7 +372,9 @@ class SDE(object):
         Parameters
         ----------
         theta_start : array
-            Initial parameter values for estimation.
+            Initial parameter values for estimation
+        kwargs : dict
+            Anything that needs to go through mygmm
 
         Notes
         -----
@@ -406,6 +414,8 @@ class SDE(object):
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
                 - 'PQ' : both
+        kwargs : dict
+            Anything that needs to go through mygmm
 
         Returns
         -------
