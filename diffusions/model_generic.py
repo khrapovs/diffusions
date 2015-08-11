@@ -13,7 +13,7 @@ from mygmm import GMM
 from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
                                rolling_window, columnwise_prod, instruments)
 try:
-    from .simulate import simulate
+   from .simulate import simulate
 except:
     print('Failed to import cython modules. '
           + 'Temporary hack to compile documentation.')

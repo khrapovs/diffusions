@@ -13,8 +13,29 @@ def simulate(double[:, :, :] errors, double[:] start,
              double[:] mat_k0, double[:, :] mat_k1,
              double[:, :] mat_h0, double[:, :, :] mat_h1, double dt):
 
-    # errors = np.random.normal(size=(npoints, nsim, nvars))
+    """Simulate AJD process.
 
+    Parameters
+    ----------
+    errors : (npoints, nsim, nvars) array
+        Standard Normal innovations
+    start : (nvars, ) array
+        Initial values for variables
+    mat_k0 : (nvars, ) array
+        Parameter matrix for drift (intercept)
+    mat_k1 : (nvars, nvars) array
+        Parameter matrix for drift (slope)
+    mat_h0 : (nvars, nvars) array
+        Parameter matrix for diffusion (intercept)
+    mat_h0 : (nvars, nvars, nvars) array
+        Parameter matrix for diffusion (slope)
+
+    Returns
+    -------
+    paths : (npoints + 1, nsim, nvars) array
+        Simulated paths
+
+    """
     cdef:
         Py_ssize_t i, j, s, t
         int info = 0

@@ -20,7 +20,7 @@ class CythonTestCase(ut.TestCase):
     """Test cython simulate."""
 
     def test_cython_simulate_gbm(self):
-        """Test cython simulation."""
+        """Test cython simulation for GBM."""
 
         nvars = 1
         mean, sigma = 1.5, .2
@@ -49,7 +49,7 @@ class CythonTestCase(ut.TestCase):
         npt.assert_array_almost_equal(paths, paths_cython)
 
     def test_cython_simulate_heston(self):
-        """Test cython simulation."""
+        """Test cython simulation for Heston."""
 
         nvars = 2
         riskfree, lmbd, mean_v, kappa, eta, rho = 0., .01, .2, 1.5, .2**.5, -.5
