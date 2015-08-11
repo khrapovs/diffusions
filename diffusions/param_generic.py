@@ -106,7 +106,7 @@ class GenericParam(object):
         """String representation.
 
         """
-        show = self.get_model_name() + ' parameters'
+        show = self.get_model_name() + ' parameters under ' + self.measure
         if self.is_valid():
             show += ' (valid)'
         else:

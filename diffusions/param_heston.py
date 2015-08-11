@@ -86,33 +86,8 @@ class HestonParam(GenericParam):
             self.convert_to_q()
         self.update_ajd()
 
-    def convert_to_q(self):
-        """Convert parameters to risk-neutral version.
-
-        """
-        if self.measure == 'Q':
-            warnings.warn('Parameters are already converted to Q!')
-        else:
-            kappa_p = self.kappa
-            self.kappa = kappa_p - self.lmbd_v * self.eta
-            self.mean_v *= (kappa_p / self.kappa)
-            self.lmbd = .0
-            self.measure = 'Q'
-            self.update_ajd()
-
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
-        # AJD parameters
-        self.mat_k0 = [self.riskfree, self.kappa * self.mean_v]
-        self.mat_k1 = [[0, self.lmbd - .5], [0, -self.kappa]]
-        self.mat_h0 = np.zeros((2, 2))
-        self.mat_h1 = np.zeros((2, 2, 2))
-        self.mat_h1[1] = [[1, self.eta*self.rho],
-                    [self.eta*self.rho, self.eta**2]]
-
-    def get_model_name(self):
+    @staticmethod
+    def get_model_name():
         """Return model name.
 
         Returns
@@ -123,7 +98,8 @@ class HestonParam(GenericParam):
         """
         return 'Heston'
 
-    def get_names(self, subset='all', measure='PQ'):
+    @staticmethod
+    def get_names(subset='all', measure='PQ'):
         """Return parameter names.
 
         Parameters
@@ -157,17 +133,31 @@ class HestonParam(GenericParam):
         else:
             raise NotImplementedError('Keyword variable is not supported!')
 
-    def is_valid(self):
-        """Check validity of parameters.
-
-        Returns
-        -------
-        bool
-            True for valid parameters, False for invalid
+    def convert_to_q(self):
+        """Convert parameters to risk-neutral version.
 
         """
-        posit = (self.mean_v > 0) & (self.kappa > 0) & (self.eta > 0)
-        return posit & self.feller()
+        if self.measure == 'Q':
+            warnings.warn('Parameters are already converted to Q!')
+        else:
+            kappa_p = self.kappa
+            self.kappa = kappa_p - self.lmbd_v * self.eta
+            self.mean_v *= (kappa_p / self.kappa)
+            self.lmbd = .0
+            self.measure = 'Q'
+            self.update_ajd()
+
+    def update_ajd(self):
+        """Update AJD representation.
+
+        """
+        # AJD parameters
+        self.mat_k0 = [self.riskfree, self.kappa * self.mean_v]
+        self.mat_k1 = [[0, self.lmbd - .5], [0, -self.kappa]]
+        self.mat_h0 = np.zeros((2, 2))
+        self.mat_h1 = np.zeros((2, 2, 2))
+        self.mat_h1[1] = [[1, self.eta*self.rho],
+                    [self.eta*self.rho, self.eta**2]]
 
     def feller(self):
         """Check Feller condition.
@@ -180,6 +170,18 @@ class HestonParam(GenericParam):
         """
         return 2 * self.kappa * self.mean_v - self.eta**2 > 0
 
+    def is_valid(self):
+        """Check validity of parameters.
+
+        Returns
+        -------
+        bool
+            True for valid parameters, False for invalid
+
+        """
+        posit = (self.mean_v > 0) & (self.kappa > 0) & (self.eta > 0)
+        return posit & self.feller()
+
     @classmethod
     def from_theta(cls, theta, measure='P'):
         """Initialize parameters from parameter vector.
@@ -189,7 +191,7 @@ class HestonParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         measure : str
-            measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -207,10 +209,14 @@ class HestonParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         subset : str
-            Which parameters to update. Belongs to
+            Which parameters to update
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -241,10 +247,14 @@ class HestonParam(GenericParam):
         Parameters
         ----------
         subset : str
-            Which parameters to update. Belongs to
+            Which parameters to update
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -275,10 +285,14 @@ class HestonParam(GenericParam):
         Parameters
         ----------
         subset : str
-            Which parameters to update. Belongs to
+            Which parameters to update
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral

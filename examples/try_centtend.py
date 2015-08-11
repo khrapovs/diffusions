@@ -16,7 +16,8 @@ import matplotlib.pylab as plt
 import seaborn as sns
 
 from diffusions import CentTend, CentTendParam
-from diffusions import plot_trajectories, plot_final_distr, plot_realized
+from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
+                                         plot_realized)
 from load_real_data import load_data
 
 
@@ -37,12 +38,14 @@ def try_simulation():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 500, .1, 10, 3
     nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                              nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
@@ -74,12 +77,14 @@ def try_simulation_pq():
                                kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
                                rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 100, .1, 10, 3
     nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                              nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
@@ -90,10 +95,12 @@ def try_simulation_pq():
                                    kappa_s=kappa_s, kappa_y=kappa_y,
                                    eta_s=eta_s, eta_y=eta_y,
                                    rho=rho, measure='Q')
+    print(param_true_new)
     centtend.update_theta(param_true_new)
     start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
 
-    paths_q = centtend.simulate(start_q, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim,
+    paths_q = centtend.simulate(start_q, interval=interval, ndiscr=ndiscr,
+                                nobs=nobs, nsim=nsim,
                                 diff=0, new_innov=False)
 
     returns_q = paths_q[:, 0, 0]
@@ -127,12 +134,14 @@ def try_marginal():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 1000
+    nperiods, interval, ndiscr, nsim = 500, .1, 10, 100
     nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+                              nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
     volatility = paths[:, :, 1]
@@ -160,6 +169,7 @@ def try_sim_realized():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
@@ -199,6 +209,7 @@ def try_sim_realized_pq():
                                kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
                                rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
@@ -247,6 +258,7 @@ def try_integrated_gmm_single():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
@@ -257,34 +269,23 @@ def try_integrated_gmm_single():
                                  aggh=aggh, nperiods=nperiods,
                                  nsim=nsim, diff=0)
     ret, rvar = data
-
-    data = load_data()
-    ret, rvar = data[['logR', 'RV']].values.T
-    rvar = (rvar / 100) ** 2 / 252
-
     plot_realized(ret, rvar)
-
-    nlags = 90
-    lw = 2
-    grid = range(nlags+1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
-    plt.show()
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    param_start = param_true
-#    param_start.update(param_true.get_theta()/2)
-    subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
-    bounds = param_start.get_bounds(subset=subset)
     cons = ({'type': 'ineq', 'fun': lambda x:  x[1] - x[2]},
              {'type': 'ineq', 'fun': lambda x: x[3] - x[4]})
+
+    subset = 'vol'
+    measure = 'P'
+    theta_start = param_true.get_theta(subset=subset, measure=measure)
+    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
     time_start = time.time()
     res = centtend.integrated_gmm(theta_start, data=data, instrlag=2,
                                   instr_data=instr_data, aggh=aggh,
                                   instr_choice='var', method='TNC',
-                                  subset=subset, iter=2, bounds=bounds,
+                                  subset=subset, iter=3, bounds=bounds,
                                   constraints=cons)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
@@ -309,6 +310,7 @@ def try_integrated_gmm_real():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_start)
+    print(param_start)
     print(param_start.is_valid())
 
     aggh = 1
@@ -362,6 +364,7 @@ def try_integrated_gmm():
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
+    print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
@@ -397,12 +400,13 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
+
 #    try_simulation()
 #    try_simulation_pq()
 #    try_marginal()
 #    try_sim_realized()
-    try_sim_realized_pq()
-#    try_integrated_gmm_single()
+#    try_sim_realized_pq()
+    try_integrated_gmm_single()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()
 #    check_moments()

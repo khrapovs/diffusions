@@ -103,7 +103,7 @@ def try_marginal():
     heston = Heston(param_true)
 
     start = [1, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 20
+    nperiods, interval, ndiscr, nsim = 500, .1, 10, 200
     nobs = int(nperiods / interval)
     paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
                             nobs=nobs, nsim=nsim, diff=0)
@@ -130,11 +130,11 @@ def try_sim_realized():
                              kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
 
-    start = [1, mean_v]
+    # start = [1, mean_v]
     nperiods, interval, ndiscr, nsim = 500, 1/80, 1, 1
     aggh = 10
 
-    returns, rvar = heston.sim_realized(start, interval=interval,
+    returns, rvar = heston.sim_realized(interval=interval,
                                         ndiscr=ndiscr, aggh=aggh,
                                         nperiods=nperiods, nsim=nsim, diff=0)
 
@@ -187,6 +187,7 @@ def try_integrated_gmm_single():
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                              kappa=kappa, eta=eta, rho=rho)
     heston = Heston(param_true)
+    print(param_true)
 
     nperiods, interval, ndiscr, nsim = 1000, 1/10, 1, 1
     aggh = 1
@@ -411,6 +412,6 @@ if __name__ == '__main__':
 #    try_sim_realized_pq()
 #    try_integrated_gmm_single()
 #    try_integrated_gmm_single_rn()
-#    res = try_integrated_gmm_joint()
+    res = try_integrated_gmm_joint()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

@@ -71,6 +71,7 @@ class CentTendParam(GenericParam):
         rho : float
             Correlation
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -87,22 +88,78 @@ class CentTendParam(GenericParam):
         self.eta_s = eta_s
         self.rho = rho
         self.scale = 1
+        self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
+
+    @staticmethod
+    def get_model_name():
+        """Return model name.
+
+        Returns
+        -------
+        str
+            Parameter vector
+
+        """
+        return 'Central Tendency'
+
+    @staticmethod
+    def get_names(subset='all', measure='PQ'):
+        """Return parameter names.
+
+        Parameters
+        ----------
+        subset : str
+
+            Which parameters to return. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
+
+        Returns
+        -------
+        list of str
+            Parameter names
+
+        """
+        names = ['mean_v', 'kappa_s', 'kappa_y', 'eta_s', 'eta_y',
+                 'rho', 'lmbd', 'lmbd_s', 'lmbd_y']
+
+        if subset == 'all' and measure == 'PQ':
+            return names
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return names[:-2]
+        elif subset == 'vol' and measure == 'PQ':
+            return names[:5] + names[-2:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
+            return names[:5]
+        else:
+            raise NotImplementedError('Keyword variable is not supported!')
 
     def convert_to_q(self):
         """Convert parameters to risk-neutral version.
 
         """
-        kappa_sp = self.kappa_s
-        kappa_yp = self.kappa_y
-        self.kappa_s = self.kappa_s - self.lmbd_s * self.eta_s
-        self.kappa_y = self.kappa_y - self.lmbd_y * self.eta_y
-        self.scale = kappa_sp / self.kappa_s
-        self.mean_v *= (kappa_yp / self.kappa_y * self.scale)
-        self.lmbd = 0
-        self.eta_y *= (self.scale**.5)
+        if self.measure == 'Q':
+            warnings.warn('Parameters are already converted to Q!')
+        else:
+            kappa_sp = self.kappa_s
+            kappa_yp = self.kappa_y
+            self.kappa_s = self.kappa_s - self.lmbd_s * self.eta_s
+            self.kappa_y = self.kappa_y - self.lmbd_y * self.eta_y
+            self.scale = kappa_sp / self.kappa_s
+            self.mean_v *= (kappa_yp / self.kappa_y * self.scale)
+            self.lmbd = 0
+            self.eta_y *= (self.scale**.5)
+            self.measure = 'Q'
+            self.update_ajd()
 
     def update_ajd(self):
         """Update AJD representation.
@@ -143,41 +200,6 @@ class CentTendParam(GenericParam):
         posit2 = (self.kappa_s > 0) & (self.eta_s > 0)
         return posit1 & posit2 & self.feller()
 
-    def get_model_name(self):
-        """Return model name.
-
-        Returns
-        -------
-        str
-            Parameter vector
-
-        """
-        return 'CT'
-
-    def get_names(self, subset='all'):
-        """Return parameter names.
-
-        Parameters
-        ----------
-        subset : str
-            Which parameter names to return. Belongs to
-                - 'all' : all parameters, including those related to returns
-                - 'vol' : only those related to volatility
-
-        Returns
-        -------
-        list of str
-            Parameter names
-
-        """
-        names = ['mean_v', 'kappa', 'eta', 'lmbd', 'rho']
-        if subset == 'all':
-            return names
-        elif subset == 'vol':
-            return names[:3]
-        else:
-            raise ValueError(subset + ' keyword variable is not supported!')
-
     @classmethod
     def from_theta(cls, theta, measure='P'):
         """Initialize parameters from parameter vector.
@@ -187,19 +209,18 @@ class CentTendParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
 
         """
-        param = cls(riskfree=theta[0], mean_v=theta[1], kappa_s=theta[2],
-                    kappa_v=theta[3], eta_s=theta[4], eta_y=theta[5],
-                    lmbd=theta[6], lmbd_s=theta[7], lmbd_y=theta[8],
-                    rho=theta[9], measure=measure)
+        return cls(riskfree=theta[0], mean_v=theta[1], kappa_s=theta[2],
+                   kappa_y=theta[3], eta_s=theta[4], eta_y=theta[5],
+                   rho=theta[6], lmbd=theta[7], lmbd_s=theta[8],
+                   lmbd_y=theta[9], measure=measure)
 
-        return param
-
-    def update(self, theta, subset='all', measure='P'):
+    def update(self, theta, subset='all', measure='PQ'):
         """Update attributes from parameter vector.
 
         Parameters
@@ -207,32 +228,57 @@ class CentTendParam(GenericParam):
         theta : (nparams, ) array
             Parameter vector
         subset : str
-            Which parameters to update. Belongs to
+            Which parameters to update
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
+
         """
-        if subset == 'all':
-            [self.mean_v, self.kappa_s, self.kappa_y,
-                 self.eta_s, self.eta_y, self.lmbd, self.rho] = theta
-        elif subset == 'vol':
-            [self.mean_v, self.kappa_s, self.kappa_y,
-                 self.eta_s, self.eta_y] = theta
+        [self.mean_v, self.kappa_s, self.kappa_y,
+             self.eta_s, self.eta_y] = theta[:5]
+
+        if subset == 'all' and measure == 'PQ':
+            [self.rho, self.lmbd, self.lmbd_s, self.lmbd_y] = theta[5:]
+        elif subset == 'all' and measure in ('P', 'Q'):
+            [self.rho, self.lmbd] = theta[5:7]
+        elif subset == 'vol' and measure == 'PQ':
+            [self.lmbd_s, self.lmbd_y] = theta[-2:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
+            pass
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')
+
+        self.measure = 'P'
         if measure == 'Q':
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, subset='all'):
+    def get_theta(self, subset='all', measure='PQ'):
         """Return vector of model parameters.
 
         Parameters
         ----------
         subset : str
-            Which parameters to return. Belongs to
+            Which parameters to return
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
@@ -241,35 +287,54 @@ class CentTendParam(GenericParam):
 
         """
         theta = np.array([self.mean_v, self.kappa_s, self.kappa_y,
-                          self.eta_s, self.eta_y, self.lmbd, self.rho])
-        if subset == 'all':
+                          self.eta_s, self.eta_y, self.rho,
+                          self.lmbd, self.lmbd_s, self.lmbd_y])
+        if subset == 'all' and measure == 'PQ':
             return theta
-        elif subset == 'vol':
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return theta[:-2]
+        elif subset == 'vol' and measure == 'PQ':
+            return np.concatenate((theta[:5], theta[-2:]))
+        elif subset == 'vol' and measure in ('P', 'Q'):
             return theta[:5]
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')
 
-    def get_bounds(self, subset='all'):
+    def get_bounds(self, subset='all', measure='PQ'):
         """Bounds on parameters.
 
         Parameters
         ----------
         subset : str
-            Which parameter bounds to return. Belongs to
+            Which parameters to update
+
+            Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
+
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
 
         Returns
         -------
         sequence of (min, max) tuples
 
         """
-        lb = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, None, -1]
-        ub = [None, None, None, None, None, None, 1]
+        lb = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, -1, None, None, None]
+        ub = [None, None, None, None, None, 1, None, None, None]
         bounds = list(zip(lb, ub))
-        if subset == 'all':
+
+        if subset == 'all' and measure == 'PQ':
             return bounds
-        elif subset == 'vol':
+        elif subset == 'all' and measure in ('P', 'Q'):
+            return bounds[:-2]
+        elif subset == 'vol' and measure == 'PQ':
+            return bounds[:5] + bounds[-2:]
+        elif subset == 'vol' and measure in ('P', 'Q'):
             return bounds[:5]
         else:
-            raise ValueError(subset + ' keyword variable is not supported!')
+            raise NotImplementedError('Keyword variable is not supported!')

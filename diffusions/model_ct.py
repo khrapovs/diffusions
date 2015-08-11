@@ -36,6 +36,17 @@ class CentTend(SDE):
         """
         super(CentTend, self).__init__(param)
 
+    def get_start(self):
+        """Get starting values for simulation.
+
+        Returns
+        -------
+        array_like
+            Starting values for price and variance
+
+        """
+        return [1, self.param.mean_v, self.param.mean_v]
+
     @staticmethod
     def coef_big_as(param, aggh):
         """Coefficient A^\sigma_h in exact discretization of volatility.
@@ -509,38 +520,6 @@ class CentTend(SDE):
         var = np.vstack([rvar, rvar**2, ret, ret * rvar])[subset].squeeze()
         return lagmat(var.T, maxlag=5, original='in')
 
-    @staticmethod
-    def convert(theta, subset='all', measure='P'):
-        """Convert parameter vector to instance.
-
-        Parameters
-        ----------
-        theta : array
-            Model parameters
-        subset : str
-            Which parameters to estimate. Belongs to
-                - 'all' : all parameters, including those related to returns
-                - 'vol' : only those related to volatility
-        measure : str
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
-
-        Returns
-        -------
-        param : CentTendParam instance
-            Model parameters
-        subset_sl : slice
-            Which moments to use
-
-        """
-        param = CentTendParam()
-        param.update(theta=theta, subset=subset, measure=measure)
-        subset_sl = None
-        if subset == 'vol':
-            subset_sl = slice(2)
-        return param, subset_sl
-
 
 def unc_mean_ct2(param):
     """Unconditional second moment of CT, E[y_t**4].
@@ -652,7 +631,3 @@ def unc_var_error(param, aggh):
         kappa_y)))*exp(aggh*(-4*kappa_s -
         4*kappa_y))/(2*aggh**2*kappa_s**3*kappa_y**3*(kappa_s -
         kappa_y)**2*(kappa_s + kappa_y)))
-
-
-if __name__ == '__main__':
-    pass
