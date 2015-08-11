@@ -12,7 +12,6 @@ __all__ = ['simulate']
 def simulate(double[:, :, :] errors, double[:] start,
              double[:] mat_k0, double[:, :] mat_k1,
              double[:, :] mat_h0, double[:, :, :] mat_h1, double dt):
-
     """Simulate AJD process.
 
     Parameters
@@ -29,6 +28,8 @@ def simulate(double[:, :, :] errors, double[:] start,
         Parameter matrix for diffusion (intercept)
     mat_h0 : (nvars, nvars, nvars) array
         Parameter matrix for diffusion (slope)
+    dt : float
+        Time interval
 
     Returns
     -------
