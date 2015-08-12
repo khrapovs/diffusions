@@ -116,7 +116,11 @@ class GenericParam(object):
         show += ':\n'
         table = pd.DataFrame({'theta': self.get_theta()},
                               index=self.get_names())
-        show += table.to_string(float_format=lambda x: '%.4f' % x)
+        tb_str = table.to_string(float_format=lambda x: '%.4f' % x)
+        width = len(tb_str) // (table.shape[0] + 1)
+        show += width * '-' + '\n'
+        show += tb_str
+        show += '\n' + width * '-'
         return show
 
     def __repr__(self):
