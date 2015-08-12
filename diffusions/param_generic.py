@@ -7,6 +7,8 @@ Generic parameter class
 """
 from __future__ import print_function, division
 
+import pandas as pd
+
 __all__ = ['GenericParam']
 
 
@@ -112,9 +114,10 @@ class GenericParam(object):
         else:
             show += ' (not valid)'
         show += ':\n'
-        for name, param in zip(self.get_names(), self.get_theta()):
-            show += name + ' = %.4f' % param + ', '
-        return show[:-2]
+        table = pd.DataFrame({'theta': self.get_theta()},
+                              index=self.get_names())
+        show += table.to_string(float_format=lambda x: '%.4f' % x)
+        return show
 
     def __repr__(self):
         """String representation.
