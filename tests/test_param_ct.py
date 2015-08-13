@@ -63,6 +63,44 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
+    def test_constraints(self):
+        """Test constraints."""
+
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = 1.5
+        kappa_y = .5
+        eta_s = .1
+        eta_y = .01
+        rho = -.5
+
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+
+        cons = param.get_constraints()
+        self.assertTrue(cons[0]['fun'](param.get_theta()) > 0)
+        self.assertTrue(cons[1]['fun'](param.get_theta()) > 0)
+
+        riskfree = .01
+        lmbd = .01
+        mean_v = .5
+        kappa_s = .5
+        kappa_y = 1.5
+        eta_s = .01
+        eta_y = .1
+        rho = -.5
+
+        param = CentTendParam(riskfree=riskfree, lmbd=lmbd,
+                              mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+                              eta_s=eta_s, eta_y=eta_y, rho=rho)
+
+        cons = param.get_constraints()
+        self.assertFalse(cons[0]['fun'](param.get_theta()) > 0)
+        self.assertFalse(cons[1]['fun'](param.get_theta()) > 0)
+
+
     def test_init_q(self):
         """Test initialization under Q."""
 

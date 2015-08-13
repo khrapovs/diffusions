@@ -104,6 +104,28 @@ class GenericParam(object):
         """
         raise NotImplementedError('Must be overridden')
 
+    def get_bounds(self):
+        """Get parameter bounds.
+
+        Returns
+        -------
+        list of tuples
+            Parameter bounds
+
+        """
+        return None
+
+    def get_constraints(self):
+        """Get parameter constraints.
+
+        Returns
+        -------
+        dict or sequence of dict
+            Equality and inequality constraints. See scipy.optimize.minimize
+
+        """
+        return ()
+
     def __str__(self):
         """String representation.
 
@@ -115,7 +137,7 @@ class GenericParam(object):
             show += ' (not valid)'
         show += ':\n'
         table = pd.DataFrame({'theta': self.get_theta()},
-                              index=self.get_names())
+                             index=self.get_names())
         tb_str = table.to_string(float_format=lambda x: '%.4f' % x)
         width = len(tb_str) // (table.shape[0] + 1)
         show += width * '-' + '\n'

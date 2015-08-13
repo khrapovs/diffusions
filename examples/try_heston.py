@@ -189,7 +189,7 @@ def try_integrated_gmm_single():
     heston = Heston(param_true)
     print(param_true)
 
-    nperiods, interval, ndiscr, nsim = 1000, 1/10, 1, 1
+    nperiods, interval, ndiscr, nsim = 1000, 1/80, 10, 1
     aggh = 1
     data = heston.sim_realized(interval=interval, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
@@ -201,13 +201,12 @@ def try_integrated_gmm_single():
     subset = 'vol'
     measure = 'P'
     theta_start = param_true.get_theta(subset=subset, measure=measure)
-    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
     time_start = time.time()
     res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds)
+                                subset=subset, iter=3)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
@@ -410,8 +409,8 @@ if __name__ == '__main__':
 #    try_marginal()
 #    try_sim_realized()
 #    try_sim_realized_pq()
-#    try_integrated_gmm_single()
+    try_integrated_gmm_single()
 #    try_integrated_gmm_single_rn()
-    res = try_integrated_gmm_joint()
+#    res = try_integrated_gmm_joint()
 #    try_integrated_gmm_real()
 #    try_integrated_gmm()

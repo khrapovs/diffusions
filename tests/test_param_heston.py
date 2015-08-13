@@ -55,6 +55,21 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.rho, rho)
         self.assertTrue(param.is_valid())
 
+    def test_constraints(self):
+        """Test constraints."""
+
+        riskfree = .01
+        mean_v = .5
+        kappa = 1.5
+        eta = .1
+        lmbd = .01
+        rho = -.5
+
+        param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                            kappa=kappa, eta=eta, rho=rho)
+
+        self.assertEqual(param.get_constraints(), ())
+
     def test_init_q(self):
         """Test initialization under Q."""
 

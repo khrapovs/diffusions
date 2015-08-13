@@ -338,3 +338,15 @@ class CentTendParam(GenericParam):
             return bounds[:5]
         else:
             raise NotImplementedError('Keyword variable is not supported!')
+
+    def get_constraints(self):
+        """Get parameter constraints.
+
+        Returns
+        -------
+        dict or sequence of dict
+            Equality and inequality constraints. See scipy.optimize.minimize
+
+        """
+        return ({'type': 'ineq', 'fun': lambda x: x[1] - x[2]},
+                {'type': 'ineq', 'fun': lambda x: x[3] - x[4]})

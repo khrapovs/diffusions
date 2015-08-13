@@ -13,7 +13,7 @@ from mygmm import GMM
 from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
                                rolling_window, columnwise_prod, instruments)
 try:
-   from .simulate import simulate
+    from .simulate import simulate
 except:
     print('Failed to import cython modules. '
           + 'Temporary hack to compile documentation.')
@@ -366,13 +366,33 @@ class SDE(object):
         estimator = GMM(self.momcond)
         return estimator.gmmest(theta_start, **kwargs)
 
-    def integrated_gmm(self, theta_start, subset='all', measure='P', **kwargs):
+    def integrated_gmm(self, theta_start, subset='all', measure='P',
+                       names=None, bounds=None, constraints=(), **kwargs):
         """Estimate model parameters using Integrated GMM.
 
         Parameters
         ----------
         theta_start : array
             Initial parameter values for estimation
+        subset : str
+
+            Which parameters to estimate. Belongs to
+                - 'all' : all parameters, including those related to returns
+                - 'vol' : only those related to volatility
+
+        measure : str
+
+            Under which measure to estimate:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
+                - 'PQ' : both
+
+        names : list of str
+            Parameter names
+        bounds : list of tuples
+            Parameter bounds
+        constraints : dict or sequence of dict
+            Equality and inequality constraints. See scipy.optimize.minimize
         kwargs : dict
             Anything that needs to go through mygmm
 
@@ -382,9 +402,15 @@ class SDE(object):
 
         """
         estimator = GMM(self.integrated_mom)
-        names = self.param.get_names(subset=subset, measure=measure)
+        if names is None:
+            names = self.param.get_names(subset=subset, measure=measure)
+        if bounds is None:
+            bounds = self.param.get_bounds(subset=subset, measure=measure)
+        if constraints == ():
+            constraints = self.param.get_constraints()
         return estimator.gmmest(theta_start, names=names, subset=subset,
-                                measure=measure, **kwargs)
+                                measure=measure, bounds=bounds,
+                                constraints=constraints, **kwargs)
 
     def integrated_mom(self, theta, data=None, instr_data=None,
                        instr_choice='const', aggh=1, subset='all',
