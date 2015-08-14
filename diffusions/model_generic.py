@@ -366,13 +366,13 @@ class SDE(object):
         estimator = GMM(self.momcond)
         return estimator.gmmest(theta_start, **kwargs)
 
-    def integrated_gmm(self, theta_start, subset='all', measure='P',
+    def integrated_gmm(self, param_start, subset='all', measure='P',
                        names=None, bounds=None, constraints=(), **kwargs):
         """Estimate model parameters using Integrated GMM.
 
         Parameters
         ----------
-        theta_start : array
+        param_start : parameter class
             Initial parameter values for estimation
         subset : str
 
@@ -402,6 +402,8 @@ class SDE(object):
 
         """
         estimator = GMM(self.integrated_mom)
+        self.param = param_start
+        theta_start = self.param.get_theta(subset=subset, measure=measure)
         if names is None:
             names = self.param.get_names(subset=subset, measure=measure)
         if bounds is None:

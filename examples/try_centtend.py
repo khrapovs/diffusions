@@ -6,14 +6,14 @@ Try Central Tendency model
 """
 from __future__ import print_function, division
 
-from statsmodels.tsa.stattools import acf
-
 import time
 import itertools
 
 import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
+
+from statsmodels.tsa.stattools import acf
 
 from diffusions import CentTend, CentTendParam
 from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
@@ -153,14 +153,14 @@ def try_sim_realized():
     """Simulate realized data from Central Tendency model and plot it.
 
     """
-    riskfree = .01
-    lmbd = .01
-    mean_v = .2
-    kappa_s = .1
-    kappa_y = .05
-    eta_s = .01**.5
-    eta_y = .001**.5
+    riskfree = .0
+    mean_v = .5
+    kappa_s = .05
+    kappa_y = .02
+    eta_s = .1
+    eta_y = .01
     rho = -.9
+    lmbd = .5
 
     param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
                                mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
@@ -169,18 +169,16 @@ def try_sim_realized():
     print(param_true)
     print(param_true.is_valid())
 
-    start = [1, mean_v, mean_v]
     nperiods, interval, ndiscr, nsim = 2000, 1/80, 10, 1
     aggh = 1
 
-    returns, rvar = centtend.sim_realized(start, interval=interval,
+    returns, rvar = centtend.sim_realized(interval=interval,
                                           ndiscr=ndiscr, aggh=aggh,
                                           nperiods=nperiods, nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
 
-    nlags = 90
-    lw = 2
+    nlags, lw = 90, 2
     grid = range(nlags+1)
     plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
     plt.show()
@@ -228,21 +226,19 @@ def try_integrated_gmm_single():
 
     """
     riskfree = .0
-
     mean_v = .2
-    kappa_s = .1
-    kappa_y = .02
-    eta_s = .1
-    eta_y = .01
+    kappa_s = 1.5
+    kappa_y = .008
+    eta_s = .5
+    eta_y = .05
     rho = -.9
     lmbd = .5
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
+    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
+                               kappa_s=kappa_s, kappa_y=kappa_y,
                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_true)
     print(param_true)
-    print(param_true.is_valid())
 
     nperiods, interval, ndiscr, nsim = 2000, 1/80, 10, 1
     aggh = 1
@@ -252,18 +248,36 @@ def try_integrated_gmm_single():
                                  nsim=nsim, diff=0)
     ret, rvar = data
     plot_realized(ret, rvar)
+    nlags, lw = 90, 2
+    grid = range(nlags+1)
+    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
+    plt.show()
 
-    instr_data = np.vstack([rvar, rvar**2])
+    instr_data = np.vstack([rvar])
 
     subset = 'vol'
     measure = 'P'
-    theta_start = param_true.get_theta(subset=subset, measure=measure)
+
+#    theta = param_true.get_theta(subset=subset, measure=measure)
+#    mom, dmom = centtend.integrated_mom(theta/10, data=data,
+#                                        instr_data=instr_data,
+#                                        instr_choice='var', aggh=1,
+#                                        subset=subset, instrlag=1,
+#                                        measure=measure)
+#
+#    fig, axes = plt.subplots(nrows=mom.shape[1], ncols=1, sharex=True,
+#                             figsize=(10, 2*mom.shape[1]))
+#    for momf, ax in zip(mom.T, axes):
+#        ax.plot(momf)
+#        ax.axhline(momf.mean(), c='red')
+#    plt.show()
+#    print(mom.mean(0) / mom.std(0))
 
     time_start = time.time()
-    res = centtend.integrated_gmm(theta_start, data=data, instrlag=2,
+    res = centtend.integrated_gmm(param_true, data=data, instrlag=3,
                                   instr_data=instr_data, aggh=aggh,
                                   instr_choice='var', method='SLSQP',
-                                  subset=subset, iter=3)
+                                  subset=subset, measure=measure, iter=3)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
