@@ -18,13 +18,13 @@ def try_simulation():
     theta_true = VasicekParam(mean, kappa, eta)
     vasicek = Vasicek(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 3
-    nobs = int(nperiods / interval)
-    paths = vasicek.simulate(x0, interval=interval, ndiscr=ndiscr,
+    x0, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 3
+    nobs = nperiods * nsub
+    paths = vasicek.simulate(x0, nsub=nsub, ndiscr=ndiscr,
                              nobs=nobs, nsim=nsim)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval, 'returns')
+    plot_trajectories(data, nsub, 'returns')
 
 
 def try_marginal():
@@ -32,9 +32,9 @@ def try_marginal():
     theta_true = VasicekParam(mean, kappa, eta)
     vasicek = Vasicek(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = mean, 500, .5, 10, 20
-    nobs = int(nperiods / interval)
-    paths = vasicek.simulate(x0, interval=interval, ndiscr=ndiscr,
+    x0, nperiods, nsub, ndiscr, nsim = mean, 500, 2, 10, 20
+    nobs = nperiods * nsub
+    paths = vasicek.simulate(x0, nsub=nsub, ndiscr=ndiscr,
                              nobs=nobs, nsim=nsim)
     data = paths[:, :, 0]
 
@@ -46,9 +46,9 @@ def try_sim_realized():
     theta_true = VasicekParam(mean, kappa, eta)
     vasicek = Vasicek(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 80, 1, 1
     aggh = 10
-    returns, rvar = vasicek.sim_realized(start, interval=interval,
+    returns, rvar = vasicek.sim_realized(start, nsub=nsub,
                                          ndiscr=ndiscr, aggh=aggh,
                                          nperiods=nperiods, nsim=nsim, diff=0)
 

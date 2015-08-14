@@ -42,18 +42,18 @@ def try_simulation():
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 3
-    nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
+    nobs = nperiods * nsub
+    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
     tendency = paths[:, 0, 2]
 
-    plot_trajectories(returns, interval, 'returns')
+    plot_trajectories(returns, nsub, 'returns')
     names = ['vol', 'ct']
-    plot_trajectories([volatility, tendency], interval, names)
+    plot_trajectories([volatility, tendency], nsub, names)
 
 
 def try_simulation_pq():
@@ -81,9 +81,9 @@ def try_simulation_pq():
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 100, 3
-    nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+    nperiods, nsub, ndiscr, nsim = 500, 10, 100, 3
+    nobs = nperiods * nsub
+    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
@@ -99,7 +99,7 @@ def try_simulation_pq():
     centtend.update_theta(param_true_new)
     start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
 
-    paths_q = centtend.simulate(start_q, interval=interval, ndiscr=ndiscr,
+    paths_q = centtend.simulate(start_q, nsub=nsub, ndiscr=ndiscr,
                                 nobs=nobs, nsim=nsim,
                                 diff=0, new_innov=False)
 
@@ -107,10 +107,10 @@ def try_simulation_pq():
     volatility_q = paths_q[:, 0, 1]
     tendency_q = paths_q[:, 0, 2] / param_true_new.scale
 
-    plot_trajectories([returns, returns_q], interval, ['returns', 'returns Q'])
+    plot_trajectories([returns, returns_q], nsub, ['returns', 'returns Q'])
     names = ['vol', 'ct', 'vol Q', 'ct Q']
     plot_trajectories([volatility, tendency, volatility_q, tendency_q],
-                      interval, names)
+                      nsub, names)
 
 
 def try_marginal():
@@ -135,9 +135,9 @@ def try_marginal():
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 100
-    nobs = int(nperiods / interval)
-    paths = centtend.simulate(start, interval=interval, ndiscr=ndiscr,
+    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 100
+    nobs = nperiods * nsub
+    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
@@ -169,11 +169,10 @@ def try_sim_realized():
     print(param_true)
     print(param_true.is_valid())
 
-    nperiods, interval, ndiscr, nsim = 2000, 1/80, 10, 1
+    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
     aggh = 1
 
-    returns, rvar = centtend.sim_realized(interval=interval,
-                                          ndiscr=ndiscr, aggh=aggh,
+    returns, rvar = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
                                           nperiods=nperiods, nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
@@ -206,10 +205,10 @@ def try_sim_realized_pq():
     centtend = CentTend(param_true)
     print(param_true)
 
-    nperiods, interval, ndiscr, nsim = 500, 1/80, 10, 1
+    nperiods, nsub, ndiscr, nsim = 500, 80, 10, 1
     aggh = [1, 1]
 
-    data = centtend.sim_realized_pq(interval=interval, ndiscr=ndiscr,
+    data = centtend.sim_realized_pq(nsub=nsub, ndiscr=ndiscr,
                                     aggh=aggh, nperiods=nperiods, nsim=nsim,
                                     diff=0)
     print(param_true)
@@ -240,10 +239,10 @@ def try_integrated_gmm_single():
     centtend = CentTend(param_true)
     print(param_true)
 
-    nperiods, interval, ndiscr, nsim = 2000, 1/80, 10, 1
+    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
     aggh = 1
 
-    data = centtend.sim_realized(interval=interval, ndiscr=ndiscr,
+    data = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr,
                                  aggh=aggh, nperiods=nperiods,
                                  nsim=nsim, diff=0)
     ret, rvar = data
@@ -298,8 +297,9 @@ def try_integrated_gmm_real():
     rho = -.9
 
     param_start = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+                                mean_v=mean_v, kappa_s=kappa_s,
+                                kappa_y=kappa_y,
+                                eta_s=eta_s, eta_y=eta_y, rho=rho)
     centtend = CentTend(param_start)
     print(param_start)
     print(param_start.is_valid())
@@ -341,8 +341,8 @@ def try_integrated_gmm():
     mean_v = .2
     kappa_s = .1
     kappa_y = .05
-    eta_s = .01**.5 # .1
-    eta_y = .001**.5 # .0316
+    eta_s = .1
+    eta_y = .03
 
     lmbd = .01
     rho = -.9
@@ -355,9 +355,9 @@ def try_integrated_gmm():
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, interval, ndiscr, nsim = 2000, 1/80, 1, 1
+    nperiods, nsub, ndiscr, nsim = 2000, 80, 1, 1
     aggh = 1
-    data = centtend.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    data = centtend.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
                                  aggh=aggh, nperiods=nperiods,
                                  nsim=nsim, diff=0)
     ret, rvar = data
@@ -374,9 +374,9 @@ def try_integrated_gmm():
     for lag, method in tasks:
         time_start = time.time()
         res = centtend.integrated_gmm(theta_start, data=data, instrlag=lag,
-                                    instr_data=instr_data, aggh=aggh,
-                                    instr_choice='var', method=method,
-                                    subset='vol', iter=3)
+                                      instr_data=instr_data, aggh=aggh,
+                                      instr_choice='var', method=method,
+                                      subset='vol', iter=3)
         print(res)
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))

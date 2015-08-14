@@ -20,13 +20,13 @@ def try_simulation():
     print(theta_true.is_valid())
     cir = CIR(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = mean, 500, .5, 10, 3
-    nobs = int(nperiods / interval)
-    paths = cir.simulate(x0, interval=interval, ndiscr=ndiscr,
+    x0, nperiods, nsub, ndiscr, nsim = mean, 500, 2, 10, 3
+    nobs = nperiods * nsub
+    paths = cir.simulate(x0, nsub=nsub, ndiscr=ndiscr,
                          nobs=nobs, nsim=nsim)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval, 'rates')
+    plot_trajectories(data, nsub, 'rates')
 
 
 def try_marginal():
@@ -36,9 +36,9 @@ def try_marginal():
     print(theta_true.is_valid())
     cir = CIR(theta_true)
 
-    x0, nperiods, interval, ndiscr, nsim = mean, 500, .5, 10, 20
-    nobs = int(nperiods / interval)
-    paths = cir.simulate(x0, interval=interval, ndiscr=ndiscr,
+    x0, nperiods, nsub, ndiscr, nsim = mean, 500, 2, 10, 20
+    nobs = nperiods * nsub
+    paths = cir.simulate(x0, nsub=nsub, ndiscr=ndiscr,
                          nobs=nobs, nsim=nsim)
     data = paths[:, :, 0]
 
@@ -50,9 +50,9 @@ def try_sim_realized():
     theta_true = CIRparam(mean, kappa, eta)
     cir = CIR(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 80, 1, 1
     aggh = 10
-    returns, rvar = cir.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    returns, rvar = cir.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
                                      aggh=aggh, nperiods=nperiods,
                                      nsim=nsim, diff=0)
 

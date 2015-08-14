@@ -38,15 +38,15 @@ def try_simulation():
     print(param_true.is_valid())
 
     start = [1, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 3
-    nobs = int(nperiods / interval)
-    paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
+    nobs = nperiods * nsub
+    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr,
                             nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
-    plot_trajectories(returns, interval, 'returns')
-    plot_trajectories(volatility, interval, 'volatility')
+    plot_trajectories(returns, nsub, 'returns')
+    plot_trajectories(volatility, nsub, 'volatility')
 
 
 def try_simulation_pq():
@@ -67,10 +67,10 @@ def try_simulation_pq():
     heston = Heston(param_true)
     print(param_true.is_valid())
 
-    nperiods, interval, ndiscr, nsim = 100, .1, 10, 3
+    nperiods, nsub, ndiscr, nsim = 100, 10, 10, 3
     start = [1, mean_v]
-    nobs = int(nperiods / interval)
-    paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+    nobs = nperiods * nsub
+    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr,
                             nobs=nobs, nsim=nsim, diff=0)
 
     param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v,
@@ -78,15 +78,15 @@ def try_simulation_pq():
                              eta=eta, rho=rho, measure='Q')
     heston.update_theta(param_true)
     start_q = [1, param_true.mean_v]
-    paths_q = heston.simulate(start_q, interval=interval, ndiscr=ndiscr,
+    paths_q = heston.simulate(start_q, nsub=nsub, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=0, new_innov=False)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
     returns_q = paths_q[:, 0, 0]
     volatility_q = paths_q[:, 0, 1]
-    plot_trajectories([returns, returns_q], interval, ['returns', 'returns_q'])
-    plot_trajectories([volatility, volatility_q], interval,
+    plot_trajectories([returns, returns_q], nsub, ['returns', 'returns_q'])
+    plot_trajectories([volatility, volatility_q], nsub,
                       ['volatility', 'volatility_q'])
 
 
@@ -106,9 +106,9 @@ def try_marginal():
     heston = Heston(param_true)
 
     start = [1, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, .1, 10, 200
-    nobs = int(nperiods / interval)
-    paths = heston.simulate(start, interval=interval, ndiscr=ndiscr,
+    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 200
+    nobs = nperiods * nsub
+    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr,
                             nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
@@ -134,11 +134,10 @@ def try_sim_realized():
     heston = Heston(param_true)
 
     # start = [1, mean_v]
-    nperiods, interval, ndiscr, nsim = 500, 1/80, 1, 1
+    nperiods, nsub, ndiscr, nsim = 500, 80, 1, 1
     aggh = 10
 
-    returns, rvar = heston.sim_realized(interval=interval,
-                                        ndiscr=ndiscr, aggh=aggh,
+    returns, rvar = heston.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
                                         nperiods=nperiods, nsim=nsim, diff=0)
 
     plot_realized(returns, rvar)
@@ -160,12 +159,12 @@ def try_sim_realized_pq():
                              kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
     heston = Heston(param_true)
 
-    nperiods, interval, ndiscr, nsim = 500, 1/100, 1, 1
+    nperiods, nsub, ndiscr, nsim = 500, 100, 1, 1
     aggh = [1, 2]
 
     print(heston.param)
 
-    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
                                   nperiods=nperiods, nsim=nsim, diff=0)
     (ret_p, rvar_p), (ret_q, rvar_q) = data
     print(heston.param)
@@ -192,9 +191,9 @@ def try_integrated_gmm_single():
     heston = Heston(param_true)
     print(param_true)
 
-    nperiods, interval, ndiscr, nsim = 2000, 1/80, 10, 1
+    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
     aggh = 1
-    data = heston.sim_realized(interval=interval, ndiscr=ndiscr,
+    data = heston.sim_realized(nsub=nsub, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
     plot_realized(ret, rvar)
@@ -235,9 +234,9 @@ def try_integrated_gmm_single_rn():
     heston = Heston(param_true)
 
     aggh = [1, 1]
-    nperiods, interval, ndiscr, nsim = 2000, 1/100, 1, 1
+    nperiods, nsub, ndiscr, nsim = 2000, 100, 1, 1
 
-    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
                                   nperiods=nperiods, nsim=nsim, diff=0)
     print('Q parameters:\n', param_true)
     data_p, data_q = data
@@ -291,9 +290,9 @@ def try_integrated_gmm_joint():
     heston = Heston(param_true)
 
     aggh = [1, 1]
-    nperiods, interval, ndiscr, nsim = 1000, 1/100, 1, 1
+    nperiods, nsub, ndiscr, nsim = 1000, 100, 1, 1
 
-    data = heston.sim_realized_pq(interval=interval, ndiscr=ndiscr, aggh=aggh,
+    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
                                   nperiods=nperiods, nsim=nsim, diff=0)
     print('Q parameters:\n', param_true)
     data_p, data_q = data
@@ -369,7 +368,7 @@ def try_integrated_gmm():
 
     mean_v = .5
     kappa = .1
-    eta = .02**.5 # 0.1414
+    eta = .15
     lmbd = .3
     rho = -.5
     # 2 * kappa * mean_v - eta**2 > 0
@@ -378,9 +377,9 @@ def try_integrated_gmm():
                              eta=eta, rho=rho)
     heston = Heston(param_true)
 
-    start, nperiods, interval, ndiscr, nsim = [1, mean_v], 2000, 1/80, 1, 1
+    start, nperiods, nsub, ndiscr, nsim = [1, mean_v], 2000, 80, 1, 1
     aggh = 10
-    data = heston.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    data = heston.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
                                aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
     plot_realized(ret, rvar)

@@ -54,7 +54,7 @@ class SDE(object):
             True parameters used for simulation of the data
 
         """
-        self.interval = None
+        self.nsub = None
         self.ndiscr = None
         self.param = param
         self.errors = None
@@ -85,7 +85,7 @@ class SDE(object):
         (nvars, nsim) array_like
 
         """
-        return ajd_drift(state, theta) * self.interval
+        return ajd_drift(state, theta) / self.nsub
 
     def euler_scale(self, state, theta):
         """Euler scale.
@@ -102,7 +102,7 @@ class SDE(object):
         (nvars, nvars, nsim) array_like
 
         """
-        return ajd_diff(state, theta) * self.interval**.5
+        return ajd_diff(state, theta) / self.nsub**.5
 
     def exact_loc(self, state, theta):
         """Eaxct location.
@@ -190,7 +190,7 @@ class SDE(object):
 
         return new_state
 
-    def simulate(self, start=None, interval=1/80, ndiscr=1, nobs=500, nsim=1,
+    def simulate(self, start=None, nsub=80, ndiscr=1, nobs=500, nsim=1,
                  diff=None, new_innov=True, cython=True):
         """Simulate observations from the model.
 
@@ -198,10 +198,10 @@ class SDE(object):
         ----------
         start : array_like
             Starting value for simulation
-        interval : float
+        nsub : int
             Interval length
         ndiscr : int
-            Number of Euler discretization points inside unit interval
+            Number of Euler discretization points inside a subinterval
         nobs : int
             Number of points to simulate in one series
         nsim : int
@@ -225,7 +225,7 @@ class SDE(object):
             start = self.get_start()
         if np.size(self.param.mat_k0) != np.size(start):
             raise ValueError('Start for paths is of wrong dimension!')
-        self.interval = interval
+        self.nsub = nsub
         self.ndiscr = ndiscr
         nvars = np.size(start)
         npoints = nobs * ndiscr
@@ -237,7 +237,7 @@ class SDE(object):
             self.errors = nice_errors(self.errors, 1)
 
         if cython:
-            dt = interval / ndiscr
+            dt = 1 / ndiscr / nsub
             paths = simulate(self.errors, np.atleast_1d(start).astype(float),
                              np.atleast_1d(self.param.mat_k0).astype(float),
                              np.atleast_2d(self.param.mat_k1).astype(float),
@@ -258,7 +258,7 @@ class SDE(object):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(self, start=None, interval=1/80, ndiscr=1, aggh=1,
+    def sim_realized(self, start=None, nsub=80, ndiscr=10, aggh=1,
                      nperiods=500, nsim=1, diff=None, new_innov=True,
                      cython=True):
         """Simulate realized returns and variance from the model.
@@ -267,8 +267,8 @@ class SDE(object):
         ----------
         start : array_like
             Starting value for simulation
-        interval : float
-            Interval length for latent simulation (fraction of the day)
+        nsub : int
+            Number of subintervals for latent simulation (fractions of the day)
         ndiscr : int
             Number of Euler discretization points inside unit interval
         aggh : int
@@ -296,12 +296,11 @@ class SDE(object):
         """
         if start is None:
             start = self.get_start()
-        intervals = int(1 / interval)
-        nobs = nperiods * intervals
-        paths = self.simulate(start, interval=interval, ndiscr=ndiscr,
+        nobs = nperiods * nsub
+        paths = self.simulate(start, nsub=nsub, ndiscr=ndiscr,
                               nobs=nobs, nsim=nsim, diff=diff,
                               new_innov=new_innov, cython=cython)
-        returns = paths[:, 0, 0].reshape((nperiods, intervals))
+        returns = paths[:, 0, 0].reshape((nperiods, nsub))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
         returns = returns.sum(1)

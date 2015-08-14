@@ -25,7 +25,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        heston.interval = .5
+        heston.nsub = 2
 
         nperiods = 5
         ret = np.ones(nperiods) * (lmbd - .5) * mean_v
@@ -45,7 +45,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        heston.interval = .5
+        heston.nsub = 2
         nmoms = 4
 
         nperiods = 5
@@ -77,7 +77,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        heston.interval = .5
+        heston.nsub = 2
         nmoms = 4
 
         nperiods = 5
@@ -119,7 +119,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        heston.interval = .5
+        heston.nsub = 2
         nmoms = 4
 
         nperiods = 5
@@ -165,7 +165,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        heston.interval = .5
+        heston.nsub = 2
         nmoms = 4
 
         nperiods = 5
@@ -404,7 +404,7 @@ class RealizedMomentsHestonTestCase(ut.TestCase):
                             mean_v=mean_v, kappa=kappa,
                             eta=eta, rho=rho)
         heston = Heston(param)
-        heston.interval = .1
+        heston.nsub = 10
         aggh = 2
 
         self.assertIsInstance(heston.coef_big_a(param, aggh), float)

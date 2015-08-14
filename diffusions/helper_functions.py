@@ -85,25 +85,25 @@ def nice_errors(errors, sdim):
     return np.concatenate((errors, -errors), axis=sdim)
 
 
-def plot_trajectories(paths, interval, names):
+def plot_trajectories(paths, nsub, names):
     """Plot process realizations.
 
     Parameters
     ----------
     paths : array
         Process realizations. Shape is either (nobs,) or (nobs, nsim)
-    interval : float
-        Length of unit interval
+    nsub : int
+        Number of subintervals inside of unit interval
     names : str or list of strings
         Labels
 
     """
     if isinstance(paths, list):
         for path, name in zip(paths, names):
-            x = np.arange(0, interval * path.shape[0], interval)
+            x = np.arange(0, path.shape[0] / nsub, 1 / nsub)
             plt.plot(x, path, label=name)
     else:
-        x = np.arange(0, interval * paths.shape[0], interval)
+        x = np.arange(0, paths.shape[0] / nsub, 1 / nsub)
         plt.plot(x, paths, label=names)
 
     plt.xlabel('$t$')

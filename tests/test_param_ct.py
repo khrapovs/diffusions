@@ -41,7 +41,8 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertEqual(param.get_model_name(), 'Central Tendency')
         self.assertEquals(param.get_names(), names)
         self.assertEquals(param.get_names(subset='all'), names)
-        self.assertEquals(param.get_names(subset='vol'), names[:5] + names[-2:])
+        self.assertEquals(param.get_names(subset='vol'),
+                          names[:5] + names[-2:])
         self.assertEquals(param.get_names(subset='vol', measure='P'),
                           names[:5])
         self.assertEquals(param.get_names(subset='vol', measure='Q'),

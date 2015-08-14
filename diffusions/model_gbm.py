@@ -160,7 +160,7 @@ class GBM(SDE):
 
         """
         mean, sigma = theta
-        return np.array([[self.interval, - sigma * self.interval], [0, 0]])
+        return np.array([[1 / self.nsub, - sigma / self.nsub], [0, 0]])
 
     def dgammamat_exact(self, theta):
         """Derivative of the second moment coefficients (exact).
@@ -177,9 +177,9 @@ class GBM(SDE):
 
         """
         mean, sigma = theta
-        return np.array([[2 * self.interval**2 * (mean - sigma**2/2),
-                         2 * sigma * self.interval
-                         - 2 * sigma * self.interval**2
+        return np.array([[2 / self.nsub**2 * (mean - sigma**2/2),
+                         2 * sigma / self.nsub
+                         - 2 * sigma / self.nsub**2
                          * (mean - sigma**2/2)], [0, 0]])
 
     @staticmethod

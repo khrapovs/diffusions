@@ -20,7 +20,7 @@ class RealizedMomentsGBMTestCase(ut.TestCase):
         mean, sigma = 1.5, .2
         param = GBMparam(mean, sigma)
         gbm = GBM(param)
-        gbm.interval = .5
+        gbm.nsub = 2
 
         nperiods = 10
         data = np.ones((2, nperiods))

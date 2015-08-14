@@ -33,7 +33,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
 
         nperiods = 10
         ret = np.arange(nperiods)
@@ -61,7 +61,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
         nmoms = 4
 
         nperiods = 10
@@ -101,7 +101,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
         nmoms = 4
 
         nperiods = 10
@@ -150,7 +150,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
         nmoms = 4
 
         nperiods = 10
@@ -204,7 +204,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
         nmoms = 4
 
         nperiods = 10
@@ -346,7 +346,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .5
+        centtend.nsub = 2
         nmoms = 4
 
         nperiods = 10
@@ -477,7 +477,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
                               eta_s=eta_s, eta_y=eta_y, rho=rho)
 
         centtend = CentTend(param)
-        centtend.interval = .1
+        centtend.nsub = 10
         aggh = 2
 
         self.assertIsInstance(centtend.coef_big_as(param, aggh), float)
@@ -491,11 +491,11 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         self.assertEqual(len(centtend.roots(param, aggh)), 5)
         roots = [centtend.coef_big_as(param, aggh),
-                  centtend.coef_big_ay(param, aggh),
-                  centtend.coef_big_as(param, aggh)**2,
-                  centtend.coef_big_ay(param, aggh)**2,
-                  centtend.coef_big_as(param, aggh)
-                  * centtend.coef_big_ay(param, aggh)]
+                 centtend.coef_big_ay(param, aggh),
+                 centtend.coef_big_as(param, aggh)**2,
+                 centtend.coef_big_ay(param, aggh)**2,
+                 centtend.coef_big_as(param, aggh)
+                 * centtend.coef_big_ay(param, aggh)]
         self.assertEqual(centtend.roots(param, aggh), roots)
 
         self.assertEqual(len(centtend.depvar_unc_mean(param, aggh)), 4)

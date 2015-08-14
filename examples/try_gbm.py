@@ -21,13 +21,13 @@ def try_simulation():
 
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 2
-    nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 2
+    nobs = nperiods * nsub
+    paths = gbm.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs,
                          nsim=nsim, diff=0)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval, 'returns')
+    plot_trajectories(data, nsub, 'returns')
 
 
 def try_marginal():
@@ -35,13 +35,13 @@ def try_marginal():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 20
-    nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 20
+    nobs = nperiods * nsub
+    paths = gbm.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs,
                          nsim=nsim, diff=0)
     data = paths[:, :, 0]
 
-    plot_final_distr(data/interval, 'returns')
+    plot_final_distr(data * nsub, 'returns')
 
 
 def try_gmm():
@@ -49,13 +49,13 @@ def try_gmm():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, .5, 10, 1
-    nobs = int(nperiods / interval)
-    paths = gbm.simulate(start, interval=interval, ndiscr=ndiscr, nobs=nobs,
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 1
+    nobs = nperiods * nsub
+    paths = gbm.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs,
                          nsim=nsim, diff=0)
     data = paths[:, 0, 0]
 
-    plot_trajectories(data, interval, 'returns')
+    plot_trajectories(data, nsub, 'returns')
 
     mean, sigma = 2.5, .4
     theta_start = GBMparam(mean, sigma)
@@ -68,9 +68,9 @@ def try_sim_realized():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 80, 1, 1
     aggh = 10
-    returns, rvar = gbm.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    returns, rvar = gbm.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
                                      aggh=aggh, nperiods=nperiods,
                                      nsim=nsim, diff=0)
 
@@ -82,9 +82,9 @@ def try_integrated_gmm():
     theta_true = GBMparam(mean, sigma)
     gbm = GBM(theta_true)
 
-    start, nperiods, interval, ndiscr, nsim = 1, 500, 1/80, 1, 1
+    start, nperiods, nsub, ndiscr, nsim = 1, 500, 80, 1, 1
     aggh = 10
-    returns, rvar = gbm.sim_realized(start, interval=interval, ndiscr=ndiscr,
+    returns, rvar = gbm.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
                                      aggh=aggh, nperiods=nperiods,
                                      nsim=nsim, diff=0)
     data = np.vstack([returns, rvar])
@@ -105,4 +105,3 @@ if __name__ == '__main__':
 #    try_sim_realized()
 #    try_gmm()
 #    try_integrated_gmm()
-
