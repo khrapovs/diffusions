@@ -6,10 +6,14 @@ Helper functions
 """
 from __future__ import print_function, division
 
+import time
+import contextlib
+
 import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 import itertools as it
+
 from statsmodels.tsa.tsatools import lagmat
 
 __all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
@@ -333,6 +337,57 @@ def instruments(data=None, instrlag=1, nobs=None, instr_choice='const'):
         instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
         width = ((0, 0), (1, 0))
         return np.pad(instr, width, mode='constant', constant_values=1)
+
+
+def format_time(t):
+    """Format time for nice printing.
+
+    Parameters
+    ----------
+    t : float
+        Time in seconds
+
+    Returns
+    -------
+    format template
+
+    """
+    if t > 60 or t == 0:
+        units = 'min'
+        t /= 60
+    elif t > 1:
+        units = 's'
+    elif t > 1e-3:
+        units = 'ms'
+        t *= 1e3
+    elif t > 1e-6:
+        units = 'us'
+        t *= 1e6
+    else:
+        units = 'ns'
+        t *= 1e9
+    return '%.1f %s' % (t, units)
+
+
+@contextlib.contextmanager
+def take_time(desc):
+    """Context manager for timing the code.
+
+    Parameters
+    ----------
+    desc : str
+        Description of the code
+
+    Example
+    -------
+    >>> with take_time('Estimation'):
+    >>>    estimate()
+
+    """
+    t0 = time.time()
+    yield
+    dt = time.time() - t0
+    print('%s took %s' % (desc, format_time(dt)))
 
 
 if __name__ == "__main__":
