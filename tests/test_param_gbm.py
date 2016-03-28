@@ -23,7 +23,7 @@ class SDEParameterTestCase(ut.TestCase):
         param = GBMparam(mean, sigma)
 
         self.assertEqual(param.get_model_name(), 'GBM')
-        self.assertEquals(param.get_names(), ['mean', 'sigma'])
+        self.assertEqual(param.get_names(), ['mean', 'sigma'])
 
         self.assertEqual(param.mean, mean)
         self.assertEqual(param.sigma, sigma)

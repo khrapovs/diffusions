@@ -11,7 +11,7 @@ import numpy as np
 
 from diffusions import GBM, GBMparam
 from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized)
+                                         plot_realized, take_time)
 
 
 def try_simulation():
@@ -100,7 +100,8 @@ def try_integrated_gmm():
 if __name__ == '__main__':
 
     sns.set_context('notebook')
-#    try_simulation()
+    with take_time('Simulation'):
+        try_simulation()
 #    try_marginal()
 #    try_sim_realized()
 #    try_gmm()

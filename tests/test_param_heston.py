@@ -34,16 +34,16 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(param.measure, 'P')
         self.assertEqual(param.get_model_name(), 'Heston')
-        self.assertEquals(param.get_names(), names)
-        self.assertEquals(param.get_names(subset='all'), names)
-        self.assertEquals(param.get_names(subset='vol'), names[:3] + names[5:])
-        self.assertEquals(param.get_names(subset='vol', measure='P'),
+        self.assertEqual(param.get_names(), names)
+        self.assertEqual(param.get_names(subset='all'), names)
+        self.assertEqual(param.get_names(subset='vol'), names[:3] + names[5:])
+        self.assertEqual(param.get_names(subset='vol', measure='P'),
                           names[:3])
-        self.assertEquals(param.get_names(subset='vol', measure='Q'),
+        self.assertEqual(param.get_names(subset='vol', measure='Q'),
                           names[:3])
-        self.assertEquals(param.get_names(subset='all', measure='P'),
+        self.assertEqual(param.get_names(subset='all', measure='P'),
                           names[:-1])
-        self.assertEquals(param.get_names(subset='all', measure='Q'),
+        self.assertEqual(param.get_names(subset='all', measure='Q'),
                           names[:-1])
 
         self.assertEqual(param.riskfree, riskfree)

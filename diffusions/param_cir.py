@@ -26,10 +26,12 @@ class CIRparam(GenericParam):
         Mean reversion speed
     eta : float
         Instantaneous standard deviation
+    measure : str
+        Under which measure (P or Q)
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, eta=.1):
+    def __init__(self, mean=.5, kappa=1.5, eta=.1, measure='P'):
         """Initialize class.
 
         Parameters
@@ -40,11 +42,17 @@ class CIRparam(GenericParam):
             Mean reversion speed
         eta : float
             Instantaneous standard deviation
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
 
         """
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
+        self.measure = 'P'
         self.update_ajd()
 
     def is_valid(self):

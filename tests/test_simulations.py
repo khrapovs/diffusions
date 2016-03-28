@@ -349,7 +349,7 @@ class SimulationTestCase(ut.TestCase):
                                 nobs=nobs, nsim=nsim, diff=0,
                                 new_innov=False, cython=False)
 
-        self.assertEquals(heston.get_start(), start)
+        self.assertEqual(heston.get_start(), start)
         self.assertEqual(paths.shape, (nobs, 2*nsim, nvars))
         self.assertEqual(paths_cy.shape, (nobs, 2*nsim, nvars))
         npt.assert_array_almost_equal(paths_cy, paths)
@@ -509,7 +509,7 @@ class RealizedSimTestCase(ut.TestCase):
         heston = Heston(param)
         start, nperiods, nsub, ndiscr, nsim = [1, mean_v], 5, 2, 3, 4
 
-        self.assertEquals(heston.get_start(), start)
+        self.assertEqual(heston.get_start(), start)
 
         aggh = 2
         returns, rvol = heston.sim_realized(start, nsub=nsub,
@@ -544,12 +544,12 @@ class RealizedSimTestCase(ut.TestCase):
 
         start_p = [1, param.mean_v]
 
-        self.assertEquals(heston.get_start(), start_p)
+        self.assertEqual(heston.get_start(), start_p)
 
         param.convert_to_q()
         start_q = [1, mean_v * kappa / (kappa - lmbd_v * eta)]
 
-        self.assertEquals(heston.get_start(), start_q)
+        self.assertEqual(heston.get_start(), start_q)
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
                             kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)

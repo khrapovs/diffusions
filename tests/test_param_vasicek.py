@@ -23,7 +23,7 @@ class SDEParameterTestCase(ut.TestCase):
         param = VasicekParam(mean, kappa, eta)
 
         self.assertEqual(param.get_model_name(), 'Vasicek')
-        self.assertEquals(param.get_names(), ['mean', 'kappa', 'eta'])
+        self.assertEqual(param.get_names(), ['mean', 'kappa', 'eta'])
 
         self.assertEqual(param.mean, mean)
         self.assertEqual(param.kappa, kappa)

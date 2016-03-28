@@ -24,10 +24,12 @@ class GBMparam(GenericParam):
         Mean of the process
     sigma : float
         Instantaneous standard deviation
+    measure : str
+        Under which measure (P or Q)
 
     """
 
-    def __init__(self, mean=0, sigma=.2):
+    def __init__(self, mean=0, sigma=.2, measure='P'):
         """Initialize class.
 
         Parameters
@@ -36,10 +38,16 @@ class GBMparam(GenericParam):
             Mean of the process
         sigma : float
             Instantaneous standard deviation
+        measure : str
+
+            Under which measure:
+                - 'P' : physical measure
+                - 'Q' : risk-neutral
 
         """
         self.mean = mean
         self.sigma = sigma
+        self.measure = 'P'
         self.update_ajd()
 
     def is_valid(self):

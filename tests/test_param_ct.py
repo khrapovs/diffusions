@@ -39,17 +39,17 @@ class SDEParameterTestCase(ut.TestCase):
 
         self.assertEqual(param.measure, 'P')
         self.assertEqual(param.get_model_name(), 'Central Tendency')
-        self.assertEquals(param.get_names(), names)
-        self.assertEquals(param.get_names(subset='all'), names)
-        self.assertEquals(param.get_names(subset='vol'),
+        self.assertEqual(param.get_names(), names)
+        self.assertEqual(param.get_names(subset='all'), names)
+        self.assertEqual(param.get_names(subset='vol'),
                           names[:5] + names[-2:])
-        self.assertEquals(param.get_names(subset='vol', measure='P'),
+        self.assertEqual(param.get_names(subset='vol', measure='P'),
                           names[:5])
-        self.assertEquals(param.get_names(subset='vol', measure='Q'),
+        self.assertEqual(param.get_names(subset='vol', measure='Q'),
                           names[:5])
-        self.assertEquals(param.get_names(subset='all', measure='P'),
+        self.assertEqual(param.get_names(subset='all', measure='P'),
                           names[:-2])
-        self.assertEquals(param.get_names(subset='all', measure='Q'),
+        self.assertEqual(param.get_names(subset='all', measure='Q'),
                           names[:-2])
 
         self.assertEqual(param.riskfree, riskfree)

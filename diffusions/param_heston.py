@@ -69,6 +69,7 @@ class HestonParam(GenericParam):
         rho : float
             Correlation
         measure : str
+
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
