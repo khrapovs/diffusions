@@ -30,11 +30,11 @@ install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION cython numpy scipy matplotlib nose seaborn statsmodels
   - conda install --yes -c https://conda.binstar.org/omnia numdifftools
   - pip install git+git://github.com/khrapovs/mygmm
-  # - python setup.py build
+  - python setup.py build
 
 # Run test
 script:
-  - python setup.py build
+  - python setup.py develop
   - nosetests
 
 # Calculate coverage
