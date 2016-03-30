@@ -23,21 +23,18 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda/bin:$PATH
+  - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda update --yes conda
-  - conda update --yes openssl
-  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  # - sudo rm -rf /dev/shm
-  # - sudo ln -s /run/shm /dev/shm
 # Install packages
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION cython numpy scipy matplotlib nose seaborn statsmodels
   - conda install --yes -c https://conda.binstar.org/omnia numdifftools
   - pip install git+git://github.com/khrapovs/mygmm
-  - python setup.py build
+  # - python setup.py build
 
 # Run test
 script:
-  - python setup.py develop
+  - python setup.py build
   - nosetests
 
 # Calculate coverage
