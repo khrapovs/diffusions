@@ -97,7 +97,8 @@ class GBMparam(GenericParam):
         self.mean, self.sigma = theta
         self.update_ajd()
 
-    def get_model_name(self):
+    @staticmethod
+    def get_model_name():
         """Return model name.
 
         Returns
@@ -108,7 +109,8 @@ class GBMparam(GenericParam):
         """
         return 'GBM'
 
-    def get_names(self):
+    @staticmethod
+    def get_names(subset='all', measure='PQ'):
         """Return parameter names.
 
         Returns
@@ -119,7 +121,7 @@ class GBMparam(GenericParam):
         """
         return ['mean', 'sigma']
 
-    def get_theta(self):
+    def get_theta(self, subset='all', measure='PQ'):
         """Return vector of parameters.
 
         Returns

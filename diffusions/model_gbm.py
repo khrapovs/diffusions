@@ -256,7 +256,7 @@ class GBM(SDE):
         return np.vstack([np.ones_like(data[0]),
                           lagmat(data.T, maxlag=instrlag).T])[:, instrlag:]
 
-    def integrated_mom(self, theta, data=None, instrlag=1):
+    def integrated_mom(self, theta, data=None, instrlag=1, **kwargs):
         """Integrated moment function.
 
         Parameters

@@ -104,7 +104,8 @@ class CIRparam(GenericParam):
         self.mean, self.kappa, self.eta = theta
         self.update_ajd()
 
-    def get_model_name(self):
+    @staticmethod
+    def get_model_name():
         """Return model name.
 
         Returns
@@ -115,7 +116,8 @@ class CIRparam(GenericParam):
         """
         return 'CIR'
 
-    def get_names(self):
+    @staticmethod
+    def get_names(subset='all', measure='PQ'):
         """Return parameter names.
 
         Returns
@@ -126,7 +128,7 @@ class CIRparam(GenericParam):
         """
         return ['mean', 'kappa', 'eta']
 
-    def get_theta(self):
+    def get_theta(self, subset='all', measure='PQ'):
         """Return vector of parameters.
 
         Returns

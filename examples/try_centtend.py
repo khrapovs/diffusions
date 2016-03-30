@@ -17,7 +17,7 @@ from statsmodels.tsa.stattools import acf
 
 from diffusions import CentTend, CentTendParam
 from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized)
+                                         plot_realized, take_time)
 from load_real_data import load_data
 
 
@@ -320,10 +320,9 @@ def try_integrated_gmm_real():
     instr_data = np.vstack([rvar, rvar**2])
 
     subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
 
     time_start = time.time()
-    res = centtend.integrated_gmm(theta_start, data=data, instrlag=2,
+    res = centtend.integrated_gmm(param_start, data=data, instrlag=2,
                                   instr_data=instr_data, aggh=aggh,
                                   instr_choice='var', method='TNC',
                                   subset=subset, iter=2)
@@ -331,7 +330,7 @@ def try_integrated_gmm_real():
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
-def try_integrated_gmm():
+def try_integrated_gmm_opt_methods():
     """Simulate realized data from Central Tendency model. Estimate parameters.
     Check various optimization methods.
 
@@ -367,13 +366,11 @@ def try_integrated_gmm():
 
     param_start = param_true
     param_start.update(param_true.get_theta()/2)
-    subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
 
     tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
     for lag, method in tasks:
         time_start = time.time()
-        res = centtend.integrated_gmm(theta_start, data=data, instrlag=lag,
+        res = centtend.integrated_gmm(param_start, data=data, instrlag=lag,
                                       instr_data=instr_data, aggh=aggh,
                                       instr_choice='var', method=method,
                                       subset='vol', iter=3)
@@ -387,12 +384,19 @@ if __name__ == '__main__':
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
 
-#    try_simulation()
-#    try_simulation_pq()
-#    try_marginal()
-#    try_sim_realized()
-#    try_sim_realized_pq()
-    try_integrated_gmm_single()
-#    try_integrated_gmm_real()
-#    try_integrated_gmm()
-#    check_moments()
+#    with take_time('Simulation'):
+#        try_simulation()
+#    with take_time('Simulation PQ'):
+#        try_simulation_pq()
+#    with take_time('Marginal density'):
+#        try_marginal()
+#    with take_time('Simulation realized'):
+#        try_sim_realized()
+#    with take_time('Simulation realized PQ'):
+#        try_sim_realized_pq()
+#    with take_time('Integrated GMM'):
+#        try_integrated_gmm_single()
+#    with take_time('Integrated GMM with real data'):
+#        try_integrated_gmm_real()
+    with take_time('Integrated GMM with real data'):
+        try_integrated_gmm_opt_methods()

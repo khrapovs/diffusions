@@ -17,7 +17,7 @@ from statsmodels.tsa.stattools import acf
 
 from diffusions import Heston, HestonParam
 from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized)
+                                         plot_realized, take_time)
 from load_real_data import load_data
 
 
@@ -250,22 +250,20 @@ def try_integrated_gmm_single_rn():
 
     subset = 'vol'
     measure = 'P'
-    theta_start = param_true.get_theta(subset=subset, measure=measure)
-    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
-    res = heston.integrated_gmm(theta_start, data=data_p, instrlag=2,
+    res = heston.integrated_gmm(param_true, data=data_p, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[0],
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds,
+                                subset=subset, iter=3,
                                 measure=measure)
 
     print(res)
 
     time_start = time.time()
-    res = heston.integrated_gmm(theta_start, data=data_q, instrlag=2,
+    res = heston.integrated_gmm(param_true, data=data_q, instrlag=2,
                                 instr_data=instr_data, aggh=aggh[1],
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds,
+                                subset=subset, iter=3,
                                 measure=measure)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
@@ -306,14 +304,12 @@ def try_integrated_gmm_joint():
 
     subset = 'vol'
     measure = 'PQ'
-    theta_start = param_true.get_theta(subset=subset, measure=measure)
-    bounds = param_true.get_bounds(subset=subset, measure=measure)
 
     time_start = time.time()
-    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
+    res = heston.integrated_gmm(param_true, data=data, instrlag=2,
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds,
+                                subset=subset, iter=3,
                                 measure=measure)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
@@ -347,19 +343,17 @@ def try_integrated_gmm_real():
     instr_data = np.vstack([rvar, rvar**2])
 
     subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
-    bounds = param_start.get_bounds(subset=subset)
 
     time_start = time.time()
-    res = heston.integrated_gmm(theta_start, data=data, instrlag=2,
+    res = heston.integrated_gmm(param_start, data=data, instrlag=2,
                                 instr_data=instr_data, aggh=aggh,
                                 instr_choice='var', method='TNC',
-                                subset=subset, iter=3, bounds=bounds)
+                                subset=subset, iter=3)
     print(res)
     print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
 
 
-def try_integrated_gmm():
+def try_integrated_gmm_opt_methods():
     """Simulate realized data from Heston model. Estimate parameters.
     Check various optimization methods.
 
@@ -388,17 +382,14 @@ def try_integrated_gmm():
 
     param_start = param_true
     param_start.update(param_true.get_theta()/2)
-    subset = 'vol'
-    theta_start = param_start.get_theta(subset=subset)
-    bounds = param_start.get_bounds(subset=subset)
 
     tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
     for lag, method in tasks:
         time_start = time.time()
-        res = heston.integrated_gmm(theta_start, data=data, instrlag=lag,
+        res = heston.integrated_gmm(param_start, data=data, instrlag=lag,
                                     instr_data=instr_data, aggh=aggh,
                                     instr_choice='var', method=method,
-                                    subset='vol', bounds=bounds, iter=3)
+                                    subset='vol', iter=3)
         print(res)
         print(lag, method)
         print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
@@ -408,13 +399,24 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=4, suppress=True)
     sns.set_context('notebook')
-#    try_simulation()
-#    try_simulation_pq()
-#    try_marginal()
-#    try_sim_realized()
-#    try_sim_realized_pq()
-    try_integrated_gmm_single()
-#    try_integrated_gmm_single_rn()
-#    res = try_integrated_gmm_joint()
-#    try_integrated_gmm_real()
-#    try_integrated_gmm()
+
+#    with take_time('Simulation'):
+#        try_simulation()
+#    with take_time('Simulation PQ'):
+#        try_simulation_pq()
+#    with take_time('Marginal density'):
+#        try_marginal()
+#    with take_time('Simulate realized'):
+#        try_sim_realized()
+#    with take_time('Simulate realized PQ'):
+#        try_sim_realized_pq()
+#    with take_time('Integrated GMM'):
+#        try_integrated_gmm_single()
+#    with take_time('Integrated GMM under Q'):
+#        try_integrated_gmm_single_rn()
+#    with take_time('Integrated GMM under P and Q'):
+#        res = try_integrated_gmm_joint()
+#    with take_time('Integrated GMM with real data'):
+#        try_integrated_gmm_real()
+    with take_time('Integrated GMM with real data'):
+        try_integrated_gmm_opt_methods()

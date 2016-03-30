@@ -71,7 +71,8 @@ class GenericParam(object):
         """
         raise NotImplementedError('Must be overridden')
 
-    def get_model_name(self):
+    @staticmethod
+    def get_model_name():
         """Return model name.
 
         Returns
@@ -82,7 +83,8 @@ class GenericParam(object):
         """
         raise NotImplementedError('Must be overridden')
 
-    def get_names(self):
+    @staticmethod
+    def get_names():
         """Return parameter names.
 
         Returns
@@ -104,7 +106,8 @@ class GenericParam(object):
         """
         raise NotImplementedError('Must be overridden')
 
-    def get_bounds(self):
+    @staticmethod
+    def get_bounds(subset='all', measure='PQ'):
         """Get parameter bounds.
 
         Returns
