@@ -30,7 +30,7 @@ before_install:
 # Install packages
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION cython numpy scipy matplotlib nose seaborn statsmodels
-  - conda install -c omnia numdifftools
+  - conda install --yes -c omnia numdifftools
   - pip install git+git://github.com/khrapovs/mygmm
   - python setup.py build
 
