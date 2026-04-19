@@ -1,0 +1,27 @@
+[project]
+name = "diffusions"
+description = "Affine Diffusions. Simulation and estimation."
+authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.4.4",
+    "scipy>=1.17.1",
+    "statsmodels>=0.14.6",
+]
+dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.0.0"
