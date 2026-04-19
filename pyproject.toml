@@ -1,0 +1,8 @@
+[project]
+name = "diffusions"
+version = "0.1.0"
+description = "Affine Diffusions. Simulation and estimation."
+authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
