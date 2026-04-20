@@ -9,9 +9,9 @@ from __future__ import print_function, division
 import seaborn as sns
 import numpy as np
 
-from diffusions import GBM, GBMparam
-from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized, take_time)
+from affidiff import GBM, GBMparam
+from affidiff.helper_functions import (plot_trajectories, plot_final_distr,
+                                       plot_realized, take_time)
 
 
 def try_simulation():

@@ -8,8 +8,8 @@ with open('README.rst') as file:
 
 kwargs = {'libraries': [], 'include_dirs': [numpy.get_include()]}
 
-ext_modules = [Extension('diffusions.simulate',
-                         ['./diffusions/simulate.pyx'], **kwargs)]
+ext_modules = [Extension('affidiff.simulate',
+                         ['./src/affidiff/simulate.pyx'], **kwargs)]
 
 setup(name='diffusions',
       version='1.0',

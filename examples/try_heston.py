@@ -15,9 +15,9 @@ import seaborn as sns
 
 from statsmodels.tsa.stattools import acf
 
-from diffusions import Heston, HestonParam
-from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized, take_time)
+from affidiff import Heston, HestonParam
+from affidiff.helper_functions import (plot_trajectories, plot_final_distr,
+                                       plot_realized, take_time)
 from load_real_data import load_data
 
 

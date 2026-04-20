@@ -1,12 +1,15 @@
 [project]
-name = "diffusions"
+name = "affidiff"
 description = "Affine Diffusions. Simulation and estimation."
 authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "matplotlib>=3.10.8",
+    "mygmm>=0.1.0",
     "numpy>=2.4.4",
     "scipy>=1.17.1",
+    "seaborn>=0.13.2",
     "statsmodels>=0.14.6",
 ]
 dynamic = ["version"]
@@ -25,3 +28,9 @@ source = "uv-dynamic-versioning"
 
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
+
+[tool.commitizen]
+version_scheme = "semver"
+version_provider = "scm"
+update_changelog_on_bump = true
+tag_format = "v$version"

@@ -10,7 +10,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import VasicekParam
+from affidiff import VasicekParam
 
 
 class SDEParameterTestCase(ut.TestCase):
