@@ -191,7 +191,7 @@ class SDE(object):
         return new_state
 
     def simulate(self, start=None, nsub=80, ndiscr=1, nobs=500, nsim=1,
-                 diff=None, new_innov=True, cython=True):
+                 diff=None, new_innov=True, cython=False):
         """Simulate observations from the model.
 
         Parameters
