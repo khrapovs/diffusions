@@ -10,7 +10,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import Heston, HestonParam
+from affidiff import Heston, HestonParam
 
 
 class RealizedMomentsHestonTestCase(ut.TestCase):

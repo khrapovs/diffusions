@@ -10,7 +10,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import GBMparam
+from affidiff import GBMparam
 
 
 class SDEParameterTestCase(ut.TestCase):

@@ -10,7 +10,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import CentTend, CentTendParam
+from affidiff import CentTend, CentTendParam
 
 
 class RealizedMomentsCTTestCase(ut.TestCase):

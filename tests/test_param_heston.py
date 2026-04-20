@@ -12,7 +12,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import HestonParam
+from affidiff import HestonParam
 
 
 class SDEParameterTestCase(ut.TestCase):

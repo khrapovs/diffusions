@@ -9,7 +9,7 @@ from __future__ import print_function, division
 import unittest as ut
 import numpy as np
 
-from diffusions import GBM, GBMparam
+from affidiff import GBM, GBMparam
 
 
 class RealizedMomentsGBMTestCase(ut.TestCase):

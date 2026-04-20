@@ -8,9 +8,9 @@ from __future__ import print_function, division
 
 import seaborn as sns
 
-from diffusions import CIR, CIRparam
-from diffusions.helper_functions import (plot_trajectories, plot_final_distr,
-                                         plot_realized, take_time)
+from affidiff import CIR, CIRparam
+from affidiff.helper_functions import (plot_trajectories, plot_final_distr,
+                                       plot_realized, take_time)
 
 
 def try_simulation():

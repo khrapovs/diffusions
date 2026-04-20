@@ -12,7 +12,7 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import CentTendParam
+from affidiff import CentTendParam
 
 
 class SDEParameterTestCase(ut.TestCase):

@@ -10,9 +10,9 @@ import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
-from diffusions import (GBMparam, VasicekParam, CIRparam,
-                        HestonParam, CentTendParam)
-from diffusions.helper_functions import ajd_drift, ajd_diff
+from affidiff import (GBMparam, VasicekParam, CIRparam,
+                      HestonParam, CentTendParam)
+from affidiff.helper_functions import ajd_drift, ajd_diff
 
 
 class DriftTestCase(ut.TestCase):
