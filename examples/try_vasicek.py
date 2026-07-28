@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Try Vasicek Model."""
 
 from __future__ import annotations

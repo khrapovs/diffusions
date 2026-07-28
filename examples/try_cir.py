@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Try Cox-Ingersoll-Ross Model."""
 
 from __future__ import annotations

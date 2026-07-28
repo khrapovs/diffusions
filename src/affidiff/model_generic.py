@@ -1,5 +1,3 @@
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Generic model class."""
 
 from __future__ import annotations

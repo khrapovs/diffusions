@@ -1,6 +1,4 @@
 # ruff: noqa
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Try Central Tendency model."""
 
 from __future__ import annotations

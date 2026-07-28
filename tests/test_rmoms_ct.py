@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Test suite for realized moments of Central Tendency."""
 
 from __future__ import division, print_function

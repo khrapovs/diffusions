@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # diffusions documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 20 14:42:02 2015.

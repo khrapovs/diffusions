@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import numpy
 from Cython.Distutils import build_ext  # type: ignore
 from setuptools import Extension, find_packages, setup  # type: ignore

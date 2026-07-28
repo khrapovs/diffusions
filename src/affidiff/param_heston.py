@@ -1,5 +1,3 @@
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Heston parameter class."""
 
 from __future__ import annotations

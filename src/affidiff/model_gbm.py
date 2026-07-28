@@ -1,5 +1,3 @@
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
 """GBM model class."""
 
 from __future__ import annotations

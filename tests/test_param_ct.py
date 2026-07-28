@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Test suite for CT parameter class."""
 
 from __future__ import division, print_function
