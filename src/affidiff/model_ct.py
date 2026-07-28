@@ -48,7 +48,7 @@ class CentTend(SDE):
 
     @staticmethod
     def coef_big_as(param, aggh):
-        """Coefficient A^\sigma_h in exact discretization of volatility.
+        r"""Coefficient A^\sigma_h in exact discretization of volatility.
 
         Parameters
         ----------
@@ -66,7 +66,7 @@ class CentTend(SDE):
         return np.exp(-param.kappa_s * aggh)
 
     def coef_big_bs(self, param, aggh):
-        """Coefficient B^\sigma_h in exact discretization of volatility.
+        r"""Coefficient B^\sigma_h in exact discretization of volatility.
 
         Parameters
         ----------
@@ -214,7 +214,7 @@ class CentTend(SDE):
         return (1 - self.coef_big_ay(param, aggh)) / param.kappa_y / aggh
 
     def roots(self, param, aggh):
-        """Roots of the polynomial in moment restrictions.
+        r"""Roots of the polynomial in moment restrictions.
 
         .. math::
 
@@ -537,7 +537,7 @@ def unc_mean_ct2(param):
 
 
 def unc_mean_sigma2(param):
-    """Unconditional second moment of volatility, E[\sigma_t**4].
+    r"""Unconditional second moment of volatility, E[\sigma_t**4].
 
     Parameters
     ----------
@@ -571,7 +571,7 @@ def unc_var_ct(param):
 
 
 def unc_var_sigma(param):
-    """Unconditional variance of volatility, V[\sigma_t**2].
+    r"""Unconditional variance of volatility, V[\sigma_t**2].
 
     Parameters
     ----------
@@ -587,7 +587,7 @@ def unc_var_sigma(param):
 
 
 def unc_var_error(param, aggh):
-    """Unconditional variance of aggregated volatility error,
+    r"""Unconditional variance of aggregated volatility error,
     :math:`V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]`
 
     Derived symbolically in symbolic.py
