@@ -24,6 +24,17 @@ class CIR(SDE):
         """
         super().__init__(param)
 
+    def get_start(self) -> list[float]:
+        """Get starting values for simulation.
+
+        Returns
+        -------
+        list[float]
+            Starting value at the long-run mean
+
+        """
+        return [float(self.param.mean)]
+
     @staticmethod
     def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
         """Drift function.

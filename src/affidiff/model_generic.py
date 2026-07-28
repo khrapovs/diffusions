@@ -346,7 +346,7 @@ class SDE(ABC):
         nsim: int = 1,
         diff: Any = None,  # noqa: ANN401
         new_innov: bool = True,
-        cython: bool = True,
+        cython: bool = False,
     ) -> tuple[Any, Any]:  # noqa: ANN401
         """Simulate realized returns and variance from the model.
 
