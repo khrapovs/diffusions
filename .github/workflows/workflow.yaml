@@ -46,7 +46,7 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: Install dependencies
-        run: uv sync group --dev
+        run: uv sync --group dev
       - name: Run pre-commit
         run: uv run prek run -v --show-diff-on-failure --all-files
 
