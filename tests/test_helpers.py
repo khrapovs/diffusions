@@ -1,9 +1,5 @@
 """Test suite for helper functions."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 import numpy as np
 import numpy.testing as npt
 from statsmodels.tsa.tsatools import lagmat
@@ -11,7 +7,7 @@ from statsmodels.tsa.tsatools import lagmat
 from affidiff.helper_functions import columnwise_prod, instruments, nice_errors, poly_coef, rolling_window
 
 
-class HelperFunctionTestCase(ut.TestCase):
+class TestHelperFunction:
     """Test helper functions."""
 
     def test_columnwise_prod(self) -> None:
@@ -46,7 +42,7 @@ class HelperFunctionTestCase(ut.TestCase):
         errors = np.random.normal(size=size)
         treated_errors = nice_errors(errors, sim)
 
-        self.assertEqual(treated_errors.shape, new_size)
+        assert treated_errors.shape == new_size
         npt.assert_almost_equal(treated_errors.mean(sim), 0)
         npt.assert_almost_equal(treated_errors.std(sim), np.ones((nobs, nvars)))
 
@@ -54,13 +50,13 @@ class HelperFunctionTestCase(ut.TestCase):
         """Test polynomial coefficients."""
         roots = [2, 3]
         coefs = [1, -np.sum(roots), np.prod(roots)]
-        self.assertEqual(poly_coef(roots), coefs)
+        assert poly_coef(roots) == coefs
 
         roots = np.array([2, 3, 4])
 
         coefs = [1, -np.sum(roots), 0, -np.prod(roots)]
         coefs[2] = np.prod(roots[:2]) + np.prod(roots[1:]) + np.prod(roots[[0, 2]])
-        self.assertEqual(poly_coef(roots), coefs)
+        assert poly_coef(roots) == coefs
 
     def test_instruments(self) -> None:
         """Test instruments."""
@@ -83,8 +79,4 @@ class HelperFunctionTestCase(ut.TestCase):
         ninstr = 1
         shape = (nperiods, ninstr * instrlag + 1)
         # Test the shape of instruments
-        self.assertEqual(instrmnts.shape, shape)
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert instrmnts.shape == shape

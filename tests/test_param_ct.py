@@ -1,17 +1,15 @@
 """Test suite for CT parameter class."""
 
-from __future__ import division, print_function
-
-import unittest as ut
 import warnings
 
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from affidiff import CentTendParam
 
 
-class SDEParameterTestCase(ut.TestCase):
+class TestSDEParameter:
     """Test parameter classes."""
 
     def test_init(self) -> None:
@@ -38,27 +36,27 @@ class SDEParameterTestCase(ut.TestCase):
 
         names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        self.assertEqual(param.measure, "P")
-        self.assertEqual(param.get_model_name(), "Central Tendency")
-        self.assertEqual(param.get_names(), names)
-        self.assertEqual(param.get_names(subset="all"), names)
-        self.assertEqual(param.get_names(subset="vol"), names[:5] + names[-2:])
-        self.assertEqual(param.get_names(subset="vol", measure="P"), names[:5])
-        self.assertEqual(param.get_names(subset="vol", measure="Q"), names[:5])
-        self.assertEqual(param.get_names(subset="all", measure="P"), names[:-2])
-        self.assertEqual(param.get_names(subset="all", measure="Q"), names[:-2])
+        assert param.measure == "P"
+        assert param.get_model_name() == "Central Tendency"
+        assert param.get_names() == names
+        assert param.get_names(subset="all") == names
+        assert param.get_names(subset="vol") == names[:5] + names[-2:]
+        assert param.get_names(subset="vol", measure="P") == names[:5]
+        assert param.get_names(subset="vol", measure="Q") == names[:5]
+        assert param.get_names(subset="all", measure="P") == names[:-2]
+        assert param.get_names(subset="all", measure="Q") == names[:-2]
 
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, lmbd)
-        self.assertEqual(param.lmbd_s, 0.0)
-        self.assertEqual(param.lmbd_y, 0.0)
-        self.assertEqual(param.mean_v, mean_v)
-        self.assertEqual(param.kappa_s, kappa_s)
-        self.assertEqual(param.kappa_y, kappa_y)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_y)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.riskfree == riskfree
+        assert param.lmbd == lmbd
+        assert param.lmbd_s == 0.0
+        assert param.lmbd_y == 0.0
+        assert param.mean_v == mean_v
+        assert param.kappa_s == kappa_s
+        assert param.kappa_y == kappa_y
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_y
+        assert param.rho == rho
+        assert param.is_valid()
 
     def test_constraints(self) -> None:
         """Test constraints."""
@@ -83,8 +81,8 @@ class SDEParameterTestCase(ut.TestCase):
         )
 
         cons = param.get_constraints()
-        self.assertTrue(cons[0]["fun"](param.get_theta()) > 0)
-        self.assertTrue(cons[1]["fun"](param.get_theta()) > 0)
+        assert cons[0]["fun"](param.get_theta()) > 0
+        assert cons[1]["fun"](param.get_theta()) > 0
 
         riskfree = 0.01
         lmbd = 0.01
@@ -107,8 +105,8 @@ class SDEParameterTestCase(ut.TestCase):
         )
 
         cons = param.get_constraints()
-        self.assertFalse(cons[0]["fun"](param.get_theta()) > 0)
-        self.assertFalse(cons[1]["fun"](param.get_theta()) > 0)
+        assert not (cons[0]["fun"](param.get_theta()) > 0)
+        assert not (cons[1]["fun"](param.get_theta()) > 0)
 
     def test_init_q(self) -> None:
         """Test initialization under Q."""
@@ -141,18 +139,18 @@ class SDEParameterTestCase(ut.TestCase):
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        self.assertEqual(param.measure, "Q")
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, 0)
-        self.assertEqual(param.lmbd_s, lmbd_s)
-        self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertEqual(param.mean_v, mean_v * kappa_y / kappa_yq * scale)
-        self.assertEqual(param.kappa_s, kappa_sq)
-        self.assertEqual(param.kappa_y, kappa_yq)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_y * scale**0.5)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.measure == "Q"
+        assert param.riskfree == riskfree
+        assert param.lmbd == 0
+        assert param.lmbd_s == lmbd_s
+        assert param.lmbd_y == lmbd_y
+        assert param.mean_v == mean_v * kappa_y / kappa_yq * scale
+        assert param.kappa_s == kappa_sq
+        assert param.kappa_y == kappa_yq
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_y * scale**0.5
+        assert param.rho == rho
+        assert param.is_valid()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -174,18 +172,18 @@ class SDEParameterTestCase(ut.TestCase):
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
         param = CentTendParam.from_theta(theta, measure="P")
 
-        self.assertEqual(param.measure, "P")
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, lmbd)
-        self.assertEqual(param.lmbd_s, lmbd_s)
-        self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertEqual(param.mean_v, mean_v)
-        self.assertEqual(param.kappa_s, kappa_s)
-        self.assertEqual(param.kappa_y, kappa_y)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_y)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.measure == "P"
+        assert param.riskfree == riskfree
+        assert param.lmbd == lmbd
+        assert param.lmbd_s == lmbd_s
+        assert param.lmbd_y == lmbd_y
+        assert param.mean_v == mean_v
+        assert param.kappa_s == kappa_s
+        assert param.kappa_y == kappa_y
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_y
+        assert param.rho == rho
+        assert param.is_valid()
 
     def test_from_theta_q(self) -> None:
         """Test from theta under Q."""
@@ -207,18 +205,18 @@ class SDEParameterTestCase(ut.TestCase):
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        self.assertEqual(param.measure, "Q")
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, 0)
-        self.assertEqual(param.lmbd_s, lmbd_s)
-        self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertEqual(param.mean_v, mean_v * kappa_y / kappa_yq * scale)
-        self.assertEqual(param.kappa_s, kappa_sq)
-        self.assertEqual(param.kappa_y, kappa_yq)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_y * scale**0.5)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.measure == "Q"
+        assert param.riskfree == riskfree
+        assert param.lmbd == 0
+        assert param.lmbd_s == lmbd_s
+        assert param.lmbd_y == lmbd_y
+        assert param.mean_v == mean_v * kappa_y / kappa_yq * scale
+        assert param.kappa_s == kappa_sq
+        assert param.kappa_y == kappa_yq
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_y * scale**0.5
+        assert param.rho == rho
+        assert param.is_valid()
 
     def test_convert_to_q(self) -> None:
         """Test conversion to Q."""
@@ -241,18 +239,18 @@ class SDEParameterTestCase(ut.TestCase):
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        self.assertEqual(param.measure, "Q")
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, 0)
-        self.assertEqual(param.lmbd_s, lmbd_s)
-        self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertEqual(param.mean_v, mean_v * kappa_y / kappa_yq * scale)
-        self.assertEqual(param.kappa_s, kappa_sq)
-        self.assertEqual(param.kappa_y, kappa_yq)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_y * scale**0.5)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.measure == "Q"
+        assert param.riskfree == riskfree
+        assert param.lmbd == 0
+        assert param.lmbd_s == lmbd_s
+        assert param.lmbd_y == lmbd_y
+        assert param.mean_v == mean_v * kappa_y / kappa_yq * scale
+        assert param.kappa_s == kappa_sq
+        assert param.kappa_y == kappa_yq
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_y * scale**0.5
+        assert param.rho == rho
+        assert param.is_valid()
 
     def test_ajd_matrices(self) -> None:
         """Test AJD matrices."""
@@ -371,18 +369,18 @@ class SDEParameterTestCase(ut.TestCase):
         mean_vq = mean_v * kappa_y / kappa_yq * scale
         eta_yq = eta_y * scale**0.5
 
-        self.assertEqual(param.measure, "Q")
-        self.assertEqual(param.riskfree, riskfree)
-        self.assertEqual(param.lmbd, 0)
-        self.assertEqual(param.lmbd_s, lmbd_s)
-        self.assertEqual(param.lmbd_y, lmbd_y)
-        self.assertAlmostEqual(param.mean_v, mean_vq)
-        self.assertEqual(param.kappa_s, kappa_sq)
-        self.assertEqual(param.kappa_y, kappa_yq)
-        self.assertEqual(param.eta_s, eta_s)
-        self.assertEqual(param.eta_y, eta_yq)
-        self.assertEqual(param.rho, rho)
-        self.assertTrue(param.is_valid())
+        assert param.measure == "Q"
+        assert param.riskfree == riskfree
+        assert param.lmbd == 0
+        assert param.lmbd_s == lmbd_s
+        assert param.lmbd_y == lmbd_y
+        assert param.mean_v == pytest.approx(mean_vq)
+        assert param.kappa_s == kappa_sq
+        assert param.kappa_y == kappa_yq
+        assert param.eta_s == eta_s
+        assert param.eta_y == eta_yq
+        assert param.rho == rho
+        assert param.is_valid()
 
         mat_k0 = [riskfree, 0.0, kappa_yq * mean_vq]
         mat_k1 = [[0, -0.5, 0], [0, -kappa_sq, kappa_sq], [0, 0, -kappa_yq]]
@@ -440,15 +438,24 @@ class SDEParameterTestCase(ut.TestCase):
     def test_bounds(self) -> None:
         """Test bounds."""
         param = CentTendParam()
-        self.assertEqual(len(param.get_bounds()), 9)
-        self.assertEqual(len(param.get_bounds(subset="all")), 9)
-        self.assertEqual(len(param.get_bounds(subset="all", measure="PQ")), 9)
-        self.assertEqual(len(param.get_bounds(subset="all", measure="P")), 7)
-        self.assertEqual(len(param.get_bounds(subset="all", measure="Q")), 7)
-        self.assertEqual(len(param.get_bounds(subset="vol")), 7)
-        self.assertEqual(len(param.get_bounds(subset="vol", measure="PQ")), 7)
-        self.assertEqual(len(param.get_bounds(subset="vol", measure="P")), 5)
-        self.assertEqual(len(param.get_bounds(subset="vol", measure="Q")), 5)
+        bounds = param.get_bounds()
+        assert bounds is not None and len(bounds) == 9
+        bounds_all = param.get_bounds(subset="all")
+        assert bounds_all is not None and len(bounds_all) == 9
+        bounds_pq = param.get_bounds(subset="all", measure="PQ")
+        assert bounds_pq is not None and len(bounds_pq) == 9
+        bounds_p = param.get_bounds(subset="all", measure="P")
+        assert bounds_p is not None and len(bounds_p) == 7
+        bounds_q = param.get_bounds(subset="all", measure="Q")
+        assert bounds_q is not None and len(bounds_q) == 7
+        bounds_vol = param.get_bounds(subset="vol")
+        assert bounds_vol is not None and len(bounds_vol) == 7
+        bounds_vol_pq = param.get_bounds(subset="vol", measure="PQ")
+        assert bounds_vol_pq is not None and len(bounds_vol_pq) == 7
+        bounds_vol_p = param.get_bounds(subset="vol", measure="P")
+        assert bounds_vol_p is not None and len(bounds_vol_p) == 5
+        bounds_vol_q = param.get_bounds(subset="vol", measure="Q")
+        assert bounds_vol_q is not None and len(bounds_vol_q) == 5
 
     def test_validity(self) -> None:
         """Test validity."""
@@ -477,7 +484,7 @@ class SDEParameterTestCase(ut.TestCase):
             measure="P",
         )
 
-        self.assertTrue(param.is_valid())
+        assert param.is_valid()
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -490,7 +497,7 @@ class SDEParameterTestCase(ut.TestCase):
             rho=rho,
         )
 
-        self.assertFalse(param.is_valid())
+        assert not param.is_valid()
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -503,7 +510,7 @@ class SDEParameterTestCase(ut.TestCase):
             rho=rho,
         )
 
-        self.assertFalse(param.is_valid())
+        assert not param.is_valid()
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -516,7 +523,7 @@ class SDEParameterTestCase(ut.TestCase):
             rho=rho,
         )
 
-        self.assertFalse(param.is_valid())
+        assert not param.is_valid()
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -529,7 +536,7 @@ class SDEParameterTestCase(ut.TestCase):
             rho=rho,
         )
 
-        self.assertFalse(param.is_valid())
+        assert not param.is_valid()
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -542,8 +549,4 @@ class SDEParameterTestCase(ut.TestCase):
             rho=rho,
         )
 
-        self.assertFalse(param.is_valid())
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert not param.is_valid()

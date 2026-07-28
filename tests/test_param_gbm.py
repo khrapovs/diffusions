@@ -1,16 +1,12 @@
 """Test suite for GBM parameter class."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 import numpy as np
 import numpy.testing as npt
 
 from affidiff import GBMparam
 
 
-class SDEParameterTestCase(ut.TestCase):
+class TestSDEParameter:
     """Test parameter classes."""
 
     def test_gbmparam_class(self) -> None:
@@ -18,11 +14,11 @@ class SDEParameterTestCase(ut.TestCase):
         mean, sigma = 1.5, 0.2
         param = GBMparam(mean, sigma)
 
-        self.assertEqual(param.get_model_name(), "GBM")
-        self.assertEqual(param.get_names(), ["mean", "sigma"])
+        assert param.get_model_name() == "GBM"
+        assert param.get_names() == ["mean", "sigma"]
 
-        self.assertEqual(param.mean, mean)
-        self.assertEqual(param.sigma, sigma)
+        assert param.mean == mean
+        assert param.sigma == sigma
         npt.assert_array_equal(param.get_theta(), np.array([mean, sigma]))
 
         theta = np.array([mean, sigma])
@@ -56,10 +52,6 @@ class SDEParameterTestCase(ut.TestCase):
         npt.assert_array_equal(param.mat_h0, mat_h0)
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
-        self.assertTrue(param.is_valid())
+        assert param.is_valid()
         param = GBMparam(mean, -sigma)
-        self.assertFalse(param.is_valid())
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert not param.is_valid()

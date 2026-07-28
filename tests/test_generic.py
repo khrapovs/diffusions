@@ -1,13 +1,9 @@
 """Test suite for generic classes."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 from affidiff import GBM, GBMparam
 
 
-class GenericModelTestCase(ut.TestCase):
+class TestGenericModel:
     """Test generic model."""
 
     def test_update_theta(self) -> None:
@@ -18,8 +14,4 @@ class GenericModelTestCase(ut.TestCase):
         param_new = GBMparam(2 * mean, 2 * sigma)
         gbm.update_theta(param_new)
 
-        self.assertEqual(gbm.param, param_new)
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert gbm.param == param_new

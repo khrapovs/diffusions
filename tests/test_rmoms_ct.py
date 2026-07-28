@@ -1,16 +1,13 @@
 """Test suite for realized moments of Central Tendency."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from affidiff import CentTend, CentTendParam
 
 
-class RealizedMomentsCTTestCase(ut.TestCase):
+class TestRealizedMomentsCT:
     """Test realized moments for CT."""
 
     def test_ct_depvar(self) -> None:
@@ -45,7 +42,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         depvar = centtend.realized_depvar(data)
 
         # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (nperiods, 6 * 4))
+        assert depvar.shape == (nperiods, 6 * 4)
 
     def test_ct_var_instr(self) -> None:
         """Test variable instruments of Central Tendency model."""
@@ -89,8 +86,8 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms_all)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
-        self.assertIsNone(dmom)
+        assert mom.shape == mom_shape
+        assert dmom is None
 
     def test_const_instr(self) -> None:
         """Test constant instrument of Central Tendency model."""
@@ -143,8 +140,8 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
-        self.assertIsNone(dmom)
+        assert mom.shape == mom_shape
+        assert dmom is None
 
     def test_vol_p(self) -> None:
         """Test vol P realized moments of Central Tendency model."""
@@ -170,7 +167,6 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         centtend = CentTend(param)
         centtend.nsub = 2
-        nmoms = 4
 
         nperiods = 10
         ret = np.arange(nperiods)
@@ -195,7 +191,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
@@ -230,7 +226,6 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         centtend = CentTend(param)
         centtend.nsub = 2
-        nmoms = 4
 
         nperiods = 10
         ret = np.arange(nperiods)
@@ -248,7 +243,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = slice(2)
         aggh = 2
@@ -274,7 +269,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = slice(2)
         aggh = 2
@@ -317,7 +312,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms * 2)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = slice(2)
         aggh = 10
@@ -379,7 +374,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
             instrlag=instrlag,
         )
 
-        self.assertFalse(np.allclose(mom, mom2))
+        assert not np.allclose(mom, mom2)
 
     def test_ct_relized_mom_all(self) -> None:
         """Test realized moments of Central Tendency model."""
@@ -407,7 +402,6 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         centtend = CentTend(param)
         centtend.nsub = 2
-        nmoms = 4
 
         nperiods = 10
         ret = np.arange(nperiods)
@@ -437,7 +431,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = None
         aggh = 2
@@ -475,7 +469,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = None
         aggh = 2
@@ -519,7 +513,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         mom_shape = (nperiods - instrlag, nmoms * 2)
 
         # Test the shape of moment functions
-        self.assertEqual(mom.shape, mom_shape)
+        assert mom.shape == mom_shape
 
         subset_sl = None
         aggh = 2
@@ -580,16 +574,16 @@ class RealizedMomentsCTTestCase(ut.TestCase):
         centtend.nsub = 10
         aggh = 2
 
-        self.assertIsInstance(centtend.coef_big_as(param, aggh), float)
-        self.assertIsInstance(centtend.coef_big_bs(param, aggh), float)
-        self.assertIsInstance(centtend.coef_big_cs(param, aggh), float)
-        self.assertIsInstance(centtend.coef_big_ay(param, aggh), float)
-        self.assertIsInstance(centtend.coef_big_cy(param, aggh), float)
-        self.assertIsInstance(centtend.coef_small_as(param, aggh), float)
-        self.assertIsInstance(centtend.coef_small_bs(param, aggh), float)
-        self.assertIsInstance(centtend.coef_small_cs(param, aggh), float)
+        assert isinstance(centtend.coef_big_as(param, aggh), float)
+        assert isinstance(centtend.coef_big_bs(param, aggh), float)
+        assert isinstance(centtend.coef_big_cs(param, aggh), float)
+        assert isinstance(centtend.coef_big_ay(param, aggh), float)
+        assert isinstance(centtend.coef_big_cy(param, aggh), float)
+        assert isinstance(centtend.coef_small_as(param, aggh), float)
+        assert isinstance(centtend.coef_small_bs(param, aggh), float)
+        assert isinstance(centtend.coef_small_cs(param, aggh), float)
 
-        self.assertEqual(len(centtend.roots(param, aggh)), 5)
+        assert len(centtend.roots(param, aggh)) == 5
         roots = [
             centtend.coef_big_as(param, aggh),
             centtend.coef_big_ay(param, aggh),
@@ -597,41 +591,41 @@ class RealizedMomentsCTTestCase(ut.TestCase):
             centtend.coef_big_ay(param, aggh) ** 2,
             centtend.coef_big_as(param, aggh) * centtend.coef_big_ay(param, aggh),
         ]
-        self.assertEqual(centtend.roots(param, aggh), roots)
+        assert centtend.roots(param, aggh) == roots
 
-        self.assertEqual(len(centtend.depvar_unc_mean(param, aggh)), 4)
+        assert len(centtend.depvar_unc_mean(param, aggh)) == 4
 
-        self.assertEqual(centtend.mat_a0(param, aggh).shape, (4, 4))
-        self.assertEqual(centtend.mat_a0(param, aggh)[1, 1], 1.0)
+        assert centtend.mat_a0(param, aggh).shape == (4, 4)
+        assert centtend.mat_a0(param, aggh)[1, 1] == 1.0
 
-        self.assertEqual(centtend.mat_a1(param, aggh).shape, (4, 4))
+        assert centtend.mat_a1(param, aggh).shape == (4, 4)
         expect = -np.sum(centtend.roots(param, aggh))
-        self.assertEqual(centtend.mat_a1(param, aggh)[1, 1], expect)
+        assert centtend.mat_a1(param, aggh)[1, 1] == expect
 
-        self.assertEqual(centtend.mat_a2(param, aggh).shape, (4, 4))
+        assert centtend.mat_a2(param, aggh).shape == (4, 4)
 
-        self.assertEqual(centtend.mat_a3(param, aggh).shape, (4, 4))
-        self.assertEqual(centtend.mat_a3(param, aggh)[0, 0], 1.0)
-        self.assertEqual(centtend.mat_a3(param, aggh)[3, 1], 0.5 - param.lmbd)
+        assert centtend.mat_a3(param, aggh).shape == (4, 4)
+        assert centtend.mat_a3(param, aggh)[0, 0] == 1.0
+        assert centtend.mat_a3(param, aggh)[3, 1] == 0.5 - param.lmbd
 
-        self.assertEqual(centtend.mat_a4(param, aggh).shape, (4, 4))
+        assert centtend.mat_a4(param, aggh).shape == (4, 4)
         expect = -np.sum(centtend.roots(param, aggh)[:2])
-        self.assertEqual(centtend.mat_a4(param, aggh)[0, 0], expect)
-        self.assertEqual(centtend.mat_a4(param, aggh)[3, 1], (0.5 - param.lmbd) * expect)
+        assert centtend.mat_a4(param, aggh)[0, 0] == expect
+        assert centtend.mat_a4(param, aggh)[3, 1] == (0.5 - param.lmbd) * expect
 
-        self.assertEqual(centtend.mat_a5(param, aggh).shape, (4, 4))
+        assert centtend.mat_a5(param, aggh).shape == (4, 4)
         expect = np.prod(centtend.roots(param, aggh)[:2])
-        self.assertEqual(centtend.mat_a5(param, aggh)[0, 0], expect)
-        self.assertEqual(centtend.mat_a5(param, aggh)[3, 1], (0.5 - param.lmbd) * expect)
+        assert centtend.mat_a5(param, aggh)[0, 0] == expect
+        assert centtend.mat_a5(param, aggh)[3, 1] == (0.5 - param.lmbd) * expect
         expect = -np.prod(centtend.roots(param, aggh))
-        self.assertEqual(centtend.mat_a5(param, aggh)[1, 1], expect)
-        self.assertEqual(centtend.mat_a5(param, aggh)[2, 2], 1.0)
-        self.assertEqual(centtend.mat_a5(param, aggh)[2, 0], 0.5 - param.lmbd)
+        assert centtend.mat_a5(param, aggh)[1, 1] == expect
+        assert centtend.mat_a5(param, aggh)[2, 2] == 1.0
+        assert centtend.mat_a5(param, aggh)[2, 0] == 0.5 - param.lmbd
 
-        self.assertEqual(centtend.mat_a(param).shape, (4, 6 * 4))
+        assert centtend.mat_a(param).shape == (4, 6 * 4)
 
-        self.assertEqual(centtend.realized_const(param, aggh).shape, (4,))
-        self.assertEqual(centtend.realized_const(param, aggh)[2], 0)
+        assert centtend.realized_const(param, aggh).shape == (4,)
+        assert centtend.realized_const(param, aggh)[2] == 0
 
         roots = [
             centtend.coef_big_as(param, 1),
@@ -643,7 +637,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
 
         res = centtend.depvar_unc_mean(param, aggh)[0] * (1 - roots[0]) * (1 - roots[1])
 
-        self.assertAlmostEqual(centtend.realized_const(param, aggh)[0], res)
+        assert centtend.realized_const(param, aggh)[0] == pytest.approx(res)
 
         res = (
             centtend.depvar_unc_mean(param, aggh)[1]
@@ -654,7 +648,7 @@ class RealizedMomentsCTTestCase(ut.TestCase):
             * (1 - roots[4])
         )
 
-        self.assertAlmostEqual(centtend.realized_const(param, aggh)[1], res)
+        assert centtend.realized_const(param, aggh)[1] == pytest.approx(res)
 
         res = (
             (centtend.depvar_unc_mean(param, aggh)[1] * (0.5 - param.lmbd) + centtend.depvar_unc_mean(param, aggh)[3])
@@ -662,8 +656,4 @@ class RealizedMomentsCTTestCase(ut.TestCase):
             * (1 - roots[1])
         )
 
-        self.assertAlmostEqual(centtend.realized_const(param, aggh)[3], res)
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert centtend.realized_const(param, aggh)[3] == pytest.approx(res)

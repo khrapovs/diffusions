@@ -1,16 +1,12 @@
 """Test suite for Vasicek parameter class."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 import numpy as np
 import numpy.testing as npt
 
 from affidiff import VasicekParam
 
 
-class SDEParameterTestCase(ut.TestCase):
+class TestSDEParameter:
     """Test parameter classes."""
 
     def test_vasicekparam_class(self) -> None:
@@ -18,12 +14,12 @@ class SDEParameterTestCase(ut.TestCase):
         mean, kappa, eta = 1.5, 1.0, 0.2
         param = VasicekParam(mean, kappa, eta)
 
-        self.assertEqual(param.get_model_name(), "Vasicek")
-        self.assertEqual(param.get_names(), ["mean", "kappa", "eta"])
+        assert param.get_model_name() == "Vasicek"
+        assert param.get_names() == ["mean", "kappa", "eta"]
 
-        self.assertEqual(param.mean, mean)
-        self.assertEqual(param.kappa, kappa)
-        self.assertEqual(param.eta, eta)
+        assert param.mean == mean
+        assert param.kappa == kappa
+        assert param.eta == eta
 
         npt.assert_array_equal(param.get_theta(), np.array([mean, kappa, eta]))
 
@@ -55,12 +51,8 @@ class SDEParameterTestCase(ut.TestCase):
         npt.assert_array_equal(param.mat_h0, mat_h0)
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
-        self.assertTrue(param.is_valid())
+        assert param.is_valid()
         param = VasicekParam(mean, -kappa, eta)
-        self.assertFalse(param.is_valid())
+        assert not param.is_valid()
         param = VasicekParam(mean, kappa, -eta)
-        self.assertFalse(param.is_valid())
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert not param.is_valid()

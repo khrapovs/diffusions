@@ -1,15 +1,11 @@
 """Test suite for realized moments of GBM."""
 
-from __future__ import division, print_function
-
-import unittest as ut
-
 import numpy as np
 
 from affidiff import GBM, GBMparam
 
 
-class RealizedMomentsGBMTestCase(ut.TestCase):
+class TestRealizedMomentsGBM:
     """Test realized moments for GBM."""
 
     def test_gbm_relized_mom(self) -> None:
@@ -25,23 +21,19 @@ class RealizedMomentsGBMTestCase(ut.TestCase):
 
         depvar = gbm.realized_depvar(data)
         # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (3, nperiods))
+        assert depvar.shape == (3, nperiods)
 
         const = gbm.realized_const(param.get_theta())
         # Test shape of the intercept
-        self.assertEqual(const.shape, (3,))
+        assert const.shape == (3,)
 
         instr = gbm.instruments(data, instrlag=instrlag)
         ninstr = 1 + data.shape[0] * instrlag
         # Test shape of instrument matrix
-        self.assertEqual(instr.shape, (ninstr, nperiods - instrlag))
+        assert instr.shape == (ninstr, nperiods - instrlag)
 
         rmom, drmom = gbm.integrated_mom(param.get_theta(), data=data, instrlag=instrlag)
         nmoms = 3 * ninstr
         # Test shape of moments and gradients
-        self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
-        self.assertEqual(drmom.shape, (nmoms, np.size(param.get_theta())))
-
-
-if __name__ == "__main__":
-    ut.main()
+        assert rmom.shape == (nperiods - instrlag, nmoms)
+        assert drmom.shape == (nmoms, np.size(param.get_theta()))
