@@ -1,21 +1,22 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-CIR parameter class
-~~~~~~~~~~~~~~~~~~~
+"""CIR parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 
 from .param_generic import GenericParam
 
-__all__ = ['CIRparam']
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+__all__ = ["CIRparam"]
 
 
 class CIRparam(GenericParam):
-
     """Parameter storage for CIR model.
 
     Attributes
@@ -31,7 +32,7 @@ class CIRparam(GenericParam):
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, eta=.1, measure='P'):
+    def __init__(self, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:  # noqa: PLR0917, ARG002
         """Initialize class.
 
         Parameters
@@ -49,13 +50,14 @@ class CIRparam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        super().__init__()
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        self.measure = 'P'
+        self.measure = "P"
         self.update_ajd()
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Check validity of parameters.
 
         Returns
@@ -66,20 +68,18 @@ class CIRparam(GenericParam):
         """
         posit = (self.kappa > 0) & (self.eta > 0)
         feller = 2 * self.kappa * self.mean - self.eta**2 > 0
-        return posit & feller
+        return bool(posit & feller)
 
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
+    def update_ajd(self) -> None:
+        """Update AJD representation."""
         # AJD parameters
         self.mat_k0 = self.kappa * self.mean
         self.mat_k1 = -self.kappa
-        self.mat_h0 = 0.
+        self.mat_h0 = 0.0
         self.mat_h1 = self.eta**2
 
     @classmethod
-    def from_theta(cls, theta):
+    def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -88,24 +88,28 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
+        param = cls(mean=float(theta[0]), kappa=float(theta[1]), eta=float(theta[2]))
         param.update_ajd()
         return param
 
-    def update(self, theta):
+    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917, ARG002
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update
+        measure : str
+            Probability measure
 
         """
-        self.mean, self.kappa, self.eta = theta
+        self.mean, self.kappa, self.eta = float(theta[0]), float(theta[1]), float(theta[2])
         self.update_ajd()
 
     @staticmethod
-    def get_model_name():
+    def get_model_name() -> str:
         """Return model name.
 
         Returns
@@ -114,10 +118,10 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        return 'CIR'
+        return "CIR"
 
     @staticmethod
-    def get_names(subset='all', measure='PQ'):
+    def get_names(subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: PLR0917, ARG004
         """Return parameter names.
 
         Returns
@@ -126,9 +130,9 @@ class CIRparam(GenericParam):
             Parameter names
 
         """
-        return ['mean', 'kappa', 'eta']
+        return ["mean", "kappa", "eta"]
 
-    def get_theta(self, subset='all', measure='PQ'):
+    def get_theta(self, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: PLR0917, ARG002
         """Return vector of parameters.
 
         Returns

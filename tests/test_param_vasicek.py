@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Test suite for Vasicek parameter class.
+"""Test suite for Vasicek parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import division, print_function
 
 import unittest as ut
+
 import numpy as np
 import numpy.testing as npt
 
@@ -16,21 +15,19 @@ from affidiff import VasicekParam
 class SDEParameterTestCase(ut.TestCase):
     """Test parameter classes."""
 
-    def test_vasicekparam_class(self):
+    def test_vasicekparam_class(self) -> None:
         """Test Vasicek parameter class."""
-
-        mean, kappa, eta = 1.5, 1., .2
+        mean, kappa, eta = 1.5, 1.0, 0.2
         param = VasicekParam(mean, kappa, eta)
 
-        self.assertEqual(param.get_model_name(), 'Vasicek')
-        self.assertEqual(param.get_names(), ['mean', 'kappa', 'eta'])
+        self.assertEqual(param.get_model_name(), "Vasicek")
+        self.assertEqual(param.get_names(), ["mean", "kappa", "eta"])
 
         self.assertEqual(param.mean, mean)
         self.assertEqual(param.kappa, kappa)
         self.assertEqual(param.eta, eta)
 
-        npt.assert_array_equal(param.get_theta(),
-                               np.array([mean, kappa, eta]))
+        npt.assert_array_equal(param.get_theta(), np.array([mean, kappa, eta]))
 
         theta = np.ones(3)
         param = VasicekParam.from_theta(theta)
@@ -67,5 +64,5 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertFalse(param.is_valid())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ut.main()

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Test suite for GBM parameter class.
+"""Test suite for GBM parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import division, print_function
 
 import unittest as ut
+
 import numpy as np
 import numpy.testing as npt
 
@@ -16,19 +15,17 @@ from affidiff import GBMparam
 class SDEParameterTestCase(ut.TestCase):
     """Test parameter classes."""
 
-    def test_gbmparam_class(self):
+    def test_gbmparam_class(self) -> None:
         """Test GBM parameter class."""
-
-        mean, sigma = 1.5, .2
+        mean, sigma = 1.5, 0.2
         param = GBMparam(mean, sigma)
 
-        self.assertEqual(param.get_model_name(), 'GBM')
-        self.assertEqual(param.get_names(), ['mean', 'sigma'])
+        self.assertEqual(param.get_model_name(), "GBM")
+        self.assertEqual(param.get_names(), ["mean", "sigma"])
 
         self.assertEqual(param.mean, mean)
         self.assertEqual(param.sigma, sigma)
-        npt.assert_array_equal(param.get_theta(),
-                               np.array([mean, sigma]))
+        npt.assert_array_equal(param.get_theta(), np.array([mean, sigma]))
 
         theta = np.array([mean, sigma])
         npt.assert_array_equal(param.get_theta(), theta)
@@ -37,10 +34,10 @@ class SDEParameterTestCase(ut.TestCase):
         param = GBMparam.from_theta(theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
-        mat_k0 = param.mean - param.sigma**2/2
-        mat_k1 = 0.
+        mat_k0 = param.mean - param.sigma**2 / 2
+        mat_k1 = 0.0
         mat_h0 = param.sigma**2
-        mat_h1 = 0.
+        mat_h1 = 0.0
 
         npt.assert_array_equal(param.mat_k0, mat_k0)
         npt.assert_array_equal(param.mat_k1, mat_k1)
@@ -51,10 +48,10 @@ class SDEParameterTestCase(ut.TestCase):
         param.update(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
-        mat_k0 = param.mean - param.sigma**2/2
-        mat_k1 = 0.
+        mat_k0 = param.mean - param.sigma**2 / 2
+        mat_k1 = 0.0
         mat_h0 = param.sigma**2
-        mat_h1 = 0.
+        mat_h1 = 0.0
 
         npt.assert_array_equal(param.mat_k0, mat_k0)
         npt.assert_array_equal(param.mat_k1, mat_k1)
@@ -66,5 +63,5 @@ class SDEParameterTestCase(ut.TestCase):
         self.assertFalse(param.is_valid())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ut.main()

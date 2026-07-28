@@ -1,36 +1,72 @@
 [project]
 name = "affidiff"
 description = "Affine Diffusions. Simulation and estimation."
-authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.14"
+authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 dependencies = [
-    "matplotlib>=3.10.8",
-    "mygmm>=0.1.0",
-    "numpy>=2.4.4",
-    "scipy>=1.17.1",
-    "seaborn>=0.13.2",
-    "statsmodels>=0.14.6",
+  "matplotlib>=3.10.8",
+  "mygmm>=0.1.0",
+  "numpy>=2.4.4",
+  "scipy>=1.17.1",
+  "seaborn>=0.13.2",
+  "statsmodels>=0.14.6",
 ]
 dynamic = ["version"]
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.3",
+  "prek>=0.4.11",
+  "pytest>=9.0.3",
+  "pytest-cov>=7.1.0",
 ]
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
-
-[tool.uv-dynamic-versioning]
-fallback-version = "0.0.0"
-
 [tool.commitizen]
 version_scheme = "semver"
 version_provider = "scm"
 update_changelog_on_bump = true
 tag_format = "v$version"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.pytest.ini_options]
+addopts = "--cov-config=.coveragerc"
+testpaths = ["tests", "src"]
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "D", "B", "I", "ARG", "ANN"]
+ignore = [
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D106",
+  "D107",
+  "D213",
+  "D417",
+]
+preview = true
+extend-select = ["PLR0917"]
+
+[tool.ruff.lint.pylint]
+max-positional-args = 1
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ty.rules]
+no-matching-overload = "ignore"
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.0.0"

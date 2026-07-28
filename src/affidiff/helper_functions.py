@@ -1,27 +1,36 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Helper functions
+"""Helper functions."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
 
-import time
 import contextlib
-
-import numpy as np
-import matplotlib.pylab as plt
-import seaborn as sns
 import itertools as it
+import time
+from typing import Any, Callable, Generator, Sequence
 
+import matplotlib.pylab as plt
+import numpy as np
+import seaborn as sns
 from statsmodels.tsa.tsatools import lagmat
 
-__all__ = ['nice_errors', 'ajd_drift', 'ajd_diff',
-           'plot_trajectories', 'plot_final_distr', 'plot_realized',
-           'columnwise_prod', 'rolling_window', 'poly_coef', 'instruments']
+__all__ = [
+    "ajd_diff",
+    "ajd_drift",
+    "columnwise_prod",
+    "format_time",
+    "instruments",
+    "nice_errors",
+    "plot_final_distr",
+    "plot_realized",
+    "plot_trajectories",
+    "poly_coef",
+    "rolling_window",
+    "take_time",
+]
 
 
-def ajd_drift(state, theta):
+def ajd_drift(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
     """Instantaneous mean.
 
     Parameters
@@ -37,11 +46,11 @@ def ajd_drift(state, theta):
         Value of the drift
 
     """
-    state = np.atleast_2d(state)
-    return theta.mat_k0 + state.dot(np.transpose(theta.mat_k1))
+    state_arr = np.atleast_2d(state)
+    return theta.mat_k0 + state_arr.dot(np.transpose(theta.mat_k1))
 
 
-def ajd_diff(state, theta):
+def ajd_diff(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
     """Instantaneous volatility.
 
     Parameters
@@ -57,17 +66,17 @@ def ajd_diff(state, theta):
         Value of the diffusion
 
     """
-    state = np.atleast_2d(state)
+    state_arr = np.atleast_2d(state)
     mat_h1 = np.atleast_3d(theta.mat_h1)
     # (nsim, nvars, nvars)
-    var = theta.mat_h0 + np.tensordot(state, mat_h1, axes=(1, 0))
+    var = theta.mat_h0 + np.tensordot(state_arr, mat_h1, axes=(1, 0))
     try:
         return np.linalg.cholesky(var)
-    except(np.linalg.LinAlgError):
+    except np.linalg.LinAlgError:
         return np.ones_like(var) * 1e10
 
 
-def nice_errors(errors, sdim):
+def nice_errors(errors: np.ndarray, sdim: int) -> np.ndarray:  # noqa: PLR0917
     """Normalize the errors and apply antithetic sampling.
 
     Parameters
@@ -84,12 +93,12 @@ def nice_errors(errors, sdim):
 
     """
     if errors.shape[sdim] > 10:
-        errors -= errors.mean(sdim, keepdims=True)
-        errors /= errors.std(sdim, keepdims=True)
+        errors = errors - errors.mean(sdim, keepdims=True)
+        errors = errors / errors.std(sdim, keepdims=True)
     return np.concatenate((errors, -errors), axis=sdim)
 
 
-def plot_trajectories(paths, nsub, names):
+def plot_trajectories(paths: Any, nsub: int, names: str | list[str]) -> None:  # noqa: PLR0917, ANN401
     """Plot process realizations.
 
     Parameters
@@ -103,20 +112,23 @@ def plot_trajectories(paths, nsub, names):
 
     """
     if isinstance(paths, list):
-        for path, name in zip(paths, names):
-            x = np.arange(0, path.shape[0] / nsub, 1 / nsub)
-            plt.plot(x, path, label=name)
+        assert isinstance(names, list)
+        for path_elem, name in zip(paths, names, strict=False):
+            p_arr = np.asarray(path_elem)
+            x = np.arange(0, p_arr.shape[0] / nsub, 1 / nsub)
+            plt.plot(x, p_arr, label=name)
     else:
-        x = np.arange(0, paths.shape[0] / nsub, 1 / nsub)
-        plt.plot(x, paths, label=names)
+        p_arr = np.asarray(paths)
+        x = np.arange(0, p_arr.shape[0] / nsub, 1 / nsub)
+        plt.plot(x, p_arr, label=names)
 
-    plt.xlabel('$t$')
-    plt.ylabel('$x_t$')
+    plt.xlabel("$t$")
+    plt.ylabel("$x_t$")
     plt.legend()
     plt.show()
 
 
-def plot_final_distr(paths, names):
+def plot_final_distr(paths: Any, names: str | list[str]) -> None:  # noqa: PLR0917, ANN401
     """Plot marginal distribution of the process.
 
     Parameters
@@ -128,19 +140,26 @@ def plot_final_distr(paths, names):
 
     """
     if isinstance(paths, list):
-        for path, name in zip(paths, names):
-            if path.ndim != 2:
-                raise ValueError('Simulate more paths!')
-            sns.kdeplot(path[-1], label=name)
+        assert isinstance(names, list)
+        for path_elem, name in zip(paths, names, strict=False):
+            p_arr = np.asarray(path_elem)
+            if p_arr.ndim != 2:
+                raise ValueError("Simulate more paths!")
+            sns.kdeplot(p_arr[-1], label=name)
     else:
-        sns.kdeplot(paths[-1], label=names)
+        p_arr = np.asarray(paths)
+        sns.kdeplot(p_arr[-1], label=names)
 
-    plt.xlabel('x')
+    plt.xlabel("x")
     plt.legend()
     plt.show()
 
 
-def plot_realized(returns, rvar, suffix=None):
+def plot_realized(  # noqa: PLR0917
+    returns: Any,  # noqa: ANN401
+    rvar: Any,  # noqa: ANN401
+    suffix: list[str] | None = None,
+) -> None:
     """Plot realized returns and volatility.
 
     Parameters
@@ -149,27 +168,31 @@ def plot_realized(returns, rvar, suffix=None):
         Returns
     rvar : array
         Realized variance
+    suffix : list of str
+        Label suffixes
 
     """
-    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(7, 6))
+    _fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(7, 6))
     if isinstance(returns, list):
-        returns = np.vstack(returns).T
-        rlabel = ['Returns ' + x for x in suffix]
+        returns_arr = np.vstack(returns).T
+        rlabel = ["Returns " + x for x in (suffix or [])]
     else:
-        rlabel = 'Returns'
+        returns_arr = returns
+        rlabel = ["Returns"]
     if isinstance(rvar, list):
-        rvar = np.vstack(rvar).T
-        vlabel = ['Realized volatility ' + x for x in suffix]
+        rvar_arr = np.vstack(rvar).T
+        vlabel = ["Realized volatility " + x for x in (suffix or [])]
     else:
-        vlabel = 'Realized volatility'
-    axes[0].plot(returns)
-    axes[1].plot(rvar**.5)
+        rvar_arr = rvar
+        vlabel = ["Realized volatility"]
+    axes[0].plot(returns_arr)
+    axes[1].plot(rvar_arr**0.5)
     axes[0].legend(rlabel)
     axes[1].legend(vlabel)
     plt.show()
 
 
-def columnwise_prod(left, right):
+def columnwise_prod(left: np.ndarray, right: np.ndarray) -> np.ndarray:  # noqa: PLR0917
     """Columnwise kronker product.
 
     Parameters
@@ -206,8 +229,8 @@ def columnwise_prod(left, right):
     return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))
 
 
-def rolling_window(fun, mat, window=1):
-    """Rolling window apply.
+def rolling_window(fun: Callable[..., Any], mat: np.ndarray, window: int = 1) -> np.ndarray:  # noqa: PLR0917
+    """Apply function over rolling window.
 
     Source: http://www.rigtorp.se/2011/01/01/rolling-statistics-numpy.html
 
@@ -219,8 +242,6 @@ def rolling_window(fun, mat, window=1):
         Data to transform
     window : int
         Window size
-    axis : int
-        Which axis to apply to
 
     Returns
     -------
@@ -241,11 +262,11 @@ def rolling_window(fun, mat, window=1):
     """
     shape = mat.shape[:-1] + (mat.shape[-1] - window + 1, window)
     strides = mat.strides + (mat.strides[-1],)
-    mat = np.lib.stride_tricks.as_strided(mat, shape=shape, strides=strides)
-    return np.apply_along_axis(fun, -1, mat)
+    mat_s = np.lib.stride_tricks.as_strided(mat, shape=shape, strides=strides)
+    return np.apply_along_axis(fun, -1, mat_s)
 
 
-def poly_coef(roots):
+def poly_coef(roots: Sequence[float] | np.ndarray) -> list[float]:
     """Ploynomial coefficients.
 
     Parameters
@@ -270,17 +291,22 @@ def poly_coef(roots):
         [1, -9, 26, -24]
 
     """
-    roots = np.array(roots)
-    nroots = roots.size
-    coefs = [1]
+    roots_arr = np.array(roots)
+    nroots = roots_arr.size
+    coefs: list[float] = [1.0]
     for power in range(nroots):
-        comb = it.combinations(range(nroots), power+1)
-        temp = [np.prod(roots[[x]]) for x in comb]
-        coefs.append((-1)**(power+1) * np.sum(temp))
+        comb = it.combinations(range(nroots), power + 1)
+        temp = [float(np.prod(roots_arr[[x]])) for x in comb]
+        coefs.append(float((-1) ** (power + 1) * np.sum(temp)))
     return coefs
 
 
-def instruments(data=None, instrlag=1, nobs=None, instr_choice='const'):
+def instruments(  # noqa: PLR0917
+    data: Any = None,  # noqa: ANN401
+    instrlag: int = 1,
+    nobs: int | None = None,
+    instr_choice: str = "const",
+) -> np.ndarray:
     """Create an array of instruments.
 
     Parameters
@@ -328,18 +354,18 @@ def instruments(data=None, instrlag=1, nobs=None, instr_choice='const'):
     if data is not None:
         nobs = data.shape[-1]
 
-    if instr_choice == 'const' or data is None:
+    if instr_choice == "const" or data is None:
         if nobs is None:
-            raise ValueError('Specify nobs!')
+            raise ValueError("Specify nobs!")
         return np.ones((nobs, 1))
 
     else:
         instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
         width = ((0, 0), (1, 0))
-        return np.pad(instr, width, mode='constant', constant_values=1)
+        return np.pad(instr, width, mode="constant", constant_values=1)
 
 
-def format_time(t):
+def format_time(t: float) -> str:
     """Format time for nice printing.
 
     Parameters
@@ -353,24 +379,24 @@ def format_time(t):
 
     """
     if t > 60 or t == 0:
-        units = 'min'
+        units = "min"
         t /= 60
     elif t > 1:
-        units = 's'
+        units = "s"
     elif t > 1e-3:
-        units = 'ms'
+        units = "ms"
         t *= 1e3
     elif t > 1e-6:
-        units = 'us'
+        units = "us"
         t *= 1e6
     else:
-        units = 'ns'
+        units = "ns"
         t *= 1e9
-    return '%.1f %s' % (t, units)
+    return f"{t:.1f} {units}"
 
 
 @contextlib.contextmanager
-def take_time(desc):
+def take_time(desc: str) -> Generator[None, None, None]:
     """Context manager for timing the code.
 
     Parameters
@@ -387,9 +413,12 @@ def take_time(desc):
     t0 = time.time()
     yield
     dt = time.time() - t0
-    print('%s took %s' % (desc, format_time(dt)))
+    print(f"{desc} took {format_time(dt)}")
 
 
 if __name__ == "__main__":
     import doctest
+
+    doctest.testmod()
+
     doctest.testmod()

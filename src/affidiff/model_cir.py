@@ -1,24 +1,23 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-CIR model class
-~~~~~~~~~~~~~~~
+"""CIR model class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from .model_generic import SDE
 
-__all__ = ['CIR']
+if TYPE_CHECKING:
+    import numpy as np
+
+__all__ = ["CIR"]
 
 
 class CIR(SDE):
+    """Cox-Ingersoll-Ross (CIR) model."""
 
-    """Cox-Ingersoll-Ross (CIR) model.
-
-    """
-
-    def __init__(self, param=None):
+    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
         """Initialize the class.
 
         Parameters
@@ -27,10 +26,10 @@ class CIR(SDE):
             True parameters used for simulation of the data
 
         """
-        super(CIR, self).__init__(param)
+        super().__init__(param)
 
     @staticmethod
-    def drift(state, theta):
+    def drift(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ANN401
         """Drift function.
 
         Parameters
@@ -49,7 +48,7 @@ class CIR(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(state, theta):
+    def diff(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -65,4 +64,4 @@ class CIR(SDE):
             Diffusion value
 
         """
-        return theta.eta * state**.5
+        return theta.eta * state**0.5

@@ -1,21 +1,22 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-GBM parameter class
-~~~~~~~~~~~~~~~~~~~
+"""GBM parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 
 from .param_generic import GenericParam
 
-__all__ = ['GBMparam']
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+__all__ = ["GBMparam"]
 
 
 class GBMparam(GenericParam):
-
     """Parameter storage for GBM model.
 
     Attributes
@@ -29,7 +30,7 @@ class GBMparam(GenericParam):
 
     """
 
-    def __init__(self, mean=0, sigma=.2, measure='P'):
+    def __init__(self, mean: float = 0.0, sigma: float = 0.2, measure: str = "P") -> None:  # noqa: PLR0917, ARG002
         """Initialize class.
 
         Parameters
@@ -45,12 +46,13 @@ class GBMparam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        super().__init__()
         self.mean = mean
         self.sigma = sigma
-        self.measure = 'P'
+        self.measure = "P"
         self.update_ajd()
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Check validity of parameters.
 
         Returns
@@ -59,20 +61,18 @@ class GBMparam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return self.sigma > 0
+        return bool(self.sigma > 0)
 
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
+    def update_ajd(self) -> None:
+        """Update AJD representation."""
         # AJD parameters
-        self.mat_k0 = self.mean - self.sigma**2/2
-        self.mat_k1 = 0.
+        self.mat_k0 = self.mean - self.sigma**2 / 2
+        self.mat_k1 = 0.0
         self.mat_h0 = self.sigma**2
-        self.mat_h1 = 0.
+        self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, theta):
+    def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -81,24 +81,28 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=theta[0], sigma=theta[1])
+        param = cls(mean=float(theta[0]), sigma=float(theta[1]))
         param.update_ajd()
         return param
 
-    def update(self, theta):
+    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917, ARG002
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update
+        measure : str
+            Probability measure
 
         """
-        self.mean, self.sigma = theta
+        self.mean, self.sigma = float(theta[0]), float(theta[1])
         self.update_ajd()
 
     @staticmethod
-    def get_model_name():
+    def get_model_name() -> str:
         """Return model name.
 
         Returns
@@ -107,10 +111,10 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
-        return 'GBM'
+        return "GBM"
 
     @staticmethod
-    def get_names(subset='all', measure='PQ'):
+    def get_names(subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: PLR0917, ARG004
         """Return parameter names.
 
         Returns
@@ -119,9 +123,9 @@ class GBMparam(GenericParam):
             Parameter names
 
         """
-        return ['mean', 'sigma']
+        return ["mean", "sigma"]
 
-    def get_theta(self, subset='all', measure='PQ'):
+    def get_theta(self, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: PLR0917, ARG002
         """Return vector of parameters.
 
         Returns

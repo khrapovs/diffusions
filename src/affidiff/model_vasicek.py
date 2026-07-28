@@ -1,24 +1,23 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Vasicek model class
-~~~~~~~~~~~~~~~~~~~
+"""Vasicek model class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from .model_generic import SDE
 
-__all__ = ['Vasicek']
+if TYPE_CHECKING:
+    import numpy as np
+
+__all__ = ["Vasicek"]
 
 
 class Vasicek(SDE):
+    """Vasicek model."""
 
-    """Vasicek model.
-
-    """
-
-    def __init__(self, param=None):
+    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
         """Initialize the class.
 
         Parameters
@@ -27,10 +26,10 @@ class Vasicek(SDE):
             True parameters used for simulation of the data
 
         """
-        super(Vasicek, self).__init__(param)
+        super().__init__(param)
 
     @staticmethod
-    def drift(state, theta):
+    def drift(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ANN401
         """Drift function.
 
         Parameters
@@ -49,7 +48,7 @@ class Vasicek(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(state, theta):
+    def diff(state: np.ndarray | float, theta: Any) -> float:  # noqa: PLR0917, ARG004, ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -68,5 +67,5 @@ class Vasicek(SDE):
         return theta.eta
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

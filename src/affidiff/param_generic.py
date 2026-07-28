@@ -1,33 +1,36 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Generic parameter class
-~~~~~~~~~~~~~~~~~~~~~~~
+"""Generic parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Sequence
 
 import pandas as pd
 
-__all__ = ['GenericParam']
+if TYPE_CHECKING:
+    import numpy as np
+    from typing_extensions import Self
+
+__all__ = ["GenericParam"]
 
 
 class GenericParam(object):
-
     """Generic parameter storage. Must be overriden.
 
     Attributes
     ----------
-
+    measure : str
+        Probability measure.
     """
 
-    def __init__(self):
-        """Initialize class.
+    measure: str = "P"
 
-        """
-        pass
+    def __init__(self) -> None:
+        """Initialize class."""
+        self.measure = "P"
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Check whether parameters are valid.
 
         Returns
@@ -38,14 +41,12 @@ class GenericParam(object):
         """
         return True
 
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
-        raise NotImplementedError('Must be overridden')
+    def update_ajd(self) -> None:
+        """Update AJD representation."""
+        raise NotImplementedError("Must be overridden")
 
     @classmethod
-    def from_theta(cls, theta):
+    def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -54,9 +55,9 @@ class GenericParam(object):
             Parameter vector
 
         """
-        raise NotImplementedError('Must be overridden')
+        raise NotImplementedError("Must be overridden")
 
-    def update(self, theta, subset='all', measure='P'):
+    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917
         """Update attributes from parameter vector.
 
         Parameters
@@ -69,10 +70,10 @@ class GenericParam(object):
             Either physical measure (P), or risk-neutral (Q)
 
         """
-        raise NotImplementedError('Must be overridden')
+        raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_model_name():
+    def get_model_name() -> str:
         """Return model name.
 
         Returns
@@ -81,10 +82,10 @@ class GenericParam(object):
             Parameter vector
 
         """
-        raise NotImplementedError('Must be overridden')
+        raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_names():
+    def get_names() -> list[str]:
         """Return parameter names.
 
         Returns
@@ -93,9 +94,9 @@ class GenericParam(object):
             Parameter names
 
         """
-        raise NotImplementedError('Must be overridden')
+        raise NotImplementedError("Must be overridden")
 
-    def get_theta(self):
+    def get_theta(self) -> np.ndarray:
         """Return vector of parameters.
 
         Returns
@@ -104,10 +105,10 @@ class GenericParam(object):
             Parameter vector
 
         """
-        raise NotImplementedError('Must be overridden')
+        raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_bounds(subset='all', measure='PQ'):
+    def get_bounds(subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:  # noqa: PLR0917, ARG004
         """Get parameter bounds.
 
         Returns
@@ -118,7 +119,7 @@ class GenericParam(object):
         """
         return None
 
-    def get_constraints(self):
+    def get_constraints(self) -> tuple[dict[str, Any], ...] | list[dict[str, Any]] | tuple[()]:
         """Get parameter constraints.
 
         Returns
@@ -129,27 +130,22 @@ class GenericParam(object):
         """
         return ()
 
-    def __str__(self):
-        """String representation.
-
-        """
-        show = self.get_model_name() + ' parameters under ' + self.measure
+    def __str__(self) -> str:
+        """Return string representation."""
+        show = self.get_model_name() + " parameters under " + self.measure
         if self.is_valid():
-            show += ' (valid)'
+            show += " (valid)"
         else:
-            show += ' (not valid)'
-        show += ':\n'
-        table = pd.DataFrame({'theta': self.get_theta()},
-                             index=self.get_names())
-        tb_str = table.to_string(float_format=lambda x: '%.4f' % x)
+            show += " (not valid)"
+        show += ":\n"
+        table = pd.DataFrame({"theta": self.get_theta()}, index=self.get_names())
+        tb_str = table.to_string(float_format=lambda x: "%.4f" % x)
         width = len(tb_str) // (table.shape[0] + 1)
-        show += width * '-' + '\n'
+        show += width * "-" + "\n"
         show += tb_str
-        show += '\n' + width * '-'
+        show += "\n" + width * "-"
         return show
 
-    def __repr__(self):
-        """String representation.
-
-        """
+    def __repr__(self) -> str:
+        """Return string representation."""
         return self.__str__()
