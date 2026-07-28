@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Sequence
 
 import pandas as pd
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class GenericParam(object):
+class GenericParam(ABC):
     """Generic parameter storage. Must be overriden.
 
     Attributes
@@ -37,11 +38,13 @@ class GenericParam(object):
         """
         return True
 
+    @abstractmethod
     def update_ajd(self) -> None:
         """Update AJD representation."""
         raise NotImplementedError("Must be overridden")
 
     @classmethod
+    @abstractmethod
     def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
@@ -53,6 +56,7 @@ class GenericParam(object):
         """
         raise NotImplementedError("Must be overridden")
 
+    @abstractmethod
     def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917
         """Update attributes from parameter vector.
 
@@ -69,6 +73,7 @@ class GenericParam(object):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
+    @abstractmethod
     def get_model_name() -> str:
         """Return model name.
 
@@ -81,6 +86,7 @@ class GenericParam(object):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
+    @abstractmethod
     def get_names() -> list[str]:
         """Return parameter names.
 
@@ -92,6 +98,7 @@ class GenericParam(object):
         """
         raise NotImplementedError("Must be overridden")
 
+    @abstractmethod
     def get_theta(self) -> np.ndarray:
         """Return vector of parameters.
 

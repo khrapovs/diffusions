@@ -30,6 +30,10 @@ class GBM(SDE):
         """
         super().__init__(param)
 
+    def get_start(self) -> list[float]:
+        """Return starting values for simulation."""
+        return [1.0]
+
     @staticmethod
     def drift(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ARG004, ANN401
         """Drift function.

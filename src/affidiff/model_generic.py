@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
@@ -19,7 +20,7 @@ except Exception:
     simulate = None
 
 
-class SDE(object):
+class SDE(ABC):
     """Generic Model.
 
     Attributes
@@ -67,6 +68,7 @@ class SDE(object):
         """
         self.param = param
 
+    @abstractmethod
     def get_start(self) -> np.ndarray | list[float]:
         """Return starting values for simulation."""
         raise NotImplementedError("Must be overridden")
