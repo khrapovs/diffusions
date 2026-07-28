@@ -402,7 +402,13 @@ class SDE(ABC):
         start_p: np.ndarray | Sequence[float] | None = None,
         start_q: np.ndarray | Sequence[float] | None = None,
         aggh: list[int] | tuple[int, int] | None = None,
-        **kwargs: Any,  # noqa: ANN401
+        nsub: int = 80,
+        ndiscr: int = 10,
+        nperiods: int = 500,
+        nsim: int = 1,
+        diff: Any = None,  # noqa: ANN401
+        new_innov: bool = True,
+        cython: bool = False,
     ) -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         """Simulate realized data from the model under both P and Q.
 
@@ -414,8 +420,20 @@ class SDE(ABC):
             Starting value for simulation under Q
         aggh : list
             Aggregation windows for P and Q respectively
-        kwargs : dict
-            Anything that needs to go through sim_realized
+        nsub : int
+            Number of subintervals for latent simulation (fractions of the day)
+        ndiscr : int
+            Number of Euler discretization points inside unit interval
+        nperiods : int
+            Number of points to simulate in one series (days)
+        nsim : int
+            Number of time series to simulate
+        diff : int
+            Dimensions which should be differentiated
+        new_innov : bool
+            Whether to generate new innovations (True), or use already stored (False)
+        cython : bool
+            Whether to use cython-optimized simulation (True) or not (False)
 
         Returns
         -------
@@ -424,50 +442,102 @@ class SDE(ABC):
         data_q : tuple
             Returns and realized variance under Q
 
-        Notes
-        -----
-        For argumentsts see sim_realized
-
         """
         if aggh is None:
             aggh = [1, 1]
         if start_p is None:
             start_p = self.get_start()
-        data_p = self.sim_realized(start=start_p, aggh=aggh[0], new_innov=True, **kwargs)
+        data_p = self.sim_realized(
+            start=start_p,
+            aggh=aggh[0],
+            new_innov=new_innov,
+            nsub=nsub,
+            ndiscr=ndiscr,
+            nperiods=nperiods,
+            nsim=nsim,
+            diff=diff,
+            cython=cython,
+        )
         self.param.convert_to_q()
         if start_q is None:
             start_q = self.get_start()
-        data_q = self.sim_realized(start=start_q, aggh=aggh[1], new_innov=False, **kwargs)
+        data_q = self.sim_realized(
+            start=start_q,
+            aggh=aggh[1],
+            new_innov=new_innov,
+            nsub=nsub,
+            ndiscr=ndiscr,
+            nperiods=nperiods,
+            nsim=nsim,
+            diff=diff,
+            cython=cython,
+        )
         return data_p, data_q
 
-    def gmmest(self, *, theta_start: Any, **kwargs: object) -> object:  # noqa: ANN401
+    def gmmest(
+        self,
+        *,
+        theta_start: Any,  # noqa: ANN401
+        data: Any = None,  # noqa: ANN401
+        instrlag: int = 1,
+        iter: int = 2,
+        method: str = "BFGS",
+        kernel: str = "Bartlett",
+        band: int | None = None,
+    ) -> object:
         """Estimate model parameters using GMM.
 
         Parameters
         ----------
-        theta_start : array
+        theta_start : parameter instance
             Initial parameter values for estimation
-        kwargs : dict
-            Anything that needs to go through mygmm
+        data : array_like, optional
+            Data passed to the moment condition function
+        instrlag : int
+            Number of lags for the instruments
+        iter : int
+            Number of GMM iterations
+        method : str
+            Optimization method passed to scipy.optimize.minimize
+        kernel : str
+            HAC kernel for weighting matrix ('Bartlett', 'Parzen', etc.)
+        band : int, optional
+            HAC bandwidth. If None, chosen automatically.
 
         Notes
         -----
-        For arguments see momcond
+        For moment condition arguments see momcond.
 
         """
         estimator = GMM(self.momcond)
-        return estimator.gmmest(theta_start.get_theta(), **kwargs)
+        return estimator.gmmest(
+            theta_start.get_theta(),
+            data=data,
+            instrlag=instrlag,
+            iter=iter,
+            method=method,
+            kernel=kernel,
+            band=band,
+        )
 
     def integrated_gmm(
         self,
         *,
         param_start: GenericParam | object,
+        data: object = None,
+        instr_data: object = None,
+        instr_choice: str = "const",
+        aggh: object = 1,
+        instrlag: int = 1,
         subset: str = "all",
         measure: str = "P",
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
         constraints: object = (),
-        **kwargs: object,
+        iter: int = 2,
+        method: str = "BFGS",
+        kernel: str = "Bartlett",
+        band: int | None = None,
     ) -> object:
         """Estimate model parameters using Integrated GMM.
 
@@ -475,6 +545,16 @@ class SDE(ABC):
         ----------
         param_start : parameter class
             Initial parameter values for estimation
+        data : array_like, optional
+            Returns and realized variance used in moment conditions
+        instr_data : array_like, optional
+            Instruments (no lags)
+        instr_choice : str {'const', 'var'}
+            Choice of instruments
+        aggh : int or list of int
+            Number of intervals (days) to aggregate over using rolling mean
+        instrlag : int
+            Number of lags for the instruments
         subset : str
 
             Which parameters to estimate. Belongs to
@@ -494,12 +574,14 @@ class SDE(ABC):
             Parameter bounds
         constraints : dict or sequence of dict
             Equality and inequality constraints. See scipy.optimize.minimize
-        kwargs : dict
-            Anything that needs to go through mygmm
-
-        Notes
-        -----
-        For arguments see integrated_mom
+        iter : int
+            Number of GMM iterations
+        method : str
+            Optimization method passed to scipy.optimize.minimize
+        kernel : str
+            HAC kernel for weighting matrix ('Bartlett', 'Parzen', etc.)
+        band : int, optional
+            HAC bandwidth. If None, chosen automatically.
 
         """
         estimator = GMM(self.integrated_mom)
@@ -512,7 +594,21 @@ class SDE(ABC):
         if constraints == ():
             constraints = self.param.get_constraints()
         return estimator.gmmest(
-            theta_start, names=names, subset=subset, measure=measure, bounds=bounds, constraints=constraints, **kwargs
+            theta_start,
+            names=names,
+            data=data,
+            instr_data=instr_data,
+            instr_choice=instr_choice,
+            aggh=aggh,
+            instrlag=instrlag,
+            subset=subset,
+            measure=measure,
+            bounds=bounds,
+            constraints=constraints,
+            iter=iter,
+            method=method,
+            kernel=kernel,
+            band=band,
         )
 
     def integrated_mom(
@@ -526,7 +622,6 @@ class SDE(ABC):
         subset: str = "all",
         instrlag: int = 1,
         measure: str = "P",
-        **kwargs: object,  # noqa: ARG002
     ) -> tuple[np.ndarray, Any]:
         """Integrated moment function.
 

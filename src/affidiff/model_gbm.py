@@ -288,7 +288,6 @@ class GBM(SDE):
         subset: str = "all",  # noqa: ARG002
         instrlag: int = 1,
         measure: str = "P",  # noqa: ARG002
-        **kwargs: Any,  # noqa: ARG002, ANN401
     ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 
@@ -310,8 +309,6 @@ class GBM(SDE):
             Number of lags for the instruments
         measure : str
             Measure
-        kwargs : dict
-            Keyword args
 
         Returns
         -------
