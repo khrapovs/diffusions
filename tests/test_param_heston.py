@@ -95,7 +95,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa, eta, rho, lmbd, lmbd_v]
-        param = HestonParam.from_theta(theta, measure="P")
+        param = HestonParam.from_theta(theta=theta, measure="P")
 
         assert param.measure == "P"
         assert param.riskfree == riskfree
@@ -118,7 +118,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa, eta, rho, lmbd, lmbd_v]
-        param = HestonParam.from_theta(theta, measure="Q")
+        param = HestonParam.from_theta(theta=theta, measure="Q")
 
         assert param.measure == "Q"
         assert param.riskfree == riskfree
@@ -141,7 +141,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa, eta, rho, lmbd, lmbd_v]
-        param = HestonParam.from_theta(theta)
+        param = HestonParam.from_theta(theta=theta)
         param.convert_to_q()
 
         assert param.measure == "Q"

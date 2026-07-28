@@ -38,15 +38,15 @@ def try_simulation() -> None:
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
     nobs = nperiods * nsub
-    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
     tendency = paths[:, 0, 2]
 
-    plot_trajectories(returns, nsub, "returns")
+    plot_trajectories(paths=returns, nsub=nsub, names="returns")
     names = ["vol", "ct"]
-    plot_trajectories([volatility, tendency], nsub, names)
+    plot_trajectories(paths=[volatility, tendency], nsub=nsub, names=names)
 
 
 def try_simulation_pq() -> None:
@@ -102,7 +102,7 @@ def try_simulation_pq() -> None:
     returns_q = paths_q[0]
 
     names = ["P", "Q"]
-    plot_trajectories([returns_p, returns_q], nsub, names)
+    plot_trajectories(paths=[returns_p, returns_q], nsub=nsub, names=names)
 
 
 def try_marginal() -> None:
@@ -124,15 +124,15 @@ def try_marginal() -> None:
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 10, 500
     nobs = nperiods * nsub
-    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
     volatility = paths[:, :, 1]
     tendency = paths[:, :, 2]
 
-    plot_final_distr(returns * nsub, "returns")
-    plot_final_distr(volatility, "volatility")
-    plot_final_distr(tendency, "tendency")
+    plot_final_distr(paths=returns * nsub, names="returns")
+    plot_final_distr(paths=volatility, names="volatility")
+    plot_final_distr(paths=tendency, names="tendency")
 
 
 def try_sim_realized() -> None:
@@ -156,7 +156,7 @@ def try_sim_realized() -> None:
 
     returns, rvar = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
 
-    plot_realized(returns, rvar)
+    plot_realized(returns=returns, rvar=rvar)
 
     nlags, lw = 90, 2
     grid = range(nlags + 1)
@@ -203,7 +203,9 @@ def try_sim_realized_pq():
     nobs = np.min([ret_p.size, ret_q.size])
 
     plot_realized(
-        [ret_p[-nobs:], ret_q[-nobs:]], [rvar_p[-nobs:], rvar_q[-nobs:] / param_true.scale], suffix=["P", "Q"]
+        returns=[ret_p[-nobs:], ret_q[-nobs:]],
+        rvar=[rvar_p[-nobs:], rvar_q[-nobs:] / param_true.scale],
+        suffix=["P", "Q"],
     )
 
 
@@ -229,7 +231,7 @@ def try_integrated_gmm_single():
 
     data = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
     nlags, lw = 90, 2
     grid = range(nlags + 1)
     plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
@@ -257,7 +259,7 @@ def try_integrated_gmm_single():
 
     time_start = time.time()
     res = centtend.integrated_gmm(
-        param_true,
+        param_start=param_true,
         data=data,
         instrlag=3,
         instr_data=instr_data,
@@ -297,7 +299,7 @@ def try_integrated_gmm_real():
     data = load_data()
     ret, rvar = data
 
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     nlags = 90
     lw = 2
@@ -311,7 +313,7 @@ def try_integrated_gmm_real():
 
     time_start = time.time()
     res = centtend.integrated_gmm(
-        param_start,
+        param_start=param_start,
         data=data,
         instrlag=2,
         instr_data=instr_data,
@@ -351,20 +353,20 @@ def try_integrated_gmm_opt_methods():
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 2000, 80, 1, 1
     aggh = 1
-    data = centtend.sim_realized(start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
+    data = centtend.sim_realized(start=start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
 
     param_start = param_true
-    param_start.update(param_true.get_theta() / 2)
+    param_start.update(theta=param_true.get_theta() / 2)
 
     tasks = itertools.product(np.arange(1, 4), ["L-BFGS-B", "TNC", "SLSQP"])
     for lag, method in tasks:
         time_start = time.time()
         res = centtend.integrated_gmm(
-            param_start,
+            param_start=param_start,
             data=data,
             instrlag=lag,
             instr_data=instr_data,

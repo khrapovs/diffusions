@@ -13,7 +13,7 @@ import seaborn as sns
 from statsmodels.tsa.tsatools import lagmat
 
 
-def ajd_drift(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
+def ajd_drift(*, state: Any, theta: Any) -> np.ndarray:  # noqa: ANN401
     """Instantaneous mean.
 
     Parameters
@@ -33,7 +33,7 @@ def ajd_drift(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
     return theta.mat_k0 + state_arr.dot(np.transpose(theta.mat_k1))
 
 
-def ajd_diff(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
+def ajd_diff(*, state: Any, theta: Any) -> np.ndarray:  # noqa: ANN401
     """Instantaneous volatility.
 
     Parameters
@@ -59,7 +59,7 @@ def ajd_diff(state: Any, theta: Any) -> np.ndarray:  # noqa: PLR0917, ANN401
         return np.ones_like(var) * 1e10
 
 
-def nice_errors(errors: np.ndarray, sdim: int) -> np.ndarray:  # noqa: PLR0917
+def nice_errors(*, errors: np.ndarray, sdim: int) -> np.ndarray:
     """Normalize the errors and apply antithetic sampling.
 
     Parameters
@@ -81,7 +81,7 @@ def nice_errors(errors: np.ndarray, sdim: int) -> np.ndarray:  # noqa: PLR0917
     return np.concatenate((errors, -errors), axis=sdim)
 
 
-def plot_trajectories(paths: Any, nsub: int, names: str | list[str]) -> None:  # noqa: PLR0917, ANN401
+def plot_trajectories(*, paths: Any, nsub: int, names: str | list[str]) -> None:  # noqa: ANN401
     """Plot process realizations.
 
     Parameters
@@ -111,7 +111,7 @@ def plot_trajectories(paths: Any, nsub: int, names: str | list[str]) -> None:  #
     plt.show()
 
 
-def plot_final_distr(paths: Any, names: str | list[str]) -> None:  # noqa: PLR0917, ANN401
+def plot_final_distr(*, paths: Any, names: str | list[str]) -> None:  # noqa: ANN401
     """Plot marginal distribution of the process.
 
     Parameters
@@ -138,7 +138,8 @@ def plot_final_distr(paths: Any, names: str | list[str]) -> None:  # noqa: PLR09
     plt.show()
 
 
-def plot_realized(  # noqa: PLR0917
+def plot_realized(
+    *,
     returns: Any,  # noqa: ANN401
     rvar: Any,  # noqa: ANN401
     suffix: list[str] | None = None,
@@ -175,7 +176,7 @@ def plot_realized(  # noqa: PLR0917
     plt.show()
 
 
-def columnwise_prod(left: np.ndarray, right: np.ndarray) -> np.ndarray:  # noqa: PLR0917
+def columnwise_prod(*, left: np.ndarray, right: np.ndarray) -> np.ndarray:
     """Columnwise kronker product.
 
     Parameters
@@ -212,7 +213,7 @@ def columnwise_prod(left: np.ndarray, right: np.ndarray) -> np.ndarray:  # noqa:
     return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))
 
 
-def rolling_window(fun: Callable[..., Any], mat: np.ndarray, window: int = 1) -> np.ndarray:  # noqa: PLR0917
+def rolling_window(*, fun: Callable[..., Any], mat: np.ndarray, window: int = 1) -> np.ndarray:
     """Apply function over rolling window.
 
     Source: http://www.rigtorp.se/2011/01/01/rolling-statistics-numpy.html
@@ -284,7 +285,8 @@ def poly_coef(roots: Sequence[float] | np.ndarray) -> list[float]:
     return coefs
 
 
-def instruments(  # noqa: PLR0917
+def instruments(
+    *,
     data: Any = None,  # noqa: ANN401
     instrlag: int = 1,
     nobs: int | None = None,

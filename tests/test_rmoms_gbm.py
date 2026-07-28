@@ -11,7 +11,7 @@ class TestRealizedMomentsGBM:
     def test_gbm_relized_mom(self) -> None:
         """Test realized moments of GBM model."""
         mean, sigma = 1.5, 0.2
-        param = GBMparam(mean, sigma)
+        param = GBMparam(mean=mean, sigma=sigma)
         gbm = GBM(param)
         gbm.nsub = 2
 
@@ -19,20 +19,20 @@ class TestRealizedMomentsGBM:
         data = np.ones((2, nperiods))
         instrlag = 2
 
-        depvar = gbm.realized_depvar(data)
+        depvar = gbm.realized_depvar(data=data)
         # Test shape of dependent variables
         assert depvar.shape == (3, nperiods)
 
-        const = gbm.realized_const(param.get_theta())
+        const = gbm.realized_const(param=param.get_theta())
         # Test shape of the intercept
         assert const.shape == (3,)
 
-        instr = gbm.instruments(data, instrlag=instrlag)
+        instr = gbm.instruments(data=data, instrlag=instrlag)
         ninstr = 1 + data.shape[0] * instrlag
         # Test shape of instrument matrix
         assert instr.shape == (ninstr, nperiods - instrlag)
 
-        rmom, drmom = gbm.integrated_mom(param.get_theta(), data=data, instrlag=instrlag)
+        rmom, drmom = gbm.integrated_mom(theta=param.get_theta(), data=data, instrlag=instrlag)
         nmoms = 3 * ninstr
         # Test shape of moments and gradients
         assert rmom.shape == (nperiods - instrlag, nmoms)

@@ -32,12 +32,12 @@ def try_simulation():
     start = [1, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
     nobs = nperiods * nsub
-    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
-    plot_trajectories(returns, nsub, "returns")
-    plot_trajectories(volatility, nsub, "volatility")
+    plot_trajectories(paths=returns, nsub=nsub, names="returns")
+    plot_trajectories(paths=volatility, nsub=nsub, names="volatility")
 
 
 def try_simulation_pq():
@@ -59,21 +59,21 @@ def try_simulation_pq():
     nperiods, nsub, ndiscr, nsim = 100, 10, 10, 3
     start = [1, mean_v]
     nobs = nperiods * nsub
-    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     param_true = HestonParam(
         riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="Q"
     )
     heston.update_theta(param_true)
     start_q = [1, param_true.mean_v]
-    paths_q = heston.simulate(start_q, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, new_innov=False)
+    paths_q = heston.simulate(start=start_q, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, new_innov=False)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
     returns_q = paths_q[:, 0, 0]
     volatility_q = paths_q[:, 0, 1]
-    plot_trajectories([returns, returns_q], nsub, ["returns", "returns_q"])
-    plot_trajectories([volatility, volatility_q], nsub, ["volatility", "volatility_q"])
+    plot_trajectories(paths=[returns, returns_q], nsub=nsub, names=["returns", "returns_q"])
+    plot_trajectories(paths=[volatility, volatility_q], nsub=nsub, names=["volatility", "volatility_q"])
 
 
 def try_marginal():
@@ -91,13 +91,13 @@ def try_marginal():
     start = [1, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 10, 200
     nobs = nperiods * nsub
-    paths = heston.simulate(start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
+    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
     volatility = paths[:, :, 1]
 
-    plot_final_distr(returns, names="returns")
-    plot_final_distr(volatility, names="volatility")
+    plot_final_distr(paths=returns, names="returns")
+    plot_final_distr(paths=volatility, names="volatility")
 
 
 def try_sim_realized():
@@ -118,7 +118,7 @@ def try_sim_realized():
 
     returns, rvar = heston.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
 
-    plot_realized(returns, rvar)
+    plot_realized(returns=returns, rvar=rvar)
 
 
 def try_sim_realized_pq():
@@ -144,7 +144,11 @@ def try_sim_realized_pq():
     print(heston.param)
     nobs = np.min([ret_p.size, ret_q.size])
 
-    plot_realized([ret_p[-nobs:], ret_q[-nobs:]], [rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
+    plot_realized(
+        returns=[ret_p[-nobs:], ret_q[-nobs:]],
+        rvar=[rvar_p[-nobs:], rvar_q[-nobs:]],
+        suffix=["P", "Q"],
+    )
 
 
 def try_integrated_gmm_single():
@@ -165,7 +169,7 @@ def try_integrated_gmm_single():
     aggh = 1
     data = heston.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
     nlags, lw = 90, 2
     grid = range(nlags + 1)
     plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
@@ -177,7 +181,7 @@ def try_integrated_gmm_single():
     measure = "P"
     time_start = time.time()
     res = heston.integrated_gmm(
-        param_true,
+        param_start=param_true,
         data=data,
         instrlag=3,
         instr_data=instr_data,
@@ -218,7 +222,7 @@ def try_integrated_gmm_single_rn():
     ret_p, rvar_p = data_p
     ret_q, rvar_q = data_q
     nobs = np.min([ret_p.size, ret_q.size])
-    plot_realized([ret_p[-nobs:], ret_q[-nobs:]], [rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
+    plot_realized(returns=[ret_p[-nobs:], ret_q[-nobs:]], rvar=[rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
 
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
@@ -226,7 +230,7 @@ def try_integrated_gmm_single_rn():
     measure = "P"
 
     res = heston.integrated_gmm(
-        param_true,
+        param_start=param_true,
         data=data_p,
         instrlag=2,
         instr_data=instr_data,
@@ -242,7 +246,7 @@ def try_integrated_gmm_single_rn():
 
     time_start = time.time()
     res = heston.integrated_gmm(
-        param_true,
+        param_start=param_true,
         data=data_q,
         instrlag=2,
         instr_data=instr_data,
@@ -283,7 +287,7 @@ def try_integrated_gmm_joint():
     ret_p, rvar_p = data_p
     ret_q, rvar_q = data_q
     nobs = np.min([ret_p.size, ret_q.size])
-    plot_realized([ret_p[-nobs:], ret_q[-nobs:]], [rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
+    plot_realized(returns=[ret_p[-nobs:], ret_q[-nobs:]], rvar=[rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
 
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
@@ -292,7 +296,7 @@ def try_integrated_gmm_joint():
 
     time_start = time.time()
     res = heston.integrated_gmm(
-        param_true,
+        param_start=param_true,
         data=data,
         instrlag=2,
         instr_data=instr_data,
@@ -327,7 +331,7 @@ def try_integrated_gmm_real():
 
     data = load_data()
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
 
@@ -335,7 +339,7 @@ def try_integrated_gmm_real():
 
     time_start = time.time()
     res = heston.integrated_gmm(
-        param_start,
+        param_start=param_start,
         data=data,
         instrlag=2,
         instr_data=instr_data,
@@ -367,20 +371,20 @@ def try_integrated_gmm_opt_methods():
 
     start, nperiods, nsub, ndiscr, nsim = [1, mean_v], 2000, 80, 1, 1
     aggh = 10
-    data = heston.sim_realized(start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
+    data = heston.sim_realized(start=start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
 
     param_start = param_true
-    param_start.update(param_true.get_theta() / 2)
+    param_start.update(theta=param_true.get_theta() / 2)
 
     tasks = itertools.product(np.arange(1, 4), ["L-BFGS-B", "TNC", "SLSQP"])
     for lag, method in tasks:
         time_start = time.time()
         res = heston.integrated_gmm(
-            param_start,
+            param_start=param_start,
             data=data,
             instrlag=lag,
             instr_data=instr_data,

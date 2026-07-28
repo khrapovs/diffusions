@@ -12,7 +12,7 @@ class TestSDEParameter:
     def test_gbmparam_class(self) -> None:
         """Test GBM parameter class."""
         mean, sigma = 1.5, 0.2
-        param = GBMparam(mean, sigma)
+        param = GBMparam(mean=mean, sigma=sigma)
 
         assert param.get_model_name() == "GBM"
         assert param.get_names() == ["mean", "sigma"]
@@ -25,7 +25,7 @@ class TestSDEParameter:
         npt.assert_array_equal(param.get_theta(), theta)
 
         theta = np.ones(2)
-        param = GBMparam.from_theta(theta)
+        param = GBMparam.from_theta(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.mean - param.sigma**2 / 2
@@ -53,5 +53,5 @@ class TestSDEParameter:
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
         assert param.is_valid()
-        param = GBMparam(mean, -sigma)
+        param = GBMparam(mean=mean, sigma=-sigma)
         assert not param.is_valid()

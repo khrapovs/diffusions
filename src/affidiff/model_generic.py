@@ -74,16 +74,17 @@ class SDE(ABC):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def realized_depvar(data: Any, subset: Any = None) -> Any:  # noqa: PLR0917, ANN401
+    def realized_depvar(*, data: Any, subset: Any = None) -> Any:  # noqa: ANN401
         """Realized dependent variables."""
         raise NotImplementedError("Must be overridden")
 
-    def mat_a(self, param: Any, subset: Any = None) -> Any:  # noqa: PLR0917, ANN401
+    def mat_a(self, *, param: Any, subset: Any = None) -> Any:  # noqa: ANN401
         """Matrix A in integrated moments."""
         raise NotImplementedError("Must be overridden")
 
-    def realized_const(  # noqa: PLR0917
+    def realized_const(
         self,
+        *,
         param: Any = None,  # noqa: ANN401
         aggh: Any = 1,  # noqa: ANN401
         subset: Any = None,  # noqa: ANN401
@@ -91,7 +92,7 @@ class SDE(ABC):
         """Realized constant in integrated moments."""
         raise NotImplementedError("Must be overridden")
 
-    def euler_loc(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def euler_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Euler location.
 
         Parameters
@@ -107,9 +108,9 @@ class SDE(ABC):
             Location term in Euler discretization
 
         """
-        return ajd_drift(state, theta)
+        return ajd_drift(state=state, theta=theta)
 
-    def euler_scale(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def euler_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Euler scale.
 
         Parameters
@@ -125,9 +126,9 @@ class SDE(ABC):
             Scale term in Euler discretization
 
         """
-        return ajd_diff(state, theta)
+        return ajd_diff(state=state, theta=theta)
 
-    def loc(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Location.
 
         Parameters
@@ -143,9 +144,9 @@ class SDE(ABC):
             Location term in Euler discretization
 
         """
-        return self.euler_loc(state, theta)
+        return self.euler_loc(state=state, theta=theta)
 
-    def scale(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Scale.
 
         Parameters
@@ -161,38 +162,39 @@ class SDE(ABC):
             Scale term in Euler discretization
 
         """
-        return self.euler_scale(state, theta)
+        return self.euler_scale(state=state, theta=theta)
 
-    def exact_loc(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def exact_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Exact location."""
-        return self.euler_loc(state, theta)
+        return self.euler_loc(state=state, theta=theta)
 
-    def exact_scale(self, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:  # noqa: PLR0917
+    def exact_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Exact scale."""
-        return self.euler_scale(state, theta)
+        return self.euler_scale(state=state, theta=theta)
 
     @staticmethod
-    def mean_vol(param: Any, aggh: float) -> float:  # noqa: PLR0917, ANN401
+    def mean_vol(*, param: Any, aggh: float) -> float:  # noqa: ANN401
         """Unconditional mean of volatility."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_vol2(param: Any, aggh: float) -> float:  # noqa: PLR0917, ANN401
+    def mean_vol2(*, param: Any, aggh: float) -> float:  # noqa: ANN401
         """Unconditional mean of squared volatility."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_ret(param: Any, aggh: float) -> float:  # noqa: PLR0917, ANN401
+    def mean_ret(*, param: Any, aggh: float) -> float:  # noqa: ANN401
         """Unconditional mean of returns."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_cross(param: Any, aggh: float) -> float:  # noqa: PLR0917, ANN401
+    def mean_cross(*, param: Any, aggh: float) -> float:  # noqa: ANN401
         """Unconditional mean of returns times volatility."""
         raise NotImplementedError
 
-    def momcond(  # noqa: PLR0917
+    def momcond(
         self,
+        *,
         theta: Any,  # noqa: ANN401
         data: Any = None,  # noqa: ANN401
         instrlag: int = 1,
@@ -200,7 +202,7 @@ class SDE(ABC):
         """Moment conditions."""
         raise NotImplementedError
 
-    def depvar_unc_mean(self, param: GenericParam | object, aggh: float) -> np.ndarray:  # noqa: PLR0917
+    def depvar_unc_mean(self, *, param: GenericParam | object, aggh: float) -> np.ndarray:
         """Unconditional means of realized data.
 
         Parameters
@@ -217,14 +219,14 @@ class SDE(ABC):
         """
         return np.array(
             [
-                self.mean_vol(param, aggh),
-                self.mean_vol2(param, aggh),
-                self.mean_ret(param, aggh),
-                self.mean_cross(param, aggh),
+                self.mean_vol(param=param, aggh=aggh),
+                self.mean_vol2(param=param, aggh=aggh),
+                self.mean_ret(param=param, aggh=aggh),
+                self.mean_cross(param=param, aggh=aggh),
             ]
         )
 
-    def update(self, state: np.ndarray, error: np.ndarray) -> np.ndarray:  # noqa: PLR0917
+    def update(self, *, state: np.ndarray, error: np.ndarray) -> np.ndarray:
         """Euler update function.
 
         Parameters
@@ -241,17 +243,18 @@ class SDE(ABC):
 
         """
         # (nsim, nvars) array_like
-        loc = self.euler_loc(state, self.param)
+        loc = self.euler_loc(state=state, theta=self.param)
         # (nsim, nvars, nvars) array_like
-        scale = self.euler_scale(state, self.param)
+        scale = self.euler_scale(state=state, theta=self.param)
 
         assert self.ndiscr is not None
         new_state = loc / self.ndiscr + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T / self.ndiscr**0.5
 
         return new_state
 
-    def simulate(  # noqa: PLR0917
+    def simulate(
         self,
+        *,
         start: Any = None,  # noqa: ANN401
         nsub: int = 80,
         ndiscr: int = 1,
@@ -303,7 +306,7 @@ class SDE(ABC):
             # Generate new errors
             self.errors = np.random.normal(size=(npoints, nsim, nvars))
             # Standardize the errors
-            self.errors = nice_errors(self.errors, 1)
+            self.errors = nice_errors(errors=self.errors, sdim=1)
 
         if cython:
             assert simulate is not None
@@ -324,7 +327,7 @@ class SDE(ABC):
 
             for i in range(npoints):
                 # (nsim, nvars)
-                paths[i + 1] = paths[i] + self.update(paths[i], self.errors[i])
+                paths[i + 1] = paths[i] + self.update(state=paths[i], error=self.errors[i])
 
         # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]
@@ -332,8 +335,9 @@ class SDE(ABC):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(  # noqa: PLR0917
+    def sim_realized(
         self,
+        *,
         start: Any = None,  # noqa: ANN401
         nsub: int = 80,
         ndiscr: int = 10,
@@ -381,19 +385,20 @@ class SDE(ABC):
             start = self.get_start()
         nobs = nperiods * nsub
         paths = self.simulate(
-            start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=diff, new_innov=new_innov, cython=cython
+            start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=diff, new_innov=new_innov, cython=cython
         )
         returns = paths[:, 0, 0].reshape((nperiods, nsub))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
         returns = returns.sum(1)
         # Aggregate over arbitrary number of days
-        rvar = rolling_window(np.mean, rvar, window=aggh)
-        returns = rolling_window(np.mean, returns, window=aggh)
+        rvar = rolling_window(fun=np.mean, mat=rvar, window=aggh)
+        returns = rolling_window(fun=np.mean, mat=returns, window=aggh)
         return returns, rvar
 
-    def sim_realized_pq(  # noqa: PLR0917
+    def sim_realized_pq(
         self,
+        *,
         start_p: np.ndarray | Sequence[float] | None = None,
         start_q: np.ndarray | Sequence[float] | None = None,
         aggh: list[int] | tuple[int, int] | None = None,
@@ -428,14 +433,14 @@ class SDE(ABC):
             aggh = [1, 1]
         if start_p is None:
             start_p = self.get_start()
-        data_p = self.sim_realized(start_p, aggh=aggh[0], new_innov=True, **kwargs)
+        data_p = self.sim_realized(start=start_p, aggh=aggh[0], new_innov=True, **kwargs)
         self.param.convert_to_q()
         if start_q is None:
             start_q = self.get_start()
-        data_q = self.sim_realized(start_q, aggh=aggh[1], new_innov=False, **kwargs)
+        data_q = self.sim_realized(start=start_q, aggh=aggh[1], new_innov=False, **kwargs)
         return data_p, data_q
 
-    def gmmest(self, theta_start: Any, **kwargs: object) -> object:  # noqa: ANN401
+    def gmmest(self, *, theta_start: Any, **kwargs: object) -> object:  # noqa: ANN401
         """Estimate model parameters using GMM.
 
         Parameters
@@ -453,8 +458,9 @@ class SDE(ABC):
         estimator = GMM(self.momcond)
         return estimator.gmmest(theta_start.get_theta(), **kwargs)
 
-    def integrated_gmm(  # noqa: PLR0917
+    def integrated_gmm(
         self,
+        *,
         param_start: GenericParam | object,
         subset: str = "all",
         measure: str = "P",
@@ -509,8 +515,9 @@ class SDE(ABC):
             theta_start, names=names, subset=subset, measure=measure, bounds=bounds, constraints=constraints, **kwargs
         )
 
-    def integrated_mom(  # noqa: PLR0917
+    def integrated_mom(
         self,
+        *,
         theta: np.ndarray | Sequence[float],
         data: object = None,
         instr_data: object = None,
@@ -574,24 +581,27 @@ class SDE(ABC):
             for data_x, agg, meas in zip(data_list, aggh_list, measure_list, strict=False):
                 if meas == "Q":
                     self.param.convert_to_q()
-                depvar = self.realized_depvar(data_x)[lag:]
+                depvar = self.realized_depvar(data=data_x)[lag:]
                 # (nobs - lag, 4) array
                 error.append(
-                    depvar.dot(self.mat_a(self.param, subset_sl).T) - self.realized_const(self.param, agg, subset_sl)
+                    depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T)
+                    - self.realized_const(param=self.param, aggh=agg, subset=subset_sl)
                 )
 
             error = np.hstack(error)
 
         else:
-            depvar = self.realized_depvar(data)[lag:]  # type: ignore[arg-type]
+            depvar = self.realized_depvar(data=data)[lag:]  # type: ignore[arg-type]
             # (nobs - lag, 4) array
-            error = depvar.dot(self.mat_a(self.param, subset_sl).T) - self.realized_const(self.param, aggh, subset_sl)
+            error = depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T) - self.realized_const(
+                param=self.param, aggh=aggh, subset=subset_sl
+            )
 
         nobs = error.shape[0] + lag
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
-        instr = instruments(instr_data, nobs=nobs, instrlag=instrlag, instr_choice=instr_choice)[:-lag]
+        instr = instruments(data=instr_data, nobs=nobs, instrlag=instrlag, instr_choice=instr_choice)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
-        moms = columnwise_prod(error, instr)
+        moms = columnwise_prod(left=error, right=instr)
 
         return moms, None

@@ -44,8 +44,9 @@ class HestonParam(GenericParam):
 
     """
 
-    def __init__(  # noqa: PLR0917
+    def __init__(
         self,
+        *,
         riskfree: float = 0.0,
         mean_v: float = 0.5,
         kappa: float = 1.5,
@@ -106,7 +107,7 @@ class HestonParam(GenericParam):
         return "Heston"
 
     @staticmethod
-    def get_names(subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: PLR0917
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
         """Return parameter names.
 
         Parameters
@@ -185,7 +186,7 @@ class HestonParam(GenericParam):
         return bool(posit & self.feller())
 
     @classmethod
-    def from_theta(cls, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:  # noqa: PLR0917
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -210,7 +211,7 @@ class HestonParam(GenericParam):
             measure=measure,
         )
 
-    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:  # noqa: PLR0917
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -250,7 +251,7 @@ class HestonParam(GenericParam):
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: PLR0917
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
@@ -287,7 +288,7 @@ class HestonParam(GenericParam):
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:  # noqa: PLR0917
+    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters

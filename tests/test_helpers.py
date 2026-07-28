@@ -18,17 +18,17 @@ class TestHelperFunction:
         for i in range(right.shape[1]):
             prod.append(left.T * right[:, i])
         prod = np.vstack(prod).T
-        expected = columnwise_prod(left, right)
+        expected = columnwise_prod(left=left, right=right)
 
         npt.assert_array_equal(prod, expected)
 
     def test_rolling_window(self) -> None:
         """Test rolling window apply."""
-        mat = rolling_window(np.sum, np.ones(5), window=2)
+        mat = rolling_window(fun=np.sum, mat=np.ones(5), window=2)
 
         npt.assert_array_equal(mat, np.ones(4) * 2)
         mat = np.arange(10).reshape((2, 5))
-        mat = rolling_window(np.mean, mat, window=2)
+        mat = rolling_window(fun=np.mean, mat=mat, window=2)
         expect = np.array([[0.5, 1.5, 2.5, 3.5], [5.5, 6.5, 7.5, 8.5]])
 
         npt.assert_array_equal(mat, expect)
@@ -40,7 +40,7 @@ class TestHelperFunction:
         size = (nobs, nsim, nvars)
         new_size = (nobs, nsim * 2, nvars)
         errors = np.random.normal(size=size)
-        treated_errors = nice_errors(errors, sim)
+        treated_errors = nice_errors(errors=errors, sdim=sim)
 
         assert treated_errors.shape == new_size
         npt.assert_almost_equal(treated_errors.mean(sim), 0)
@@ -75,7 +75,7 @@ class TestHelperFunction:
         expect = np.hstack([np.ones((nperiods, 1)), lagmat(data.T, maxlag=1)])
         npt.assert_array_equal(instrmnts, expect)
 
-        instrmnts = instruments(data[0], instrlag=instrlag, instr_choice="var")
+        instrmnts = instruments(data=data[0], instrlag=instrlag, instr_choice="var")
         ninstr = 1
         shape = (nperiods, ninstr * instrlag + 1)
         # Test the shape of instruments

@@ -45,7 +45,7 @@ class GenericParam(ABC):
 
     @classmethod
     @abstractmethod
-    def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -57,7 +57,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @abstractmethod
-    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -111,7 +111,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_bounds(subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:  # noqa: PLR0917, ARG004
+    def get_bounds(*, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:  # noqa: ARG004
         """Get parameter bounds.
 
         Returns

@@ -170,7 +170,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta, measure="P")
+        param = CentTendParam.from_theta(theta=theta, measure="P")
 
         assert param.measure == "P"
         assert param.riskfree == riskfree
@@ -199,7 +199,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta, measure="Q")
+        param = CentTendParam.from_theta(theta=theta, measure="Q")
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
@@ -232,7 +232,7 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta)
+        param = CentTendParam.from_theta(theta=theta)
         param.convert_to_q()
 
         kappa_sq = kappa_s - lmbd_s * eta_s

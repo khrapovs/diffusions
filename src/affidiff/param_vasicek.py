@@ -28,7 +28,7 @@ class VasicekParam(GenericParam):
 
     """
 
-    def __init__(self, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:  # noqa: PLR0917, ARG002
+    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:  # noqa: ARG002
         """Initialize class.
 
         Parameters
@@ -73,7 +73,7 @@ class VasicekParam(GenericParam):
         self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -86,7 +86,7 @@ class VasicekParam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: PLR0917, ARG002
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: ARG002
         """Update attributes from parameter vector.
 
         Parameters
@@ -115,7 +115,7 @@ class VasicekParam(GenericParam):
         return "Vasicek"
 
     @staticmethod
-    def get_names(subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: PLR0917, ARG004
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: ARG004
         """Return parameter names.
 
         Returns
@@ -126,7 +126,7 @@ class VasicekParam(GenericParam):
         """
         return ["mean", "kappa", "eta"]
 
-    def get_theta(self, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: PLR0917, ARG002
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: ARG002
         """Return vector of parameters.
 
         Returns

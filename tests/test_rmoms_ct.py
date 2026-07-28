@@ -39,7 +39,7 @@ class TestRealizedMomentsCT:
         ret = np.arange(nperiods)
         rvar = ret**2
         data = np.vstack([ret, rvar])
-        depvar = centtend.realized_depvar(data)
+        depvar = centtend.realized_depvar(data=data)
 
         # Test shape of dependent variables
         assert depvar.shape == (nperiods, 6 * 4)
@@ -80,7 +80,7 @@ class TestRealizedMomentsCT:
         ninstr = instr_data.shape[0]
 
         mom, dmom = centtend.integrated_mom(
-            param.get_theta(), instr_data=instr_data, instr_choice="var", data=data, instrlag=instrlag
+            theta=param.get_theta(), instr_data=instr_data, instr_choice="var", data=data, instrlag=instrlag
         )
         nmoms_all = nmoms * (ninstr * instrlag + 1)
         mom_shape = (nperiods - instrlag, nmoms_all)
@@ -120,23 +120,25 @@ class TestRealizedMomentsCT:
         rvar = ret**2
         data = np.vstack([ret, rvar])
         instrlag = 2
-        depvar = centtend.realized_depvar(data)
+        depvar = centtend.realized_depvar(data=data)
 
-        mom, dmom = centtend.integrated_mom(param.get_theta(), instr_choice="const", data=data, instrlag=instrlag)
+        mom, dmom = centtend.integrated_mom(theta=param.get_theta(), instr_choice="const", data=data, instrlag=instrlag)
         nmoms_all = nmoms
         mom_shape = (nperiods - instrlag, nmoms_all)
 
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
 
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error = depvar.dot(centtend.mat_a(param, None).T) - centtend.realized_const(param, aggh, None)
+        error = depvar.dot(centtend.mat_a(param=param, subset=None).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=None
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
         # Test the shape of moment functions
@@ -173,19 +175,19 @@ class TestRealizedMomentsCT:
         rvar = ret**2
         data = np.vstack([ret, rvar])
         instrlag = 2
-        depvar = centtend.realized_depvar(data)
+        depvar = centtend.realized_depvar(data=data)
 
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
 
         subset = "vol"
         mom, dmom = centtend.integrated_mom(
-            param.get_theta(subset=subset), subset=subset, instr_choice="const", data=data, instrlag=instrlag
+            theta=param.get_theta(subset=subset), subset=subset, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
         mom_shape = (nperiods - instrlag, nmoms)
@@ -196,7 +198,9 @@ class TestRealizedMomentsCT:
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
         subset_sl = slice(2)
-        error = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
@@ -237,7 +241,7 @@ class TestRealizedMomentsCT:
         measure = "Q"
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
+            theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
         mom_shape = (nperiods - instrlag, nmoms)
@@ -248,14 +252,16 @@ class TestRealizedMomentsCT:
         subset_sl = slice(2)
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
@@ -263,7 +269,7 @@ class TestRealizedMomentsCT:
         measure = "P"
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
+            theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
         mom_shape = (nperiods - instrlag, nmoms)
@@ -274,14 +280,16 @@ class TestRealizedMomentsCT:
         subset_sl = slice(2)
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
@@ -300,7 +308,7 @@ class TestRealizedMomentsCT:
         measure = "PQ"
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta,
+            theta=theta,
             subset=subset,
             measure=measure,
             instr_choice="const",
@@ -317,14 +325,16 @@ class TestRealizedMomentsCT:
         subset_sl = slice(2)
         aggh = 10
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error_q = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error_q = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -338,14 +348,16 @@ class TestRealizedMomentsCT:
         )
 
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error_p = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error_p = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(np.hstack((error_p, error_q)), np.zeros(mom_shape))
 
@@ -365,7 +377,7 @@ class TestRealizedMomentsCT:
         centtend = CentTend(param)
         theta = param.get_theta(subset=subset, measure=measure)
         mom2, dmom = centtend.integrated_mom(
-            theta,
+            theta=theta,
             subset=subset,
             measure=measure,
             instr_choice="const",
@@ -425,7 +437,7 @@ class TestRealizedMomentsCT:
         )
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
+            theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 4
         mom_shape = (nperiods - instrlag, nmoms)
@@ -436,14 +448,16 @@ class TestRealizedMomentsCT:
         subset_sl = None
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
@@ -463,7 +477,7 @@ class TestRealizedMomentsCT:
         )
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
+            theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 4
         mom_shape = (nperiods - instrlag, nmoms)
@@ -474,14 +488,16 @@ class TestRealizedMomentsCT:
         subset_sl = None
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
@@ -501,7 +517,7 @@ class TestRealizedMomentsCT:
         )
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
-            theta,
+            theta=theta,
             subset=subset,
             measure=measure,
             instr_choice="const",
@@ -518,14 +534,16 @@ class TestRealizedMomentsCT:
         subset_sl = None
         aggh = 2
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error_q = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error_q = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         param = CentTendParam(
             riskfree=riskfree,
@@ -538,14 +556,16 @@ class TestRealizedMomentsCT:
             rho=rho,
         )
         means = [
-            centtend.mean_vol(param, aggh),
-            centtend.mean_vol2(param, aggh),
-            centtend.mean_ret(param, aggh),
-            centtend.mean_cross(param, aggh),
+            centtend.mean_vol(param=param, aggh=aggh),
+            centtend.mean_vol2(param=param, aggh=aggh),
+            centtend.mean_ret(param=param, aggh=aggh),
+            centtend.mean_cross(param=param, aggh=aggh),
         ]
         depvar = np.ones((nperiods - instrlag, 4)) * means
         depvar = np.tile(depvar, 6)
-        error_p = depvar.dot(centtend.mat_a(param, subset_sl).T) - centtend.realized_const(param, aggh, subset_sl)
+        error_p = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
+            param=param, aggh=aggh, subset=subset_sl
+        )
 
         npt.assert_array_almost_equal(np.hstack((error_p, error_q)), np.zeros(mom_shape))
 
@@ -574,73 +594,73 @@ class TestRealizedMomentsCT:
         centtend.nsub = 10
         aggh = 2
 
-        assert isinstance(centtend.coef_big_as(param, aggh), float)
-        assert isinstance(centtend.coef_big_bs(param, aggh), float)
-        assert isinstance(centtend.coef_big_cs(param, aggh), float)
-        assert isinstance(centtend.coef_big_ay(param, aggh), float)
-        assert isinstance(centtend.coef_big_cy(param, aggh), float)
-        assert isinstance(centtend.coef_small_as(param, aggh), float)
-        assert isinstance(centtend.coef_small_bs(param, aggh), float)
-        assert isinstance(centtend.coef_small_cs(param, aggh), float)
+        assert isinstance(centtend.coef_big_as(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_big_bs(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_big_cs(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_big_ay(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_big_cy(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_small_as(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_small_bs(param=param, aggh=aggh), float)
+        assert isinstance(centtend.coef_small_cs(param=param, aggh=aggh), float)
 
-        assert len(centtend.roots(param, aggh)) == 5
+        assert len(centtend.roots(param=param, aggh=aggh)) == 5
         roots = [
-            centtend.coef_big_as(param, aggh),
-            centtend.coef_big_ay(param, aggh),
-            centtend.coef_big_as(param, aggh) ** 2,
-            centtend.coef_big_ay(param, aggh) ** 2,
-            centtend.coef_big_as(param, aggh) * centtend.coef_big_ay(param, aggh),
+            centtend.coef_big_as(param=param, aggh=aggh),
+            centtend.coef_big_ay(param=param, aggh=aggh),
+            centtend.coef_big_as(param=param, aggh=aggh) ** 2,
+            centtend.coef_big_ay(param=param, aggh=aggh) ** 2,
+            centtend.coef_big_as(param=param, aggh=aggh) * centtend.coef_big_ay(param=param, aggh=aggh),
         ]
-        assert centtend.roots(param, aggh) == roots
+        assert centtend.roots(param=param, aggh=aggh) == roots
 
-        assert len(centtend.depvar_unc_mean(param, aggh)) == 4
+        assert len(centtend.depvar_unc_mean(param=param, aggh=aggh)) == 4
 
-        assert centtend.mat_a0(param, aggh).shape == (4, 4)
-        assert centtend.mat_a0(param, aggh)[1, 1] == 1.0
+        assert centtend.mat_a0(param=param, aggh=aggh).shape == (4, 4)
+        assert centtend.mat_a0(param=param, aggh=aggh)[1, 1] == 1.0
 
-        assert centtend.mat_a1(param, aggh).shape == (4, 4)
-        expect = -np.sum(centtend.roots(param, aggh))
-        assert centtend.mat_a1(param, aggh)[1, 1] == expect
+        assert centtend.mat_a1(param=param, aggh=aggh).shape == (4, 4)
+        expect = -np.sum(centtend.roots(param=param, aggh=aggh))
+        assert centtend.mat_a1(param=param, aggh=aggh)[1, 1] == expect
 
-        assert centtend.mat_a2(param, aggh).shape == (4, 4)
+        assert centtend.mat_a2(param=param, aggh=aggh).shape == (4, 4)
 
-        assert centtend.mat_a3(param, aggh).shape == (4, 4)
-        assert centtend.mat_a3(param, aggh)[0, 0] == 1.0
-        assert centtend.mat_a3(param, aggh)[3, 1] == 0.5 - param.lmbd
+        assert centtend.mat_a3(param=param, aggh=aggh).shape == (4, 4)
+        assert centtend.mat_a3(param=param, aggh=aggh)[0, 0] == 1.0
+        assert centtend.mat_a3(param=param, aggh=aggh)[3, 1] == 0.5 - param.lmbd
 
-        assert centtend.mat_a4(param, aggh).shape == (4, 4)
-        expect = -np.sum(centtend.roots(param, aggh)[:2])
-        assert centtend.mat_a4(param, aggh)[0, 0] == expect
-        assert centtend.mat_a4(param, aggh)[3, 1] == (0.5 - param.lmbd) * expect
+        assert centtend.mat_a4(param=param, aggh=aggh).shape == (4, 4)
+        expect = -np.sum(centtend.roots(param=param, aggh=aggh)[:2])
+        assert centtend.mat_a4(param=param, aggh=aggh)[0, 0] == expect
+        assert centtend.mat_a4(param=param, aggh=aggh)[3, 1] == (0.5 - param.lmbd) * expect
 
-        assert centtend.mat_a5(param, aggh).shape == (4, 4)
-        expect = np.prod(centtend.roots(param, aggh)[:2])
-        assert centtend.mat_a5(param, aggh)[0, 0] == expect
-        assert centtend.mat_a5(param, aggh)[3, 1] == (0.5 - param.lmbd) * expect
-        expect = -np.prod(centtend.roots(param, aggh))
-        assert centtend.mat_a5(param, aggh)[1, 1] == expect
-        assert centtend.mat_a5(param, aggh)[2, 2] == 1.0
-        assert centtend.mat_a5(param, aggh)[2, 0] == 0.5 - param.lmbd
+        assert centtend.mat_a5(param=param, aggh=aggh).shape == (4, 4)
+        expect = np.prod(centtend.roots(param=param, aggh=aggh)[:2])
+        assert centtend.mat_a5(param=param, aggh=aggh)[0, 0] == expect
+        assert centtend.mat_a5(param=param, aggh=aggh)[3, 1] == (0.5 - param.lmbd) * expect
+        expect = -np.prod(centtend.roots(param=param, aggh=aggh))
+        assert centtend.mat_a5(param=param, aggh=aggh)[1, 1] == expect
+        assert centtend.mat_a5(param=param, aggh=aggh)[2, 2] == 1.0
+        assert centtend.mat_a5(param=param, aggh=aggh)[2, 0] == 0.5 - param.lmbd
 
-        assert centtend.mat_a(param).shape == (4, 6 * 4)
+        assert centtend.mat_a(param=param).shape == (4, 6 * 4)
 
-        assert centtend.realized_const(param, aggh).shape == (4,)
-        assert centtend.realized_const(param, aggh)[2] == 0
+        assert centtend.realized_const(param=param, aggh=aggh).shape == (4,)
+        assert centtend.realized_const(param=param, aggh=aggh)[2] == 0
 
         roots = [
-            centtend.coef_big_as(param, 1),
-            centtend.coef_big_ay(param, 1),
-            centtend.coef_big_as(param, 1) ** 2,
-            centtend.coef_big_ay(param, 1) ** 2,
-            centtend.coef_big_as(param, 1) * centtend.coef_big_ay(param, 1),
+            centtend.coef_big_as(param=param, aggh=1),
+            centtend.coef_big_ay(param=param, aggh=1),
+            centtend.coef_big_as(param=param, aggh=1) ** 2,
+            centtend.coef_big_ay(param=param, aggh=1) ** 2,
+            centtend.coef_big_as(param=param, aggh=1) * centtend.coef_big_ay(param=param, aggh=1),
         ]
 
-        res = centtend.depvar_unc_mean(param, aggh)[0] * (1 - roots[0]) * (1 - roots[1])
+        res = centtend.depvar_unc_mean(param=param, aggh=aggh)[0] * (1 - roots[0]) * (1 - roots[1])
 
-        assert centtend.realized_const(param, aggh)[0] == pytest.approx(res)
+        assert centtend.realized_const(param=param, aggh=aggh)[0] == pytest.approx(res)
 
         res = (
-            centtend.depvar_unc_mean(param, aggh)[1]
+            centtend.depvar_unc_mean(param=param, aggh=aggh)[1]
             * (1 - roots[0])
             * (1 - roots[1])
             * (1 - roots[2])
@@ -648,12 +668,15 @@ class TestRealizedMomentsCT:
             * (1 - roots[4])
         )
 
-        assert centtend.realized_const(param, aggh)[1] == pytest.approx(res)
+        assert centtend.realized_const(param=param, aggh=aggh)[1] == pytest.approx(res)
 
         res = (
-            (centtend.depvar_unc_mean(param, aggh)[1] * (0.5 - param.lmbd) + centtend.depvar_unc_mean(param, aggh)[3])
+            (
+                centtend.depvar_unc_mean(param=param, aggh=aggh)[1] * (0.5 - param.lmbd)
+                + centtend.depvar_unc_mean(param=param, aggh=aggh)[3]
+            )
             * (1 - roots[0])
             * (1 - roots[1])
         )
 
-        assert centtend.realized_const(param, aggh)[3] == pytest.approx(res)
+        assert centtend.realized_const(param=param, aggh=aggh)[3] == pytest.approx(res)

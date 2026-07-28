@@ -39,8 +39,9 @@ class CentTendParam(GenericParam):
 
     """
 
-    def __init__(  # noqa: PLR0917
+    def __init__(
         self,
+        *,
         riskfree: float = 0.0,
         lmbd: float = 0.1,
         lmbd_s: float = 0.0,
@@ -114,7 +115,7 @@ class CentTendParam(GenericParam):
         return "Central Tendency"
 
     @staticmethod
-    def get_names(subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: PLR0917
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
         """Return parameter names.
 
         Parameters
@@ -202,7 +203,7 @@ class CentTendParam(GenericParam):
         return bool(posit1 & posit2 & self.feller())
 
     @classmethod
-    def from_theta(cls, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:  # noqa: PLR0917
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -230,7 +231,7 @@ class CentTendParam(GenericParam):
             measure=measure,
         )
 
-    def update(self, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:  # noqa: PLR0917
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -270,7 +271,7 @@ class CentTendParam(GenericParam):
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: PLR0917
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
@@ -319,7 +320,7 @@ class CentTendParam(GenericParam):
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:  # noqa: PLR0917
+    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters

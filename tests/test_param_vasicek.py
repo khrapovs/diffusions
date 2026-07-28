@@ -12,7 +12,7 @@ class TestSDEParameter:
     def test_vasicekparam_class(self) -> None:
         """Test Vasicek parameter class."""
         mean, kappa, eta = 1.5, 1.0, 0.2
-        param = VasicekParam(mean, kappa, eta)
+        param = VasicekParam(mean=mean, kappa=kappa, eta=eta)
 
         assert param.get_model_name() == "Vasicek"
         assert param.get_names() == ["mean", "kappa", "eta"]
@@ -24,7 +24,7 @@ class TestSDEParameter:
         npt.assert_array_equal(param.get_theta(), np.array([mean, kappa, eta]))
 
         theta = np.ones(3)
-        param = VasicekParam.from_theta(theta)
+        param = VasicekParam.from_theta(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
@@ -38,7 +38,7 @@ class TestSDEParameter:
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
         theta *= 2
-        param.update(theta)
+        param.update(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
@@ -52,7 +52,7 @@ class TestSDEParameter:
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
         assert param.is_valid()
-        param = VasicekParam(mean, -kappa, eta)
+        param = VasicekParam(mean=mean, kappa=-kappa, eta=eta)
         assert not param.is_valid()
-        param = VasicekParam(mean, kappa, -eta)
+        param = VasicekParam(mean=mean, kappa=kappa, eta=-eta)
         assert not param.is_valid()

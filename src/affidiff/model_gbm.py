@@ -35,7 +35,7 @@ class GBM(SDE):
         return [1.0]
 
     @staticmethod
-    def drift(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ARG004, ANN401
+    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
         """Drift function.
 
         Parameters
@@ -54,7 +54,7 @@ class GBM(SDE):
         return theta.mean - theta.sigma**2 / 2
 
     @staticmethod
-    def diff(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ARG004, ANN401
+    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -86,8 +86,8 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam.from_theta(theta)
-        loc = float(self.exact_loc(np.array(0), param))
+        param = GBMparam.from_theta(theta=theta)
+        loc = float(self.exact_loc(state=np.array(0), theta=param))
         return np.array([loc, 0], dtype=float)
 
     def gammamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
@@ -104,9 +104,9 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam.from_theta(theta)
-        loc = float(self.exact_loc(np.array(0), param))
-        scale = float(self.exact_scale(np.array(0), param))
+        param = GBMparam.from_theta(theta=theta)
+        loc = float(self.exact_loc(state=np.array(0), theta=param))
+        scale = float(self.exact_scale(state=np.array(0), theta=param))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
     def dbetamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
@@ -188,7 +188,7 @@ class GBM(SDE):
         )
 
     @staticmethod
-    def realized_depvar(data: np.ndarray, subset: slice | None = None) -> np.ndarray:  # noqa: ARG004, PLR0917
+    def realized_depvar(*, data: np.ndarray, subset: slice | None = None) -> np.ndarray:  # noqa: ARG004
         """Array of the left-hand side variables in realized moment conditions.
 
         Parameters
@@ -207,8 +207,9 @@ class GBM(SDE):
         ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 
-    def realized_const(  # noqa: PLR0917
+    def realized_const(
         self,
+        *,
         param: Any = None,  # noqa: ANN401
         aggh: Any = 1,  # noqa: ARG002, ANN401
         subset: slice | None = None,  # noqa: ARG002
@@ -248,11 +249,15 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
+
+        def _realized_const_wrapper(theta: Any) -> np.ndarray:  # noqa: ANN401
+            return self.realized_const(param=theta)
+
         with np.errstate(divide="ignore"):
-            return nd.Jacobian(self.realized_const)(theta)
+            return nd.Jacobian(_realized_const_wrapper)(theta)
 
     @staticmethod
-    def instruments(data: Any, instrlag: int = 1) -> np.ndarray:  # noqa: PLR0917, ANN401
+    def instruments(*, data: Any, instrlag: int = 1) -> np.ndarray:  # noqa: ANN401
         """Create an array of instruments.
 
         Parameters
@@ -272,8 +277,9 @@ class GBM(SDE):
         lmat = cast(np.ndarray, lagmat(data_arr.T, maxlag=instrlag))
         return np.vstack([np.ones_like(data_arr[0]), lmat.T])[:, instrlag:]
 
-    def integrated_mom(  # noqa: PLR0917
+    def integrated_mom(
         self,
+        *,
         theta: Any,  # noqa: ANN401
         data: Any = None,  # noqa: ANN401
         instr_data: Any = None,  # noqa: ARG002, ANN401
@@ -317,11 +323,11 @@ class GBM(SDE):
         """
         assert data is not None
         # (nobs - instrlag, 3) array
-        error = self.realized_depvar(data).T[instrlag:] - self.realized_const(theta)
+        error = self.realized_depvar(data=data).T[instrlag:] - self.realized_const(param=theta)
         # (nobs - instrlag, ninstr)
-        instr = self.instruments(data, instrlag=instrlag).T
+        instr = self.instruments(data=data, instrlag=instrlag).T
         # (nobs - instrlag, 3 * ninstr = nmoms)
-        moms = columnwise_prod(error, instr)
+        moms = columnwise_prod(left=error, right=instr)
         # (nintercepts, nparams)
         dmoms = -self.drealized_const(theta)
         dmoments = []
@@ -331,8 +337,9 @@ class GBM(SDE):
 
         return moms, dmoments_arr
 
-    def momcond(  # noqa: PLR0917
+    def momcond(
         self,
+        *,
         theta: np.ndarray | Sequence[float],
         data: Any = None,  # noqa: ANN401
         instrlag: int = 1,

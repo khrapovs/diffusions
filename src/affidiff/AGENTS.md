@@ -21,6 +21,7 @@ Owns all core stochastic modeling logic, including:
 
 - Ensure parameter bounds and matrix dimensions (drift, diffusion, jump intensities) are validated upon instantiation in parameter classes.
 - Maintain mathematical accuracy in ODE solving, characteristic function evaluation, and numerical integration.
+- All public methods and functions use `*` after `self`/`cls` to enforce keyword-only arguments (PLR0917 compliance). When calling internal methods that are keyword-only from contexts where positional calls are unavoidable (e.g., `numdifftools`), add a local positional wrapper function.
 
 # Verification
 

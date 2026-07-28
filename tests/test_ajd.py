@@ -13,38 +13,38 @@ class TestDrift:
     def test_ajd_drift_gbm(self) -> None:
         """Test AJD drift function for GBM model."""
         mean, sigma = 1.5, 0.2
-        param = GBMparam(mean, sigma)
+        param = GBMparam(mean=mean, sigma=sigma)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
         drift = state * (mean - sigma**2 / 2)
 
-        assert ajd_drift(state, param).shape == size
-        npt.assert_array_equal(ajd_drift(state, param), drift)
+        assert ajd_drift(state=state, theta=param).shape == size
+        npt.assert_array_equal(ajd_drift(state=state, theta=param), drift)
 
     def test_ajd_drift_vasicek(self) -> None:
         """Test AJD drift function for Vasicek model."""
         mean, kappa, eta = 1.5, 1, 0.2
-        param = VasicekParam(mean, kappa, eta)
+        param = VasicekParam(mean=mean, kappa=kappa, eta=eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
         drift = kappa * (mean - state)
 
-        assert ajd_drift(state, param).shape == size
-        npt.assert_array_equal(ajd_drift(state, param), drift)
+        assert ajd_drift(state=state, theta=param).shape == size
+        npt.assert_array_equal(ajd_drift(state=state, theta=param), drift)
 
     def test_ajd_drift_cir(self) -> None:
         """Test AJD drift function for CIR model."""
         mean, kappa, eta = 1.5, 1, 0.2
-        param = CIRparam(mean, kappa, eta)
+        param = CIRparam(mean=mean, kappa=kappa, eta=eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
         drift = kappa * (mean - state)
 
-        assert ajd_drift(state, param).shape == size
-        npt.assert_array_equal(ajd_drift(state, param), drift)
+        assert ajd_drift(state=state, theta=param).shape == size
+        npt.assert_array_equal(ajd_drift(state=state, theta=param), drift)
 
     def test_ajd_drift_heston(self) -> None:
         """Test AJD drift function for Heston model."""
@@ -57,8 +57,8 @@ class TestDrift:
         drift_v = kappa * (mean_v - state[:, 1])
         drift = np.vstack([drift_r, drift_v]).T
 
-        assert ajd_drift(state, param).shape == drift.shape
-        npt.assert_almost_equal(ajd_drift(state, param), drift)
+        assert ajd_drift(state=state, theta=param).shape == drift.shape
+        npt.assert_almost_equal(ajd_drift(state=state, theta=param), drift)
 
     def test_ajd_drift_ct(self) -> None:
         """Test AJD drift function for CT model."""
@@ -82,8 +82,8 @@ class TestDrift:
         drift_y = kappa_y * (mean_v - state[:, 2])
         drift = np.vstack([drift_r, drift_s, drift_y]).T
 
-        assert ajd_drift(state, param).shape == drift.shape
-        npt.assert_almost_equal(ajd_drift(state, param), drift)
+        assert ajd_drift(state=state, theta=param).shape == drift.shape
+        npt.assert_almost_equal(ajd_drift(state=state, theta=param), drift)
 
 
 class TestDiffusion:
@@ -92,39 +92,39 @@ class TestDiffusion:
     def test_ajd_diff_gbm(self) -> None:
         """Test AJD diffusion function for GBM model."""
         mean, sigma = 1.5, 0.2
-        param = GBMparam(mean, sigma)
+        param = GBMparam(mean=mean, sigma=sigma)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
         diff = np.ones((nsim, nvars, nvars)) * sigma
 
-        assert ajd_diff(state, param).shape == (nsim, nvars, nvars)
-        npt.assert_array_equal(ajd_diff(state, param), diff)
+        assert ajd_diff(state=state, theta=param).shape == (nsim, nvars, nvars)
+        npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)
 
     def test_ajd_diff_vasicek(self) -> None:
         """Test AJD diffusion function for Vasicek model."""
         mean, kappa, eta = 1.5, 1, 0.2
-        param = VasicekParam(mean, kappa, eta)
+        param = VasicekParam(mean=mean, kappa=kappa, eta=eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state = np.ones(size)
         diff = np.ones((nsim, nvars, nvars)) * eta
 
-        assert ajd_diff(state, param).shape == (nsim, nvars, nvars)
-        npt.assert_array_equal(ajd_diff(state, param), diff)
+        assert ajd_diff(state=state, theta=param).shape == (nsim, nvars, nvars)
+        npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)
 
     def test_ajd_diff_cir(self) -> None:
         """Test AJD diffusion function for CIR model."""
         mean, kappa, eta = 1.5, 1, 0.2
-        param = CIRparam(mean, kappa, eta)
+        param = CIRparam(mean=mean, kappa=kappa, eta=eta)
         nvars, nsim = 1, 2
         size = (nsim, nvars)
         state_val = 4
         state = np.ones(size) * state_val
         diff = eta * state_val**0.5 * np.ones((nsim, nvars, nvars))
 
-        assert ajd_diff(state, param).shape == (nsim, nvars, nvars)
-        npt.assert_array_equal(ajd_diff(state, param), diff)
+        assert ajd_diff(state=state, theta=param).shape == (nsim, nvars, nvars)
+        npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)
 
     def test_ajd_diff_heston(self) -> None:
         """Test AJD diffusion function for Heston model."""
@@ -137,8 +137,8 @@ class TestDiffusion:
         var = ((np.ones((nsim, nvars, nvars)) * var).T * state[:, 1]).T
         diff = np.linalg.cholesky(var)
 
-        assert ajd_diff(state, param).shape == diff.shape
-        npt.assert_array_equal(ajd_diff(state, param), diff)
+        assert ajd_diff(state=state, theta=param).shape == diff.shape
+        npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)
 
     def test_ajd_diff_ct(self) -> None:
         """Test AJD diffusion function for CT model."""
@@ -166,5 +166,5 @@ class TestDiffusion:
         ).T
         diff = np.linalg.cholesky(var)
 
-        assert ajd_diff(state, param).shape == diff.shape
-        npt.assert_array_equal(ajd_diff(state, param), diff)
+        assert ajd_diff(state=state, theta=param).shape == diff.shape
+        npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)

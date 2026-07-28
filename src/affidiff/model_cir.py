@@ -25,7 +25,7 @@ class CIR(SDE):
         super().__init__(param)
 
     @staticmethod
-    def drift(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ANN401
+    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
         """Drift function.
 
         Parameters
@@ -44,7 +44,7 @@ class CIR(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: PLR0917, ANN401
+    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
