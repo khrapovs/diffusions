@@ -8,9 +8,9 @@ import numdifftools as nd
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .helper_functions import columnwise_prod
-from .model_generic import SDE
-from .param_gbm import GBMparam
+from affidiff.helper_functions import columnwise_prod
+from affidiff.model_generic import SDE
+from affidiff.param_gbm import GBMparam
 
 if TYPE_CHECKING:
     pass

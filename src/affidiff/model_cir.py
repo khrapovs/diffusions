@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from .model_generic import SDE
+from affidiff.model_generic import SDE
 
 if TYPE_CHECKING:
     import numpy as np

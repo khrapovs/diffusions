@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .model_generic import SDE
-from .param_heston import HestonParam
+from affidiff.model_generic import SDE
+from affidiff.param_heston import HestonParam
 
 if TYPE_CHECKING:
     pass

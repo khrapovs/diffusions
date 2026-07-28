@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 
-from .param_generic import GenericParam
+from affidiff.param_generic import GenericParam
 
 if TYPE_CHECKING:
     from typing_extensions import Self

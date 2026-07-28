@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .helper_functions import poly_coef
-from .model_generic import SDE
-from .param_ct import CentTendParam
+from affidiff.helper_functions import poly_coef
+from affidiff.model_generic import SDE
+from affidiff.param_ct import CentTendParam
 
 if TYPE_CHECKING:
     pass

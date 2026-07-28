@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 import numpy as np
 from mygmm import GMM
 
-from .helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
+from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 
 if TYPE_CHECKING:
-    from .param_generic import GenericParam
+    from affidiff.param_generic import GenericParam
 
 try:
-    from .simulate import simulate  # type: ignore
+    from affidiff.simulate import simulate  # type: ignore
 except Exception:
     simulate = None
 
