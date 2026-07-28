@@ -17,8 +17,6 @@ from .param_gbm import GBMparam
 if TYPE_CHECKING:
     pass
 
-__all__ = ["GBM"]
-
 
 class GBM(SDE):
     """Geometric Brownian Motion."""

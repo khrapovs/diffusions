@@ -11,8 +11,6 @@ from .model_generic import SDE
 if TYPE_CHECKING:
     import numpy as np
 
-__all__ = ["Vasicek"]
-
 
 class Vasicek(SDE):
     """Vasicek model."""

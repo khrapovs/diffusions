@@ -13,8 +13,6 @@ from .param_generic import GenericParam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ["GBMparam"]
-
 
 class GBMparam(GenericParam):
     """Parameter storage for GBM model.

@@ -14,8 +14,6 @@ from .param_generic import GenericParam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ["CentTendParam"]
-
 
 class CentTendParam(GenericParam):
     """Parameter storage for CT model.

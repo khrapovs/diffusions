@@ -11,8 +11,6 @@ from .model_generic import SDE
 if TYPE_CHECKING:
     import numpy as np
 
-__all__ = ["CIR"]
-
 
 class CIR(SDE):
     """Cox-Ingersoll-Ross (CIR) model."""

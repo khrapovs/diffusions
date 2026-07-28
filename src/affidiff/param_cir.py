@@ -13,8 +13,6 @@ from .param_generic import GenericParam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ["CIRparam"]
-
 
 class CIRparam(GenericParam):
     """Parameter storage for CIR model.

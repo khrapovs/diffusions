@@ -15,8 +15,6 @@ from .param_heston import HestonParam
 if TYPE_CHECKING:
     pass
 
-__all__ = ["Heston"]
-
 
 class Heston(SDE):
     """Heston model."""

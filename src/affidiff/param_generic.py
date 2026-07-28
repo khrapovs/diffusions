@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     import numpy as np
     from typing_extensions import Self
 
-__all__ = ["GenericParam"]
-
 
 class GenericParam(object):
     """Generic parameter storage. Must be overriden.

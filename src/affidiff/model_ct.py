@@ -17,8 +17,6 @@ from .param_ct import CentTendParam
 if TYPE_CHECKING:
     pass
 
-__all__ = ["CentTend"]
-
 
 class CentTend(SDE):
     """Central Tendency model."""

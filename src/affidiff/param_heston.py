@@ -14,8 +14,6 @@ from .param_generic import GenericParam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ["HestonParam"]
-
 
 class HestonParam(GenericParam):
     """Parameter storage for Heston model.

@@ -13,8 +13,6 @@ from .param_generic import GenericParam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ["VasicekParam"]
-
 
 class VasicekParam(GenericParam):
     """Parameter storage for Vasicek model.
