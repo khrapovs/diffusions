@@ -1,23 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-CT parameter class
-~~~~~~~~~~~~~~~~~~
+"""CT parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING, Any, Sequence
 
 import numpy as np
 
-from .param_generic import GenericParam
+from affidiff.param_generic import GenericParam
 
-__all__ = ['CentTendParam']
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class CentTendParam(GenericParam):
-
     """Parameter storage for CT model.
 
     Attributes
@@ -43,9 +39,21 @@ class CentTendParam(GenericParam):
 
     """
 
-    def __init__(self, riskfree=.0, lmbd=.1, lmbd_s=.0, lmbd_y=.0,
-                 mean_v=.5, kappa_s=1.5, kappa_y=.5,
-                 eta_s=.1, eta_y=.01, rho=-.5, measure='P'):
+    def __init__(
+        self,
+        *,
+        riskfree: float = 0.0,
+        lmbd: float = 0.1,
+        lmbd_s: float = 0.0,
+        lmbd_y: float = 0.0,
+        mean_v: float = 0.5,
+        kappa_s: float = 1.5,
+        kappa_y: float = 0.5,
+        eta_s: float = 0.1,
+        eta_y: float = 0.01,
+        rho: float = -0.5,
+        measure: str = "P",
+    ) -> None:
         """Initialize class.
 
         Parameters
@@ -77,6 +85,7 @@ class CentTendParam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        super().__init__()
         self.riskfree = riskfree
         self.kappa_s = kappa_s
         self.kappa_y = kappa_y
@@ -87,14 +96,14 @@ class CentTendParam(GenericParam):
         self.eta_y = eta_y
         self.eta_s = eta_s
         self.rho = rho
-        self.scale = 1
-        self.measure = 'P'
-        if measure == 'Q':
+        self.scale = 1.0
+        self.measure = "P"
+        if measure == "Q":
             self.convert_to_q()
         self.update_ajd()
 
     @staticmethod
-    def get_model_name():
+    def get_model_name() -> str:
         """Return model name.
 
         Returns
@@ -103,10 +112,10 @@ class CentTendParam(GenericParam):
             Parameter vector
 
         """
-        return 'Central Tendency'
+        return "Central Tendency"
 
     @staticmethod
-    def get_names(subset='all', measure='PQ'):
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
         """Return parameter names.
 
         Parameters
@@ -129,54 +138,47 @@ class CentTendParam(GenericParam):
             Parameter names
 
         """
-        names = ['mean_v', 'kappa_s', 'kappa_y', 'eta_s', 'eta_y',
-                 'rho', 'lmbd', 'lmbd_s', 'lmbd_y']
+        names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        if subset == 'all' and measure == 'PQ':
+        if subset == "all" and measure == "PQ":
             return names
-        elif subset == 'all' and measure in ('P', 'Q'):
+        elif subset == "all" and measure in ("P", "Q"):
             return names[:-2]
-        elif subset == 'vol' and measure == 'PQ':
+        elif subset == "vol" and measure == "PQ":
             return names[:5] + names[-2:]
-        elif subset == 'vol' and measure in ('P', 'Q'):
+        elif subset == "vol" and measure in ("P", "Q"):
             return names[:5]
         else:
-            raise NotImplementedError('Keyword variable is not supported!')
+            raise NotImplementedError("Keyword variable is not supported!")
 
-    def convert_to_q(self):
-        """Convert parameters to risk-neutral version.
-
-        """
-        if self.measure == 'Q':
-            warnings.warn('Parameters are already converted to Q!')
+    def convert_to_q(self) -> None:
+        """Convert parameters to risk-neutral version."""
+        if self.measure == "Q":
+            warnings.warn("Parameters are already converted to Q!", stacklevel=2)
         else:
             kappa_sp = self.kappa_s
             kappa_yp = self.kappa_y
             self.kappa_s = self.kappa_s - self.lmbd_s * self.eta_s
             self.kappa_y = self.kappa_y - self.lmbd_y * self.eta_y
             self.scale = kappa_sp / self.kappa_s
-            self.mean_v *= (kappa_yp / self.kappa_y * self.scale)
-            self.lmbd = 0
-            self.eta_y *= (self.scale**.5)
-            self.measure = 'Q'
+            self.mean_v *= kappa_yp / self.kappa_y * self.scale
+            self.lmbd = 0.0
+            self.eta_y *= self.scale**0.5
+            self.measure = "Q"
             self.update_ajd()
 
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
+    def update_ajd(self) -> None:
+        """Update AJD representation."""
         # AJD parameters
-        self.mat_k0 = [self.riskfree, 0., self.kappa_y * self.mean_v]
-        self.mat_k1 = [[0, self.lmbd - .5, 0],
-                       [0, -self.kappa_s, self.kappa_s],
-                       [0, 0, -self.kappa_y]]
+        self.mat_k0 = [self.riskfree, 0.0, self.kappa_y * self.mean_v]
+        self.mat_k1 = [[0, self.lmbd - 0.5, 0], [0, -self.kappa_s, self.kappa_s], [0, 0, -self.kappa_y]]
         self.mat_h0 = np.zeros((3, 3))
         self.mat_h1 = np.zeros((3, 3, 3))
-        self.mat_h1[1, 0] = [1, self.eta_s*self.rho, 0]
-        self.mat_h1[1, 1] = [self.eta_s*self.rho, self.eta_s**2, 0]
+        self.mat_h1[1, 0] = [1, self.eta_s * self.rho, 0]
+        self.mat_h1[1, 1] = [self.eta_s * self.rho, self.eta_s**2, 0]
         self.mat_h1[2, 2, 2] = self.eta_y**2
 
-    def feller(self):
+    def feller(self) -> bool:
         """Check Feller condition.
 
         Returns
@@ -185,9 +187,9 @@ class CentTendParam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return 2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0
+        return bool(2 * self.kappa_y * self.mean_v - self.eta_y**2 > 0)
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Check validity of parameters.
 
         Returns
@@ -198,10 +200,10 @@ class CentTendParam(GenericParam):
         """
         posit1 = (self.mean_v > 0) & (self.kappa_y > 0) & (self.eta_y > 0)
         posit2 = (self.kappa_s > 0) & (self.eta_s > 0)
-        return posit1 & posit2 & self.feller()
+        return bool(posit1 & posit2 & self.feller())
 
     @classmethod
-    def from_theta(cls, theta, measure='P'):
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -215,12 +217,21 @@ class CentTendParam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
-        return cls(riskfree=theta[0], mean_v=theta[1], kappa_s=theta[2],
-                   kappa_y=theta[3], eta_s=theta[4], eta_y=theta[5],
-                   rho=theta[6], lmbd=theta[7], lmbd_s=theta[8],
-                   lmbd_y=theta[9], measure=measure)
+        return cls(
+            riskfree=float(theta[0]),
+            mean_v=float(theta[1]),
+            kappa_s=float(theta[2]),
+            kappa_y=float(theta[3]),
+            eta_s=float(theta[4]),
+            eta_y=float(theta[5]),
+            rho=float(theta[6]),
+            lmbd=float(theta[7]),
+            lmbd_s=float(theta[8]),
+            lmbd_y=float(theta[9]),
+            measure=measure,
+        )
 
-    def update(self, theta, subset='all', measure='PQ'):
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -242,26 +253,25 @@ class CentTendParam(GenericParam):
                 - 'PQ' : both
 
         """
-        [self.mean_v, self.kappa_s, self.kappa_y,
-             self.eta_s, self.eta_y] = theta[:5]
+        [self.mean_v, self.kappa_s, self.kappa_y, self.eta_s, self.eta_y] = [float(x) for x in theta[:5]]
 
-        if subset == 'all' and measure == 'PQ':
-            [self.rho, self.lmbd, self.lmbd_s, self.lmbd_y] = theta[5:]
-        elif subset == 'all' and measure in ('P', 'Q'):
-            [self.rho, self.lmbd] = theta[5:7]
-        elif subset == 'vol' and measure == 'PQ':
-            [self.lmbd_s, self.lmbd_y] = theta[-2:]
-        elif subset == 'vol' and measure in ('P', 'Q'):
+        if subset == "all" and measure == "PQ":
+            [self.rho, self.lmbd, self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[5:]]
+        elif subset == "all" and measure in ("P", "Q"):
+            [self.rho, self.lmbd] = [float(x) for x in theta[5:7]]
+        elif subset == "vol" and measure == "PQ":
+            [self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[-2:]]
+        elif subset == "vol" and measure in ("P", "Q"):
             pass
         else:
-            raise NotImplementedError('Keyword variable is not supported!')
+            raise NotImplementedError("Keyword variable is not supported!")
 
-        self.measure = 'P'
-        if measure == 'Q':
+        self.measure = "P"
+        if measure == "Q":
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, subset='all', measure='PQ'):
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
@@ -286,21 +296,31 @@ class CentTendParam(GenericParam):
             Parameter vector
 
         """
-        theta = np.array([self.mean_v, self.kappa_s, self.kappa_y,
-                          self.eta_s, self.eta_y, self.rho,
-                          self.lmbd, self.lmbd_s, self.lmbd_y])
-        if subset == 'all' and measure == 'PQ':
+        theta = np.array(
+            [
+                self.mean_v,
+                self.kappa_s,
+                self.kappa_y,
+                self.eta_s,
+                self.eta_y,
+                self.rho,
+                self.lmbd,
+                self.lmbd_s,
+                self.lmbd_y,
+            ]
+        )
+        if subset == "all" and measure == "PQ":
             return theta
-        elif subset == 'all' and measure in ('P', 'Q'):
+        elif subset == "all" and measure in ("P", "Q"):
             return theta[:-2]
-        elif subset == 'vol' and measure == 'PQ':
+        elif subset == "vol" and measure == "PQ":
             return np.concatenate((theta[:5], theta[-2:]))
-        elif subset == 'vol' and measure in ('P', 'Q'):
+        elif subset == "vol" and measure in ("P", "Q"):
             return theta[:5]
         else:
-            raise NotImplementedError('Keyword variable is not supported!')
+            raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, subset='all', measure='PQ'):
+    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters
@@ -324,22 +344,22 @@ class CentTendParam(GenericParam):
         sequence of (min, max) tuples
 
         """
-        lb = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, -1, None, None, None]
-        ub = [None, None, None, None, None, 1, None, None, None]
-        bounds = list(zip(lb, ub))
+        lb: list[float | None] = [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, -1.0, None, None, None]
+        ub: list[float | None] = [None, None, None, None, None, 1.0, None, None, None]
+        bounds = list(zip(lb, ub, strict=False))
 
-        if subset == 'all' and measure == 'PQ':
+        if subset == "all" and measure == "PQ":
             return bounds
-        elif subset == 'all' and measure in ('P', 'Q'):
+        elif subset == "all" and measure in ("P", "Q"):
             return bounds[:-2]
-        elif subset == 'vol' and measure == 'PQ':
+        elif subset == "vol" and measure == "PQ":
             return bounds[:5] + bounds[-2:]
-        elif subset == 'vol' and measure in ('P', 'Q'):
+        elif subset == "vol" and measure in ("P", "Q"):
             return bounds[:5]
         else:
-            raise NotImplementedError('Keyword variable is not supported!')
+            raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_constraints(self):
+    def get_constraints(self) -> tuple[dict[str, Any], ...]:
         """Get parameter constraints.
 
         Returns
@@ -348,5 +368,4 @@ class CentTendParam(GenericParam):
             Equality and inequality constraints. See scipy.optimize.minimize
 
         """
-        return ({'type': 'ineq', 'fun': lambda x: x[1] - x[2]},
-                {'type': 'ineq', 'fun': lambda x: x[3] - x[4]})
+        return ({"type": "ineq", "fun": lambda x: x[1] - x[2]}, {"type": "ineq", "fun": lambda x: x[3] - x[4]})

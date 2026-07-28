@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = affidiff
+omit = */__init__.py
+
+[paths]
+source =
+    src/
+
+[report]
+show_missing = True

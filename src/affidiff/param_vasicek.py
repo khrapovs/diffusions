@@ -1,21 +1,18 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Vasicek parameter class
-~~~~~~~~~~~~~~~~~~~~~~~
+"""Vasicek parameter class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 
-from .param_generic import GenericParam
+from affidiff.param_generic import GenericParam
 
-__all__ = ['VasicekParam']
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class VasicekParam(GenericParam):
-
     """Parameter storage for Vasicek model.
 
     Attributes
@@ -31,7 +28,7 @@ class VasicekParam(GenericParam):
 
     """
 
-    def __init__(self, mean=.5, kappa=1.5, eta=.1, measure='P'):
+    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:  # noqa: ARG002
         """Initialize class.
 
         Parameters
@@ -49,13 +46,14 @@ class VasicekParam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        super().__init__()
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        self.measure = 'P'
+        self.measure = "P"
         self.update_ajd()
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Check validity of parameters.
 
         Returns
@@ -64,20 +62,18 @@ class VasicekParam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return (self.kappa > 0) & (self.eta > 0)
+        return bool((self.kappa > 0) & (self.eta > 0))
 
-    def update_ajd(self):
-        """Update AJD representation.
-
-        """
+    def update_ajd(self) -> None:
+        """Update AJD representation."""
         # AJD parameters
         self.mat_k0 = self.kappa * self.mean
         self.mat_k1 = -self.kappa
         self.mat_h0 = self.eta**2
-        self.mat_h1 = 0
+        self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, theta):
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -86,24 +82,28 @@ class VasicekParam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=theta[0], kappa=theta[1], eta=theta[2])
+        param = cls(mean=float(theta[0]), kappa=float(theta[1]), eta=float(theta[2]))
         param.update_ajd()
         return param
 
-    def update(self, theta):
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: ARG002
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
+        subset : str
+            Which parameters to update
+        measure : str
+            Probability measure
 
         """
-        self.mean, self.kappa, self.eta = theta
+        self.mean, self.kappa, self.eta = float(theta[0]), float(theta[1]), float(theta[2])
         self.update_ajd()
 
     @staticmethod
-    def get_model_name():
+    def get_model_name() -> str:
         """Return model name.
 
         Returns
@@ -112,10 +112,10 @@ class VasicekParam(GenericParam):
             Parameter vector
 
         """
-        return 'Vasicek'
+        return "Vasicek"
 
     @staticmethod
-    def get_names(subset='all', measure='PQ'):
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: ARG004
         """Return parameter names.
 
         Returns
@@ -124,9 +124,9 @@ class VasicekParam(GenericParam):
             Parameter names
 
         """
-        return ['mean', 'kappa', 'eta']
+        return ["mean", "kappa", "eta"]
 
-    def get_theta(self, subset='all', measure='PQ'):
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: ARG002
         """Return vector of parameters.
 
         Returns

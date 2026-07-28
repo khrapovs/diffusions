@@ -3,7 +3,8 @@ import numpy as np
 cimport numpy as cnp
 from scipy.linalg.cython_lapack cimport dpotrf
 
-__all__ = ['simulate']
+
+
 
 
 @cython.boundscheck(False)

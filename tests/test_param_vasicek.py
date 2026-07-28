@@ -1,39 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Test suite for Vasicek parameter class.
+"""Test suite for Vasicek parameter class."""
 
-"""
-from __future__ import print_function, division
-
-import unittest as ut
 import numpy as np
 import numpy.testing as npt
 
 from affidiff import VasicekParam
 
 
-class SDEParameterTestCase(ut.TestCase):
+class TestSDEParameter:
     """Test parameter classes."""
 
-    def test_vasicekparam_class(self):
+    def test_vasicekparam_class(self) -> None:
         """Test Vasicek parameter class."""
+        mean, kappa, eta = 1.5, 1.0, 0.2
+        param = VasicekParam(mean=mean, kappa=kappa, eta=eta)
 
-        mean, kappa, eta = 1.5, 1., .2
-        param = VasicekParam(mean, kappa, eta)
+        assert param.get_model_name() == "Vasicek"
+        assert param.get_names() == ["mean", "kappa", "eta"]
 
-        self.assertEqual(param.get_model_name(), 'Vasicek')
-        self.assertEqual(param.get_names(), ['mean', 'kappa', 'eta'])
+        assert param.mean == mean
+        assert param.kappa == kappa
+        assert param.eta == eta
 
-        self.assertEqual(param.mean, mean)
-        self.assertEqual(param.kappa, kappa)
-        self.assertEqual(param.eta, eta)
-
-        npt.assert_array_equal(param.get_theta(),
-                               np.array([mean, kappa, eta]))
+        npt.assert_array_equal(param.get_theta(), np.array([mean, kappa, eta]))
 
         theta = np.ones(3)
-        param = VasicekParam.from_theta(theta)
+        param = VasicekParam.from_theta(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
@@ -47,7 +38,7 @@ class SDEParameterTestCase(ut.TestCase):
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
         theta *= 2
-        param.update(theta)
+        param.update(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
 
         mat_k0 = param.kappa * param.mean
@@ -60,12 +51,8 @@ class SDEParameterTestCase(ut.TestCase):
         npt.assert_array_equal(param.mat_h0, mat_h0)
         npt.assert_array_equal(param.mat_h1, mat_h1)
 
-        self.assertTrue(param.is_valid())
-        param = VasicekParam(mean, -kappa, eta)
-        self.assertFalse(param.is_valid())
-        param = VasicekParam(mean, kappa, -eta)
-        self.assertFalse(param.is_valid())
-
-
-if __name__ == '__main__':
-    ut.main()
+        assert param.is_valid()
+        param = VasicekParam(mean=mean, kappa=-kappa, eta=eta)
+        assert not param.is_valid()
+        param = VasicekParam(mean=mean, kappa=kappa, eta=-eta)
+        assert not param.is_valid()

@@ -1,24 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-CIR model class
-~~~~~~~~~~~~~~~
+"""CIR model class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
 
-from .model_generic import SDE
+from typing import TYPE_CHECKING, Any
 
-__all__ = ['CIR']
+from affidiff.model_generic import SDE
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 class CIR(SDE):
+    """Cox-Ingersoll-Ross (CIR) model."""
 
-    """Cox-Ingersoll-Ross (CIR) model.
-
-    """
-
-    def __init__(self, param=None):
+    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
         """Initialize the class.
 
         Parameters
@@ -27,10 +22,21 @@ class CIR(SDE):
             True parameters used for simulation of the data
 
         """
-        super(CIR, self).__init__(param)
+        super().__init__(param)
+
+    def get_start(self) -> list[float]:
+        """Get starting values for simulation.
+
+        Returns
+        -------
+        list[float]
+            Starting value at the long-run mean
+
+        """
+        return [float(self.param.mean)]
 
     @staticmethod
-    def drift(state, theta):
+    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
         """Drift function.
 
         Parameters
@@ -49,7 +55,7 @@ class CIR(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(state, theta):
+    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -65,4 +71,4 @@ class CIR(SDE):
             Diffusion value
 
         """
-        return theta.eta * state**.5
+        return theta.eta * state**0.5

@@ -1,42 +1,36 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Try Central Tendency model
+# ruff: noqa
+"""Try Central Tendency model."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
 
-import time
+
 import itertools
+import time
 
-import numpy as np
 import matplotlib.pylab as plt
+import numpy as np
 import seaborn as sns
-
+from load_real_data import load_data  # type: ignore
 from statsmodels.tsa.stattools import acf
 
 from affidiff import CentTend, CentTendParam
-from affidiff.helper_functions import (plot_trajectories, plot_final_distr,
-                                       plot_realized, take_time)
-from load_real_data import load_data
+from affidiff.helper_functions import plot_final_distr, plot_realized, plot_trajectories, take_time
 
 
-def try_simulation():
-    """Try simulating and plotting Central Tendency model.
-
-    """
-    riskfree = .01
-    lmbd = .01
-    mean_v = .5
+def try_simulation() -> None:
+    """Try simulating and plotting Central Tendency model."""
+    riskfree = 0.01
+    lmbd = 0.01
+    mean_v = 0.5
     kappa_s = 1.5
-    kappa_y = .05
-    eta_s = .02**.5
-    eta_y = .001**.5
-    rho = -.9
+    kappa_y = 0.05
+    eta_s = 0.02**0.5
+    eta_y = 0.001**0.5
+    rho = -0.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_true)
     print(param_true)
     print(param_true.is_valid())
@@ -44,142 +38,129 @@ def try_simulation():
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
     nobs = nperiods * nsub
-    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
-                              nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, 0, 0]
     volatility = paths[:, 0, 1]
     tendency = paths[:, 0, 2]
 
-    plot_trajectories(returns, nsub, 'returns')
-    names = ['vol', 'ct']
-    plot_trajectories([volatility, tendency], nsub, names)
+    plot_trajectories(paths=returns, nsub=nsub, names="returns")
+    names = ["vol", "ct"]
+    plot_trajectories(paths=[volatility, tendency], nsub=nsub, names=names)
 
 
-def try_simulation_pq():
-    """Try simulating and plotting Central Tendency model
-    under P and Q measures.
-
-    """
-    riskfree = .01
+def try_simulation_pq() -> None:
+    """Try simulating and plotting Central Tendency model under P and Q measures."""
+    riskfree = 0.01
     lmbd = 1.01
-    lmbd_s = .5
-    lmbd_y = .5
-    mean_v = .5
+    lmbd_s = 0.5
+    lmbd_y = 0.5
+    mean_v = 0.5
     kappa_s = 1.5
-    kappa_y = .05
-    eta_s = .02**.5
-    eta_y = .001**.5
-    rho = -.9
+    kappa_y = 0.05
+    eta_s = 0.02**0.5
+    eta_y = 0.001**0.5
+    rho = -0.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
-                               lmbd_y=lmbd_y, mean_v=mean_v, kappa_s=kappa_s,
-                               kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
-                               rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree,
+        lmbd=lmbd,
+        lmbd_s=lmbd_s,
+        lmbd_y=lmbd_y,
+        mean_v=mean_v,
+        kappa_s=kappa_s,
+        kappa_y=kappa_y,
+        eta_s=eta_s,
+        eta_y=eta_y,
+        rho=rho,
+    )
     centtend = CentTend(param_true)
     print(param_true)
     print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 500, 10, 100, 3
-    nobs = nperiods * nsub
-    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
-                              nobs=nobs, nsim=nsim, diff=0)
 
-    returns = paths[:, 0, 0]
-    volatility = paths[:, 0, 1]
-    tendency = paths[:, 0, 2]
+    param_true_new = CentTendParam(
+        riskfree=riskfree,
+        lmbd=lmbd,
+        lmbd_s=lmbd_s,
+        lmbd_y=lmbd_y,
+        mean_v=mean_v,
+        kappa_s=kappa_s,
+        kappa_y=kappa_y,
+        eta_s=eta_s,
+        eta_y=eta_y,
+        rho=rho,
+    )
+    centtend_new = CentTend(param_true_new)
+    (paths_p, paths_q) = centtend_new.sim_realized_pq(
+        start_p=start, start_q=start, nsub=nsub, ndiscr=ndiscr, aggh=[1, 1], nperiods=nperiods, nsim=nsim
+    )
 
-    param_true_new = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
-                                   lmbd_y=lmbd_y, mean_v=mean_v,
-                                   kappa_s=kappa_s, kappa_y=kappa_y,
-                                   eta_s=eta_s, eta_y=eta_y,
-                                   rho=rho, measure='Q')
-    print(param_true_new)
-    centtend.update_theta(param_true_new)
-    start_q = [1, param_true_new.mean_v, param_true_new.mean_v]
+    returns_p = paths_p[0]
+    returns_q = paths_q[0]
 
-    paths_q = centtend.simulate(start_q, nsub=nsub, ndiscr=ndiscr,
-                                nobs=nobs, nsim=nsim,
-                                diff=0, new_innov=False)
-
-    returns_q = paths_q[:, 0, 0]
-    volatility_q = paths_q[:, 0, 1]
-    tendency_q = paths_q[:, 0, 2] / param_true_new.scale
-
-    plot_trajectories([returns, returns_q], nsub, ['returns', 'returns Q'])
-    names = ['vol', 'ct', 'vol Q', 'ct Q']
-    plot_trajectories([volatility, tendency, volatility_q, tendency_q],
-                      nsub, names)
+    names = ["P", "Q"]
+    plot_trajectories(paths=[returns_p, returns_q], nsub=nsub, names=names)
 
 
-def try_marginal():
-    """Simulate and plot marginal distribution of the data
-    in Central Tendency model.
-
-    """
-    riskfree = .01
-    lmbd = .01
-    mean_v = .5
+def try_marginal() -> None:
+    """Simulate and plot marginal distribution of the data in Central Tendency model."""
+    riskfree = 0.01
+    lmbd = 0.01
+    mean_v = 0.5
     kappa_s = 1.5
-    kappa_y = .05
-    eta_s = .02**.5
-    eta_y = .001**.5
-    rho = -.9
+    kappa_y = 0.05
+    eta_s = 0.02**0.5
+    eta_y = 0.001**0.5
+    rho = -0.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_true)
-    print(param_true)
-    print(param_true.is_valid())
 
     start = [1, mean_v, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 100
+    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 500
     nobs = nperiods * nsub
-    paths = centtend.simulate(start, nsub=nsub, ndiscr=ndiscr,
-                              nobs=nobs, nsim=nsim, diff=0)
+    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     returns = paths[:, :, 0]
     volatility = paths[:, :, 1]
     tendency = paths[:, :, 2]
 
-    plot_final_distr(returns, 'returns')
-    names = ['vol', 'ct']
-    plot_final_distr([volatility, tendency], names)
+    plot_final_distr(paths=returns * nsub, names="returns")
+    plot_final_distr(paths=volatility, names="volatility")
+    plot_final_distr(paths=tendency, names="tendency")
 
 
-def try_sim_realized():
-    """Simulate realized data from Central Tendency model and plot it.
+def try_sim_realized() -> None:
+    """Simulate realized data from Central Tendency model and plot it."""
+    riskfree = 0.0
+    mean_v = 0.5
+    kappa_s = 0.05
+    kappa_y = 0.02
+    eta_s = 0.1
+    eta_y = 0.01
+    rho = -0.9
+    lmbd = 0.5
 
-    """
-    riskfree = .0
-    mean_v = .5
-    kappa_s = .05
-    kappa_y = .02
-    eta_s = .1
-    eta_y = .01
-    rho = -.9
-    lmbd = .5
-
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_true)
-    print(param_true)
-    print(param_true.is_valid())
 
     nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
     aggh = 1
 
-    returns, rvar = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh,
-                                          nperiods=nperiods, nsim=nsim, diff=0)
+    returns, rvar = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
 
-    plot_realized(returns, rvar)
+    plot_realized(returns=returns, rvar=rvar)
 
     nlags, lw = 90, 2
-    grid = range(nlags+1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
+    grid = range(nlags + 1)
+    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
     plt.show()
 
 
@@ -188,118 +169,127 @@ def try_sim_realized_pq():
     under P and Q measures.
 
     """
-    riskfree = .0
+    riskfree = 0.0
     lmbd = 1.01
-    lmbd_s, lmbd_y = .5, .5
-    mean_v = .2
-    kappa_s = .1
-    kappa_y = .02
-    eta_s = .1
-    eta_y = .01
-    rho = -.9
+    lmbd_s, lmbd_y = 0.5, 0.5
+    mean_v = 0.2
+    kappa_s = 0.1
+    kappa_y = 0.02
+    eta_s = 0.1
+    eta_y = 0.01
+    rho = -0.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, lmbd_s=lmbd_s,
-                               lmbd_y=lmbd_y, mean_v=mean_v, kappa_s=kappa_s,
-                               kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y,
-                               rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree,
+        lmbd=lmbd,
+        lmbd_s=lmbd_s,
+        lmbd_y=lmbd_y,
+        mean_v=mean_v,
+        kappa_s=kappa_s,
+        kappa_y=kappa_y,
+        eta_s=eta_s,
+        eta_y=eta_y,
+        rho=rho,
+    )
     centtend = CentTend(param_true)
     print(param_true)
 
     nperiods, nsub, ndiscr, nsim = 500, 80, 10, 1
     aggh = [1, 1]
 
-    data = centtend.sim_realized_pq(nsub=nsub, ndiscr=ndiscr,
-                                    aggh=aggh, nperiods=nperiods, nsim=nsim,
-                                    diff=0)
+    data = centtend.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     print(param_true)
     (ret_p, rvar_p), (ret_q, rvar_q) = data
     nobs = np.min([ret_p.size, ret_q.size])
 
-    plot_realized([ret_p[-nobs:], ret_q[-nobs:]],
-                  [rvar_p[-nobs:], rvar_q[-nobs:] / param_true.scale],
-                  suffix=['P', 'Q'])
+    plot_realized(
+        returns=[ret_p[-nobs:], ret_q[-nobs:]],
+        rvar=[rvar_p[-nobs:], rvar_q[-nobs:] / param_true.scale],
+        suffix=["P", "Q"],
+    )
 
 
 def try_integrated_gmm_single():
-    """Simulate realized data from Central Tendency model. Estimate parameters.
-
-    """
-    riskfree = .0
-    mean_v = .2
+    """Simulate realized data from Central Tendency model. Estimate parameters."""
+    riskfree = 0.0
+    mean_v = 0.2
     kappa_s = 1.5
-    kappa_y = .008
-    eta_s = .5
-    eta_y = .05
-    rho = -.9
-    lmbd = .5
+    kappa_y = 0.008
+    eta_s = 0.5
+    eta_y = 0.05
+    rho = -0.9
+    lmbd = 0.5
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v,
-                               kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_true)
     print(param_true)
 
     nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
     aggh = 1
 
-    data = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr,
-                                 aggh=aggh, nperiods=nperiods,
-                                 nsim=nsim, diff=0)
+    data = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
     nlags, lw = 90, 2
-    grid = range(nlags+1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
+    grid = range(nlags + 1)
+    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
     plt.show()
 
     instr_data = np.vstack([rvar])
 
-    subset = 'vol'
-    measure = 'P'
+    subset = "vol"
+    measure = "P"
 
-#    theta = param_true.get_theta(subset=subset, measure=measure)
-#    mom, dmom = centtend.integrated_mom(theta/10, data=data,
-#                                        instr_data=instr_data,
-#                                        instr_choice='var', aggh=1,
-#                                        subset=subset, instrlag=1,
-#                                        measure=measure)
-#
-#    fig, axes = plt.subplots(nrows=mom.shape[1], ncols=1, sharex=True,
-#                             figsize=(10, 2*mom.shape[1]))
-#    for momf, ax in zip(mom.T, axes):
-#        ax.plot(momf)
-#        ax.axhline(momf.mean(), c='red')
-#    plt.show()
-#    print(mom.mean(0) / mom.std(0))
+    #    theta = param_true.get_theta(subset=subset, measure=measure)
+    #    mom, dmom = centtend.integrated_mom(theta/10, data=data,
+    #                                        instr_data=instr_data,
+    #                                        instr_choice='var', aggh=1,
+    #                                        subset=subset, instrlag=1,
+    #                                        measure=measure)
+    #
+    #    fig, axes = plt.subplots(nrows=mom.shape[1], ncols=1, sharex=True,
+    #                             figsize=(10, 2*mom.shape[1]))
+    #    for momf, ax in zip(mom.T, axes):
+    #        ax.plot(momf)
+    #        ax.axhline(momf.mean(), c='red')
+    #    plt.show()
+    #    print(mom.mean(0) / mom.std(0))
 
     time_start = time.time()
-    res = centtend.integrated_gmm(param_true, data=data, instrlag=3,
-                                  instr_data=instr_data, aggh=aggh,
-                                  instr_choice='var', method='SLSQP',
-                                  subset=subset, measure=measure, iter=3)
+    res = centtend.integrated_gmm(
+        param_start=param_true,
+        data=data,
+        instrlag=3,
+        instr_data=instr_data,
+        aggh=aggh,
+        instr_choice="var",
+        method="SLSQP",
+        subset=subset,
+        measure=measure,
+        iter=3,
+    )
     print(res)
-    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
 def try_integrated_gmm_real():
-    """Estimate Central Tendency model parameters with real data.
+    """Estimate Central Tendency model parameters with real data."""
+    riskfree = 0.0
 
-    """
-    riskfree = .0
+    mean_v = 0.02
+    kappa_s = 0.22
+    kappa_y = 0.05
+    eta_s = 0.36
+    eta_y = 0.05
 
-    mean_v = .02
-    kappa_s = .22
-    kappa_y = .05
-    eta_s = .36
-    eta_y = .05
+    lmbd = 0.01
+    rho = -0.9
 
-    lmbd = .01
-    rho = -.9
-
-    param_start = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                                mean_v=mean_v, kappa_s=kappa_s,
-                                kappa_y=kappa_y,
-                                eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_start = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_start)
     print(param_start)
     print(param_start.is_valid())
@@ -309,25 +299,32 @@ def try_integrated_gmm_real():
     data = load_data()
     ret, rvar = data
 
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     nlags = 90
     lw = 2
-    grid = range(nlags+1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label='RV')
+    grid = range(nlags + 1)
+    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
     plt.show()
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    subset = 'vol'
+    subset = "vol"
 
     time_start = time.time()
-    res = centtend.integrated_gmm(param_start, data=data, instrlag=2,
-                                  instr_data=instr_data, aggh=aggh,
-                                  instr_choice='var', method='TNC',
-                                  subset=subset, iter=2)
+    res = centtend.integrated_gmm(
+        param_start=param_start,
+        data=data,
+        instrlag=2,
+        instr_data=instr_data,
+        aggh=aggh,
+        instr_choice="var",
+        method="TNC",
+        subset=subset,
+        iter=2,
+    )
     print(res)
-    print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
 def try_integrated_gmm_opt_methods():
@@ -335,20 +332,20 @@ def try_integrated_gmm_opt_methods():
     Check various optimization methods.
 
     """
-    riskfree = .0
+    riskfree = 0.0
 
-    mean_v = .2
-    kappa_s = .1
-    kappa_y = .05
-    eta_s = .1
-    eta_y = .03
+    mean_v = 0.2
+    kappa_s = 0.1
+    kappa_y = 0.05
+    eta_s = 0.1
+    eta_y = 0.03
 
-    lmbd = .01
-    rho = -.9
+    lmbd = 0.01
+    rho = -0.9
 
-    param_true = CentTendParam(riskfree=riskfree, lmbd=lmbd,
-                               mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y,
-                               eta_s=eta_s, eta_y=eta_y, rho=rho)
+    param_true = CentTendParam(
+        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
+    )
     centtend = CentTend(param_true)
     print(param_true)
     print(param_true.is_valid())
@@ -356,47 +353,51 @@ def try_integrated_gmm_opt_methods():
     start = [1, mean_v, mean_v]
     nperiods, nsub, ndiscr, nsim = 2000, 80, 1, 1
     aggh = 1
-    data = centtend.sim_realized(start, nsub=nsub, ndiscr=ndiscr,
-                                 aggh=aggh, nperiods=nperiods,
-                                 nsim=nsim, diff=0)
+    data = centtend.sim_realized(start=start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
     ret, rvar = data
-    plot_realized(ret, rvar)
+    plot_realized(returns=ret, rvar=rvar)
 
     instr_data = np.vstack([rvar, rvar**2])
 
     param_start = param_true
-    param_start.update(param_true.get_theta()/2)
+    param_start.update(theta=param_true.get_theta() / 2)
 
-    tasks = itertools.product(np.arange(1, 4), ['L-BFGS-B', 'TNC', 'SLSQP'])
+    tasks = itertools.product(np.arange(1, 4), ["L-BFGS-B", "TNC", "SLSQP"])
     for lag, method in tasks:
         time_start = time.time()
-        res = centtend.integrated_gmm(param_start, data=data, instrlag=lag,
-                                      instr_data=instr_data, aggh=aggh,
-                                      instr_choice='var', method=method,
-                                      subset='vol', iter=3)
+        res = centtend.integrated_gmm(
+            param_start=param_start,
+            data=data,
+            instrlag=lag,
+            instr_data=instr_data,
+            aggh=aggh,
+            instr_choice="var",
+            method=method,
+            subset="vol",
+            iter=3,
+        )
         print(res)
         print(lag, method)
-        print('Elapsed time = %.2f min' % ((time.time() - time_start)/60))
+        print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     np.set_printoptions(precision=4, suppress=True)
-    sns.set_context('notebook')
+    sns.set_context("notebook")
 
-#    with take_time('Simulation'):
-#        try_simulation()
-#    with take_time('Simulation PQ'):
-#        try_simulation_pq()
-#    with take_time('Marginal density'):
-#        try_marginal()
-#    with take_time('Simulation realized'):
-#        try_sim_realized()
-#    with take_time('Simulation realized PQ'):
-#        try_sim_realized_pq()
-#    with take_time('Integrated GMM'):
-#        try_integrated_gmm_single()
-#    with take_time('Integrated GMM with real data'):
-#        try_integrated_gmm_real()
-    with take_time('Integrated GMM with real data'):
+    #    with take_time('Simulation'):
+    #        try_simulation()
+    #    with take_time('Simulation PQ'):
+    #        try_simulation_pq()
+    #    with take_time('Marginal density'):
+    #        try_marginal()
+    #    with take_time('Simulation realized'):
+    #        try_sim_realized()
+    #    with take_time('Simulation realized PQ'):
+    #        try_sim_realized_pq()
+    #    with take_time('Integrated GMM'):
+    #        try_integrated_gmm_single()
+    #    with take_time('Integrated GMM with real data'):
+    #        try_integrated_gmm_real()
+    with take_time("Integrated GMM with real data"):
         try_integrated_gmm_opt_methods()

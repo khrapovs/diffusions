@@ -1,24 +1,17 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Test suite for realized moments of GBM.
+"""Test suite for realized moments of GBM."""
 
-"""
-from __future__ import print_function, division
-
-import unittest as ut
 import numpy as np
 
 from affidiff import GBM, GBMparam
 
 
-class RealizedMomentsGBMTestCase(ut.TestCase):
+class TestRealizedMomentsGBM:
     """Test realized moments for GBM."""
 
-    def test_gbm_relized_mom(self):
+    def test_gbm_relized_mom(self) -> None:
         """Test realized moments of GBM model."""
-        mean, sigma = 1.5, .2
-        param = GBMparam(mean, sigma)
+        mean, sigma = 1.5, 0.2
+        param = GBMparam(mean=mean, sigma=sigma)
         gbm = GBM(param)
         gbm.nsub = 2
 
@@ -26,27 +19,21 @@ class RealizedMomentsGBMTestCase(ut.TestCase):
         data = np.ones((2, nperiods))
         instrlag = 2
 
-        depvar = gbm.realized_depvar(data)
+        depvar = gbm.realized_depvar(data=data)
         # Test shape of dependent variables
-        self.assertEqual(depvar.shape, (3, nperiods))
+        assert depvar.shape == (3, nperiods)
 
-        const = gbm.realized_const(param.get_theta())
+        const = gbm.realized_const(param=param.get_theta())
         # Test shape of the intercept
-        self.assertEqual(const.shape, (3, ))
+        assert const.shape == (3,)
 
-        instr = gbm.instruments(data, instrlag=instrlag)
+        instr = gbm.instruments(data=data, instrlag=instrlag)
         ninstr = 1 + data.shape[0] * instrlag
         # Test shape of instrument matrix
-        self.assertEqual(instr.shape, (ninstr, nperiods - instrlag))
+        assert instr.shape == (ninstr, nperiods - instrlag)
 
-        rmom, drmom = gbm.integrated_mom(param.get_theta(), data=data,
-                                         instrlag=instrlag)
+        rmom, drmom = gbm.integrated_mom(theta=param.get_theta(), data=data, instrlag=instrlag)
         nmoms = 3 * ninstr
         # Test shape of moments and gradients
-        self.assertEqual(rmom.shape, (nperiods - instrlag, nmoms))
-        self.assertEqual(drmom.shape, (nmoms, np.size(param.get_theta())))
-
-
-if __name__ == '__main__':
-
-    ut.main()
+        assert rmom.shape == (nperiods - instrlag, nmoms)
+        assert drmom.shape == (nmoms, np.size(param.get_theta()))

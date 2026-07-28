@@ -1,31 +1,25 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-GBM model class
-~~~~~~~~~~~~~~~
+"""GBM model class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
 
-import numpy as np
+from typing import TYPE_CHECKING, Any, Sequence, cast
+
 import numdifftools as nd
-
+import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from .model_generic import SDE
-from .helper_functions import columnwise_prod
-from .param_gbm import GBMparam
+from affidiff.helper_functions import columnwise_prod
+from affidiff.model_generic import SDE
+from affidiff.param_gbm import GBMparam
 
-__all__ = ['GBM']
+if TYPE_CHECKING:
+    pass
 
 
 class GBM(SDE):
+    """Geometric Brownian Motion."""
 
-    """Geometric Brownian Motion.
-
-    """
-
-    def __init__(self, param=None):
+    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
         """Initialize the class.
 
         Parameters
@@ -34,10 +28,14 @@ class GBM(SDE):
             True parameters used for simulation of the data
 
         """
-        super(GBM, self).__init__(param)
+        super().__init__(param)
+
+    def get_start(self) -> list[float]:
+        """Return starting values for simulation."""
+        return [1.0]
 
     @staticmethod
-    def drift(state, theta):
+    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
         """Drift function.
 
         Parameters
@@ -53,10 +51,10 @@ class GBM(SDE):
             Drift value
 
         """
-        return theta.mean - theta.sigma**2/2
+        return theta.mean - theta.sigma**2 / 2
 
     @staticmethod
-    def diff(state, theta):
+    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -74,7 +72,7 @@ class GBM(SDE):
         """
         return theta.sigma
 
-    def betamat(self, theta):
+    def betamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Coefficients in linear representation of the first moment.
 
         Parameters
@@ -88,11 +86,11 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam.from_theta(theta)
-        loc = float(self.exact_loc(0, param))
+        param = GBMparam.from_theta(theta=theta)
+        loc = float(self.exact_loc(state=np.array(0), theta=param))
         return np.array([loc, 0], dtype=float)
 
-    def gammamat(self, theta):
+    def gammamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Coefficients in linear representation of the second moment.
 
         Parameters
@@ -106,13 +104,13 @@ class GBM(SDE):
             Constant coefficient
 
         """
-        param = GBMparam.from_theta(theta)
-        loc = float(self.exact_loc(0, param))
-        scale = float(self.exact_scale(0, param))
+        param = GBMparam.from_theta(theta=theta)
+        loc = float(self.exact_loc(state=np.array(0), theta=param))
+        scale = float(self.exact_scale(state=np.array(0), theta=param))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
-    def dbetamat(self, theta):
-        """Derivative of the first moment coefficients (numerical).
+    def dbetamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+        """Calculate derivative of the first moment coefficients (numerical).
 
         Parameters
         ----------
@@ -125,11 +123,11 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
             return nd.Jacobian(self.betamat)(theta)
 
-    def dgammamat(self, theta):
-        """Derivative of the second moment coefficients (numerical).
+    def dgammamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+        """Calculate derivative of the second moment coefficients (numerical).
 
         Parameters
         ----------
@@ -142,11 +140,11 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
             return nd.Jacobian(self.gammamat)(theta)
 
-    def dbetamat_exact(self, theta):
-        """Derivative of the first moment coefficients (exact).
+    def dbetamat_exact(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+        """Calculate derivative of the first moment coefficients (exact).
 
         Parameters
         ----------
@@ -159,11 +157,12 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        mean, sigma = theta
-        return np.array([[1 / self.nsub, - sigma / self.nsub], [0, 0]])
+        _mean, sigma = float(theta[0]), float(theta[1])
+        assert self.nsub is not None
+        return np.array([[1 / self.nsub, -sigma / self.nsub], [0, 0]])
 
-    def dgammamat_exact(self, theta):
-        """Derivative of the second moment coefficients (exact).
+    def dgammamat_exact(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+        """Calculate derivative of the second moment coefficients (exact).
 
         Parameters
         ----------
@@ -176,21 +175,28 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        mean, sigma = theta
-        return np.array([[2 / self.nsub**2 * (mean - sigma**2/2),
-                         2 * sigma / self.nsub
-                         - 2 * sigma / self.nsub**2
-                         * (mean - sigma**2/2)], [0, 0]])
+        mean, sigma = float(theta[0]), float(theta[1])
+        assert self.nsub is not None
+        return np.array(
+            [
+                [
+                    2 / self.nsub**2 * (mean - sigma**2 / 2),
+                    2 * sigma / self.nsub - 2 * sigma / self.nsub**2 * (mean - sigma**2 / 2),
+                ],
+                [0, 0],
+            ]
+        )
 
     @staticmethod
-    def realized_depvar(data):
-        """Array of the left-hand side variables
-        in realized moment conditions.
+    def realized_depvar(*, data: np.ndarray, subset: slice | None = None) -> np.ndarray:  # noqa: ARG004
+        """Array of the left-hand side variables in realized moment conditions.
 
         Parameters
         ----------
         data : (2, nobs) array
             Returns and realized variance
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -201,14 +207,23 @@ class GBM(SDE):
         ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 
-    @staticmethod
-    def realized_const(theta):
+    def realized_const(
+        self,
+        *,
+        param: Any = None,  # noqa: ANN401
+        aggh: Any = 1,  # noqa: ARG002, ANN401
+        subset: slice | None = None,  # noqa: ARG002
+    ) -> np.ndarray:
         """Intercept in the realized moment conditions.
 
         Parameters
         ----------
-        theta : array
+        param : array
             Parameters
+        aggh : int
+            Interval length
+        subset : slice
+            Which moments to use
 
         Returns
         -------
@@ -216,11 +231,12 @@ class GBM(SDE):
             Intercept
 
         """
-        mean, sigma = theta
-        return np.array([mean - sigma**2/2, sigma**2, sigma**4])
+        theta = param
+        mean, sigma = float(theta[0]), float(theta[1])
+        return np.array([mean - sigma**2 / 2, sigma**2, sigma**4])
 
-    def drealized_const(self, theta):
-        """Derivative of the intercept in the realized moment conditions.
+    def drealized_const(self, theta: Any) -> np.ndarray:  # noqa: ANN401
+        """Calculate derivative of the intercept in the realized moment conditions.
 
         Parameters
         ----------
@@ -233,11 +249,15 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        with np.errstate(divide='ignore'):
-            return nd.Jacobian(self.realized_const)(theta)
+
+        def _realized_const_wrapper(theta: Any) -> np.ndarray:  # noqa: ANN401
+            return self.realized_const(param=theta)
+
+        with np.errstate(divide="ignore"):
+            return nd.Jacobian(_realized_const_wrapper)(theta)
 
     @staticmethod
-    def instruments(data, instrlag=1):
+    def instruments(*, data: Any, instrlag: int = 1) -> np.ndarray:  # noqa: ANN401
         """Create an array of instruments.
 
         Parameters
@@ -253,10 +273,22 @@ class GBM(SDE):
             Derivatives of the coefficient
 
         """
-        return np.vstack([np.ones_like(data[0]),
-                          lagmat(data.T, maxlag=instrlag).T])[:, instrlag:]
+        data_arr = np.asarray(data)
+        lmat = cast(np.ndarray, lagmat(data_arr.T, maxlag=instrlag))
+        return np.vstack([np.ones_like(data_arr[0]), lmat.T])[:, instrlag:]
 
-    def integrated_mom(self, theta, data=None, instrlag=1, **kwargs):
+    def integrated_mom(
+        self,
+        *,
+        theta: Any,  # noqa: ANN401
+        data: Any = None,  # noqa: ANN401
+        instr_data: Any = None,  # noqa: ARG002, ANN401
+        instr_choice: str = "const",  # noqa: ARG002
+        aggh: Any = 1,  # noqa: ARG002, ANN401
+        subset: str = "all",  # noqa: ARG002
+        instrlag: int = 1,
+        measure: str = "P",  # noqa: ARG002
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 
         Parameters
@@ -265,8 +297,18 @@ class GBM(SDE):
             Model parameters
         data : (2, nobs) array
             Returns and realized variance
+        instr_data : object
+            Instrument data
+        instr_choice : str
+            Instrument choice
+        aggh : int
+            Aggregation horizon
+        subset : str
+            Subset
         instrlag : int
             Number of lags for the instruments
+        measure : str
+            Measure
 
         Returns
         -------
@@ -276,24 +318,29 @@ class GBM(SDE):
             Average derivative of the moment restrictions
 
         """
-        ret, rvar = data
+        assert data is not None
         # (nobs - instrlag, 3) array
-        error = (self.realized_depvar(data).T[instrlag:]
-            - self.realized_const(theta))
+        error = self.realized_depvar(data=data).T[instrlag:] - self.realized_const(param=theta)
         # (nobs - instrlag, ninstr)
-        instr = self.instruments(data, instrlag=instrlag).T
+        instr = self.instruments(data=data, instrlag=instrlag).T
         # (nobs - instrlag, 3 * ninstr = nmoms)
-        moms = columnwise_prod(error, instr)
+        moms = columnwise_prod(left=error, right=instr)
         # (nintercepts, nparams)
         dmoms = -self.drealized_const(theta)
         dmoments = []
         for minstr in instr.mean(0):
             dmoments.append(dmoms * minstr)
-        dmoments = np.vstack(dmoments)
+        dmoments_arr = np.vstack(dmoments)
 
-        return moms, dmoments
+        return moms, dmoments_arr
 
-    def momcond(self, theta, data=None, instrlag=1):
+    def momcond(
+        self,
+        *,
+        theta: np.ndarray | Sequence[float],
+        data: Any = None,  # noqa: ANN401
+        instrlag: int = 1,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Moment function.
 
         Parameters
@@ -313,8 +360,10 @@ class GBM(SDE):
             Average derivative of the moment restrictions
 
         """
+        assert data is not None
+        data_arr = np.asarray(data)
         datalag = 1
-        lagdata = lagmat(data, maxlag=datalag)[datalag:]
+        lagdata = cast(np.ndarray, lagmat(data_arr, maxlag=datalag))[datalag:]
         nobs = lagdata.shape[0]
         datamat = np.hstack([np.ones((nobs, 1)), lagdata])
 
@@ -326,24 +375,23 @@ class GBM(SDE):
         modelerror = []
         for i in range(len(linearcoef)):
             # Difference between data and model prediction
-            error = data[datalag:]**(i+1) - datamat.dot(linearcoef[i])
+            error = data_arr[datalag:] ** (i + 1) - datamat.dot(linearcoef[i])
             modelerror.append(error)
-        modelerror = np.vstack(modelerror)
+        modelerror_arr = np.vstack(modelerror)
 
-        instruments = np.hstack([np.ones((nobs, 1)),
-                                 lagmat(data[:-datalag], maxlag=instrlag)]).T
+        instruments = np.hstack([np.ones((nobs, 1)), cast(np.ndarray, lagmat(data_arr[:-datalag], maxlag=instrlag))]).T
 
         mom, dmom = [], []
         for instr in instruments:
-            mom.append(modelerror * instr)
+            mom.append(modelerror_arr * instr)
             meandata = (datamat.T * instr).mean(1)
             dtheta = []
             for coef in dlinearcoef:
                 dtheta.append(meandata.dot(coef))
-            dtheta = -np.vstack(dtheta)
-            dmom.append(dtheta)
+            dtheta_arr = -np.vstack(dtheta)
+            dmom.append(dtheta_arr)
 
-        mom = np.vstack(mom).T
-        dmom = np.vstack(dmom)
+        mom_arr = np.vstack(mom).T
+        dmom_arr = np.vstack(dmom)
 
-        return mom, dmom
+        return mom_arr, dmom_arr

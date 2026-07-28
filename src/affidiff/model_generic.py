@@ -1,28 +1,26 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Generic model class
--------------------
+"""Generic model class."""
 
-"""
-from __future__ import print_function, division
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, Sequence, cast
 
 import numpy as np
-
 from mygmm import GMM
-from .helper_functions import (nice_errors, ajd_drift, ajd_diff,
-                               rolling_window, columnwise_prod, instruments)
+
+from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
+
+if TYPE_CHECKING:
+    from affidiff.param_generic import GenericParam
+
 try:
-    from .simulate import simulate
-except:
-    print('Failed to import cython modules. '
-          + 'Temporary hack to compile documentation.')
-
-__all__ = ['SDE']
+    from affidiff.simulate import simulate  # type: ignore
+except Exception:
+    simulate = None
 
 
-class SDE(object):
-
+class SDE(ABC):
     """Generic Model.
 
     Attributes
@@ -45,7 +43,7 @@ class SDE(object):
 
     """
 
-    def __init__(self, param=None):
+    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
         """Initialize the class.
 
         Parameters
@@ -54,12 +52,12 @@ class SDE(object):
             True parameters used for simulation of the data
 
         """
-        self.nsub = None
-        self.ndiscr = None
-        self.param = param
-        self.errors = None
+        self.nsub: int | None = None
+        self.ndiscr: int | None = None
+        self.param: Any = param
+        self.errors: np.ndarray | None = None
 
-    def update_theta(self, param):
+    def update_theta(self, param: GenericParam | object) -> None:
         """Update model parameters.
 
         Parameters
@@ -70,75 +68,141 @@ class SDE(object):
         """
         self.param = param
 
-    def euler_loc(self, state, theta):
+    @abstractmethod
+    def get_start(self) -> np.ndarray | list[float]:
+        """Return starting values for simulation."""
+        raise NotImplementedError("Must be overridden")
+
+    @staticmethod
+    def realized_depvar(*, data: Any, subset: Any = None) -> Any:  # noqa: ANN401
+        """Realized dependent variables."""
+        raise NotImplementedError("Must be overridden")
+
+    def mat_a(self, *, param: Any, subset: Any = None) -> Any:  # noqa: ANN401
+        """Matrix A in integrated moments."""
+        raise NotImplementedError("Must be overridden")
+
+    def realized_const(
+        self,
+        *,
+        param: Any = None,  # noqa: ANN401
+        aggh: Any = 1,  # noqa: ANN401
+        subset: Any = None,  # noqa: ANN401
+    ) -> Any:  # noqa: ANN401
+        """Realized constant in integrated moments."""
+        raise NotImplementedError("Must be overridden")
+
+    def euler_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Euler location.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
+        state : (nsim, nvars) array
             Current value of the process
         theta : parameter instance
-            Model parameter
+            Model parameters
 
         Returns
         -------
-        (nvars, nsim) array_like
+        (nsim, nvars) array
+            Location term in Euler discretization
 
         """
-        return ajd_drift(state, theta) / self.nsub
+        return ajd_drift(state=state, theta=theta)
 
-    def euler_scale(self, state, theta):
+    def euler_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
         """Euler scale.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
+        state : (nsim, nvars) array
             Current value of the process
         theta : parameter instance
-            Model parameter
+            Model parameters
 
         Returns
         -------
-        (nvars, nvars, nsim) array_like
+        (nsim, nvars, nvars) array
+            Scale term in Euler discretization
 
         """
-        return ajd_diff(state, theta) / self.nsub**.5
+        return ajd_diff(state=state, theta=theta)
 
-    def exact_loc(self, state, theta):
-        """Eaxct location.
+    def loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+        """Location.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
+        state : (nsim, nvars) array
             Current value of the process
         theta : parameter instance
-            Model parameter
+            Model parameters
 
         Returns
         -------
-        (nvars, nsim) array_like
+        (nsim, nvars) array
+            Location term in Euler discretization
 
         """
-        return self.euler_loc(state, theta)
+        return self.euler_loc(state=state, theta=theta)
 
-    def exact_scale(self, state, theta):
-        """Exact scale.
+    def scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+        """Scale.
 
         Parameters
         ----------
-        state : (nvars, nsim) array_like
+        state : (nsim, nvars) array
             Current value of the process
         theta : parameter instance
-            Model parameter
+            Model parameters
 
         Returns
         -------
-        (nvars, nvars, nsim) array_like
+        (nsim, nvars, nvars) array
+            Scale term in Euler discretization
 
         """
-        return self.euler_scale(state, theta)
+        return self.euler_scale(state=state, theta=theta)
 
-    def depvar_unc_mean(self, param, aggh):
+    def exact_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+        """Exact location."""
+        return self.euler_loc(state=state, theta=theta)
+
+    def exact_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+        """Exact scale."""
+        return self.euler_scale(state=state, theta=theta)
+
+    @staticmethod
+    def mean_vol(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+        """Unconditional mean of volatility."""
+        raise NotImplementedError
+
+    @staticmethod
+    def mean_vol2(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+        """Unconditional mean of squared volatility."""
+        raise NotImplementedError
+
+    @staticmethod
+    def mean_ret(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+        """Unconditional mean of returns."""
+        raise NotImplementedError
+
+    @staticmethod
+    def mean_cross(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+        """Unconditional mean of returns times volatility."""
+        raise NotImplementedError
+
+    def momcond(
+        self,
+        *,
+        theta: Any,  # noqa: ANN401
+        data: Any = None,  # noqa: ANN401
+        instrlag: int = 1,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Moment conditions."""
+        raise NotImplementedError
+
+    def depvar_unc_mean(self, *, param: GenericParam | object, aggh: float) -> np.ndarray:
         """Unconditional means of realized data.
 
         Parameters
@@ -153,12 +217,16 @@ class SDE(object):
         array
 
         """
-        return np.array([self.mean_vol(param, aggh),
-                         self.mean_vol2(param, aggh),
-                         self.mean_ret(param, aggh),
-                         self.mean_cross(param, aggh)])
+        return np.array(
+            [
+                self.mean_vol(param=param, aggh=aggh),
+                self.mean_vol2(param=param, aggh=aggh),
+                self.mean_ret(param=param, aggh=aggh),
+                self.mean_cross(param=param, aggh=aggh),
+            ]
+        )
 
-    def update(self, state, error):
+    def update(self, *, state: np.ndarray, error: np.ndarray) -> np.ndarray:
         """Euler update function.
 
         Parameters
@@ -175,23 +243,27 @@ class SDE(object):
 
         """
         # (nsim, nvars) array_like
-        loc = self.euler_loc(state, self.param)
+        loc = self.euler_loc(state=state, theta=self.param)
         # (nsim, nvars, nvars) array_like
-        scale = self.euler_scale(state, self.param)
+        scale = self.euler_scale(state=state, theta=self.param)
 
-        new_state = loc / self.ndiscr \
-            + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T \
-            / self.ndiscr**.5
-
-        # Equivalent operation through the loop:
-#        new_state = loc / self.ndiscr
-#        for i in range(error.shape[0]):
-#            new_state[i] += (scale[i] * error[i]).sum(1) / self.ndiscr**.5
+        assert self.ndiscr is not None
+        new_state = loc / self.ndiscr + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T / self.ndiscr**0.5
 
         return new_state
 
-    def simulate(self, start=None, nsub=80, ndiscr=1, nobs=500, nsim=1,
-                 diff=None, new_innov=True, cython=False):
+    def simulate(
+        self,
+        *,
+        start: Any = None,  # noqa: ANN401
+        nsub: int = 80,
+        ndiscr: int = 1,
+        nobs: int = 500,
+        nsim: int = 1,
+        diff: Any = None,  # noqa: ANN401
+        new_innov: bool = True,
+        cython: bool = False,
+    ) -> Any:  # noqa: ANN401
         """Simulate observations from the model.
 
         Parameters
@@ -224,7 +296,7 @@ class SDE(object):
         if start is None:
             start = self.get_start()
         if np.size(self.param.mat_k0) != np.size(start):
-            raise ValueError('Start for paths is of wrong dimension!')
+            raise ValueError("Start for paths is of wrong dimension!")
         self.nsub = nsub
         self.ndiscr = ndiscr
         nvars = np.size(start)
@@ -234,23 +306,28 @@ class SDE(object):
             # Generate new errors
             self.errors = np.random.normal(size=(npoints, nsim, nvars))
             # Standardize the errors
-            self.errors = nice_errors(self.errors, 1)
+            self.errors = nice_errors(errors=self.errors, sdim=1)
 
         if cython:
+            assert simulate is not None
             dt = 1 / ndiscr / nsub
-            paths = simulate(self.errors, np.atleast_1d(start).astype(float),
-                             np.atleast_1d(self.param.mat_k0).astype(float),
-                             np.atleast_2d(self.param.mat_k1).astype(float),
-                             np.atleast_2d(self.param.mat_h0).astype(float),
-                             np.atleast_3d(self.param.mat_h1).astype(float),
-                             float(dt))
+
+            paths = simulate(
+                self.errors,
+                np.atleast_1d(start).astype(float),
+                np.atleast_1d(self.param.mat_k0).astype(float),
+                np.atleast_2d(self.param.mat_k1).astype(float),
+                np.atleast_2d(self.param.mat_h0).astype(float),
+                np.atleast_3d(self.param.mat_h1).astype(float),
+                float(dt),
+            )
         else:
             nsim = self.errors.shape[1]
             paths = start * np.ones((npoints + 1, nsim, nvars))
 
             for i in range(npoints):
                 # (nsim, nvars)
-                paths[i+1] = paths[i] + self.update(paths[i], self.errors[i])
+                paths[i + 1] = paths[i] + self.update(state=paths[i], error=self.errors[i])
 
         # (nobs+1, nsim, nvars)
         paths = paths[::ndiscr]
@@ -258,9 +335,19 @@ class SDE(object):
             paths[1:, :, diff] = paths[1:, :, diff] - paths[:-1, :, diff]
         return paths[1:]
 
-    def sim_realized(self, start=None, nsub=80, ndiscr=10, aggh=1,
-                     nperiods=500, nsim=1, diff=None, new_innov=True,
-                     cython=True):
+    def sim_realized(
+        self,
+        *,
+        start: Any = None,  # noqa: ANN401
+        nsub: int = 80,
+        ndiscr: int = 10,
+        aggh: int = 1,
+        nperiods: int = 500,
+        nsim: int = 1,
+        diff: Any = None,  # noqa: ANN401
+        new_innov: bool = True,
+        cython: bool = False,
+    ) -> tuple[Any, Any]:  # noqa: ANN401
         """Simulate realized returns and variance from the model.
 
         Parameters
@@ -297,20 +384,32 @@ class SDE(object):
         if start is None:
             start = self.get_start()
         nobs = nperiods * nsub
-        paths = self.simulate(start, nsub=nsub, ndiscr=ndiscr,
-                              nobs=nobs, nsim=nsim, diff=diff,
-                              new_innov=new_innov, cython=cython)
+        paths = self.simulate(
+            start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=diff, new_innov=new_innov, cython=cython
+        )
         returns = paths[:, 0, 0].reshape((nperiods, nsub))
         # Compute realized var and returns over one day
         rvar = (returns**2).sum(1)
         returns = returns.sum(1)
         # Aggregate over arbitrary number of days
-        rvar = rolling_window(np.mean, rvar, window=aggh)
-        returns = rolling_window(np.mean, returns, window=aggh)
+        rvar = rolling_window(fun=np.mean, mat=rvar, window=aggh)
+        returns = rolling_window(fun=np.mean, mat=returns, window=aggh)
         return returns, rvar
 
-    def sim_realized_pq(self, start_p=None, start_q=None,
-                        aggh=[1, 1], **kwargs):
+    def sim_realized_pq(
+        self,
+        *,
+        start_p: np.ndarray | Sequence[float] | None = None,
+        start_q: np.ndarray | Sequence[float] | None = None,
+        aggh: list[int] | tuple[int, int] | None = None,
+        nsub: int = 80,
+        ndiscr: int = 10,
+        nperiods: int = 500,
+        nsim: int = 1,
+        diff: Any = None,  # noqa: ANN401
+        new_innov: bool = True,
+        cython: bool = False,
+    ) -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         """Simulate realized data from the model under both P and Q.
 
         Parameters
@@ -321,8 +420,20 @@ class SDE(object):
             Starting value for simulation under Q
         aggh : list
             Aggregation windows for P and Q respectively
-        kwargs : dict
-            Anything that needs to go through sim_realized
+        nsub : int
+            Number of subintervals for latent simulation (fractions of the day)
+        ndiscr : int
+            Number of Euler discretization points inside unit interval
+        nperiods : int
+            Number of points to simulate in one series (days)
+        nsim : int
+            Number of time series to simulate
+        diff : int
+            Dimensions which should be differentiated
+        new_innov : bool
+            Whether to generate new innovations (True), or use already stored (False)
+        cython : bool
+            Whether to use cython-optimized simulation (True) or not (False)
 
         Returns
         -------
@@ -331,48 +442,119 @@ class SDE(object):
         data_q : tuple
             Returns and realized variance under Q
 
-        Notes
-        -----
-        For argumentsts see sim_realized
-
         """
+        if aggh is None:
+            aggh = [1, 1]
         if start_p is None:
             start_p = self.get_start()
-        data_p = self.sim_realized(start_p, aggh=aggh[0],
-                                   new_innov=True, **kwargs)
+        data_p = self.sim_realized(
+            start=start_p,
+            aggh=aggh[0],
+            new_innov=new_innov,
+            nsub=nsub,
+            ndiscr=ndiscr,
+            nperiods=nperiods,
+            nsim=nsim,
+            diff=diff,
+            cython=cython,
+        )
         self.param.convert_to_q()
         if start_q is None:
             start_q = self.get_start()
-        data_q = self.sim_realized(start_q, aggh=aggh[1],
-                                   new_innov=False, **kwargs)
+        data_q = self.sim_realized(
+            start=start_q,
+            aggh=aggh[1],
+            new_innov=new_innov,
+            nsub=nsub,
+            ndiscr=ndiscr,
+            nperiods=nperiods,
+            nsim=nsim,
+            diff=diff,
+            cython=cython,
+        )
         return data_p, data_q
 
-    def gmmest(self, theta_start, **kwargs):
+    def gmmest(
+        self,
+        *,
+        theta_start: Any,  # noqa: ANN401
+        data: Any = None,  # noqa: ANN401
+        instrlag: int = 1,
+        iter: int = 2,
+        method: str = "BFGS",
+        kernel: str = "Bartlett",
+        band: int | None = None,
+    ) -> object:
         """Estimate model parameters using GMM.
 
         Parameters
         ----------
-        theta_start : array
+        theta_start : parameter instance
             Initial parameter values for estimation
-        kwargs : dict
-            Anything that needs to go through mygmm
+        data : array_like, optional
+            Data passed to the moment condition function
+        instrlag : int
+            Number of lags for the instruments
+        iter : int
+            Number of GMM iterations
+        method : str
+            Optimization method passed to scipy.optimize.minimize
+        kernel : str
+            HAC kernel for weighting matrix ('Bartlett', 'Parzen', etc.)
+        band : int, optional
+            HAC bandwidth. If None, chosen automatically.
 
         Notes
         -----
-        For arguments see momcond
+        For moment condition arguments see momcond.
 
         """
         estimator = GMM(self.momcond)
-        return estimator.gmmest(theta_start.get_theta(), **kwargs)
+        return estimator.gmmest(
+            theta_start.get_theta(),
+            data=data,
+            instrlag=instrlag,
+            iter=iter,
+            method=method,
+            kernel=kernel,
+            band=band,
+        )
 
-    def integrated_gmm(self, param_start, subset='all', measure='P',
-                       names=None, bounds=None, constraints=(), **kwargs):
+    def integrated_gmm(
+        self,
+        *,
+        param_start: GenericParam | object,
+        data: object = None,
+        instr_data: object = None,
+        instr_choice: str = "const",
+        aggh: object = 1,
+        instrlag: int = 1,
+        subset: str = "all",
+        measure: str = "P",
+        names: list[str] | None = None,
+        bounds: list[tuple[float | None, float | None]] | None = None,
+        constraints: object = (),
+        iter: int = 2,
+        method: str = "BFGS",
+        kernel: str = "Bartlett",
+        band: int | None = None,
+    ) -> object:
         """Estimate model parameters using Integrated GMM.
 
         Parameters
         ----------
         param_start : parameter class
             Initial parameter values for estimation
+        data : array_like, optional
+            Returns and realized variance used in moment conditions
+        instr_data : array_like, optional
+            Instruments (no lags)
+        instr_choice : str {'const', 'var'}
+            Choice of instruments
+        aggh : int or list of int
+            Number of intervals (days) to aggregate over using rolling mean
+        instrlag : int
+            Number of lags for the instruments
         subset : str
 
             Which parameters to estimate. Belongs to
@@ -392,16 +574,18 @@ class SDE(object):
             Parameter bounds
         constraints : dict or sequence of dict
             Equality and inequality constraints. See scipy.optimize.minimize
-        kwargs : dict
-            Anything that needs to go through mygmm
-
-        Notes
-        -----
-        For arguments see integrated_mom
+        iter : int
+            Number of GMM iterations
+        method : str
+            Optimization method passed to scipy.optimize.minimize
+        kernel : str
+            HAC kernel for weighting matrix ('Bartlett', 'Parzen', etc.)
+        band : int, optional
+            HAC bandwidth. If None, chosen automatically.
 
         """
         estimator = GMM(self.integrated_mom)
-        self.param = param_start
+        self.param: Any = param_start
         theta_start = self.param.get_theta(subset=subset, measure=measure)
         if names is None:
             names = self.param.get_names(subset=subset, measure=measure)
@@ -409,13 +593,36 @@ class SDE(object):
             bounds = self.param.get_bounds(subset=subset, measure=measure)
         if constraints == ():
             constraints = self.param.get_constraints()
-        return estimator.gmmest(theta_start, names=names, subset=subset,
-                                measure=measure, bounds=bounds,
-                                constraints=constraints, **kwargs)
+        return estimator.gmmest(
+            theta_start,
+            names=names,
+            data=data,
+            instr_data=instr_data,
+            instr_choice=instr_choice,
+            aggh=aggh,
+            instrlag=instrlag,
+            subset=subset,
+            measure=measure,
+            bounds=bounds,
+            constraints=constraints,
+            iter=iter,
+            method=method,
+            kernel=kernel,
+            band=band,
+        )
 
-    def integrated_mom(self, theta, data=None, instr_data=None,
-                       instr_choice='const', aggh=1, subset='all',
-                       instrlag=1, measure='P', **kwargs):
+    def integrated_mom(
+        self,
+        *,
+        theta: np.ndarray | Sequence[float],
+        data: object = None,
+        instr_data: object = None,
+        instr_choice: str = "const",
+        aggh: object = 1,
+        subset: str = "all",
+        instrlag: int = 1,
+        measure: str = "P",
+    ) -> tuple[np.ndarray, Any]:
         """Integrated moment function.
 
         Parameters
@@ -455,36 +662,41 @@ class SDE(object):
 
         """
         subset_sl = None
-        if subset == 'vol':
+        if subset == "vol":
             subset_sl = slice(2)
 
         self.param.update(theta=theta, subset=subset, measure=measure)
         lag = 2
 
-        if measure == 'PQ':
+        if measure == "PQ":
             error = []
-            for data_x, agg, meas in zip(data, aggh, measure):
-                if meas == 'Q':
+            data_list = list(cast(Iterable, data)) if data is not None else []
+            aggh_list = list(aggh) if isinstance(aggh, (list, tuple)) else [aggh, aggh]  # type: ignore[arg-type]
+            measure_list = list(measure)
+            for data_x, agg, meas in zip(data_list, aggh_list, measure_list, strict=False):
+                if meas == "Q":
                     self.param.convert_to_q()
-                depvar = self.realized_depvar(data_x)[lag:]
+                depvar = self.realized_depvar(data=data_x)[lag:]
                 # (nobs - lag, 4) array
-                error.append(depvar.dot(self.mat_a(self.param, subset_sl).T) \
-                    - self.realized_const(self.param, agg, subset_sl))
+                error.append(
+                    depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T)
+                    - self.realized_const(param=self.param, aggh=agg, subset=subset_sl)
+                )
 
             error = np.hstack(error)
 
         else:
-            depvar = self.realized_depvar(data)[lag:]
+            depvar = self.realized_depvar(data=data)[lag:]  # type: ignore[arg-type]
             # (nobs - lag, 4) array
-            error = depvar.dot(self.mat_a(self.param, subset_sl).T) \
-                - self.realized_const(self.param, aggh, subset_sl)
+            error = depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T) - self.realized_const(
+                param=self.param, aggh=aggh, subset=subset_sl
+            )
 
         nobs = error.shape[0] + lag
         # self.instruments(data, instrlag=instrlag): (nobs, ninstr*instrlag+1)
         # (nobs-lag, ninstr*instrlag+1)
-        instr = instruments(instr_data, nobs=nobs, instrlag=instrlag,
-                            instr_choice=instr_choice)[:-lag]
+        instr = instruments(data=instr_data, nobs=nobs, instrlag=instrlag, instr_choice=instr_choice)[:-lag]
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
-        moms = columnwise_prod(error, instr)
+        moms = columnwise_prod(left=error, right=instr)
 
         return moms, None
