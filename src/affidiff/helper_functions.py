@@ -5,7 +5,10 @@ from __future__ import annotations
 import contextlib
 import itertools as it
 import time
-from typing import Any, Callable, Generator, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Generator, Sequence
+
+if TYPE_CHECKING:
+    from affidiff.param_generic import GenericParam
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -13,7 +16,7 @@ import seaborn as sns
 from statsmodels.tsa.tsatools import lagmat
 
 
-def ajd_drift(*, state: Any, theta: Any) -> np.ndarray:  # noqa: ANN401
+def ajd_drift(*, state: np.ndarray | float | Sequence[float], theta: GenericParam) -> np.ndarray:
     """Instantaneous mean.
 
     Parameters
@@ -33,7 +36,7 @@ def ajd_drift(*, state: Any, theta: Any) -> np.ndarray:  # noqa: ANN401
     return theta.mat_k0 + state_arr.dot(np.transpose(theta.mat_k1))
 
 
-def ajd_diff(*, state: Any, theta: Any) -> np.ndarray:  # noqa: ANN401
+def ajd_diff(*, state: np.ndarray | float | Sequence[float], theta: GenericParam) -> np.ndarray:
     """Instantaneous volatility.
 
     Parameters
@@ -81,7 +84,7 @@ def nice_errors(*, errors: np.ndarray, sdim: int) -> np.ndarray:
     return np.concatenate((errors, -errors), axis=sdim)
 
 
-def plot_trajectories(*, paths: Any, nsub: int, names: str | list[str]) -> None:  # noqa: ANN401
+def plot_trajectories(*, paths: np.ndarray | list[np.ndarray], nsub: int, names: str | list[str]) -> None:
     """Plot process realizations.
 
     Parameters
@@ -111,7 +114,7 @@ def plot_trajectories(*, paths: Any, nsub: int, names: str | list[str]) -> None:
     plt.show()
 
 
-def plot_final_distr(*, paths: Any, names: str | list[str]) -> None:  # noqa: ANN401
+def plot_final_distr(*, paths: np.ndarray | list[np.ndarray], names: str | list[str]) -> None:
     """Plot marginal distribution of the process.
 
     Parameters
@@ -140,8 +143,8 @@ def plot_final_distr(*, paths: Any, names: str | list[str]) -> None:  # noqa: AN
 
 def plot_realized(
     *,
-    returns: Any,  # noqa: ANN401
-    rvar: Any,  # noqa: ANN401
+    returns: np.ndarray | list[np.ndarray],
+    rvar: np.ndarray | list[np.ndarray],
     suffix: list[str] | None = None,
 ) -> None:
     """Plot realized returns and volatility.
@@ -287,7 +290,7 @@ def poly_coef(roots: Sequence[float] | np.ndarray) -> list[float]:
 
 def instruments(
     *,
-    data: Any = None,  # noqa: ANN401
+    data: np.ndarray | None = None,
     instrlag: int = 1,
     nobs: int | None = None,
     instr_choice: str = "const",

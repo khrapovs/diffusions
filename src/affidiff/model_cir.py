@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from affidiff.model_generic import SDE
 
 if TYPE_CHECKING:
     import numpy as np
 
+    from affidiff.param_cir import CIRparam
+
 
 class CIR(SDE):
     """Cox-Ingersoll-Ross (CIR) model."""
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    param: CIRparam | None
+
+    def __init__(self, param: CIRparam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -33,10 +37,11 @@ class CIR(SDE):
             Starting value at the long-run mean
 
         """
+        assert self.param is not None
         return [float(self.param.mean)]
 
     @staticmethod
-    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
+    def drift(*, state: np.ndarray | float, theta: CIRparam) -> np.ndarray | float:
         """Drift function.
 
         Parameters
@@ -55,7 +60,7 @@ class CIR(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
+    def diff(*, state: np.ndarray | float, theta: CIRparam) -> np.ndarray | float:
         """Diffusion (instantaneous volatility) function.
 
         Parameters

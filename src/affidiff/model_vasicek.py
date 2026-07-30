@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from affidiff.model_generic import SDE
 
 if TYPE_CHECKING:
     import numpy as np
 
+    from affidiff.param_vasicek import VasicekParam
+
 
 class Vasicek(SDE):
     """Vasicek model."""
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    param: VasicekParam | None
+
+    def __init__(self, param: VasicekParam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -33,10 +37,11 @@ class Vasicek(SDE):
             Starting value at the long-run mean
 
         """
+        assert self.param is not None
         return [float(self.param.mean)]
 
     @staticmethod
-    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ANN401
+    def drift(*, state: np.ndarray | float, theta: VasicekParam) -> np.ndarray | float:
         """Drift function.
 
         Parameters
@@ -55,7 +60,7 @@ class Vasicek(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(*, state: np.ndarray | float, theta: Any) -> float:  # noqa: ARG004, ANN401
+    def diff(*, state: np.ndarray | float, theta: VasicekParam) -> float:  # noqa: ARG004
         """Diffusion (instantaneous volatility) function.
 
         Parameters
