@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, cast
+from typing import TYPE_CHECKING, Sequence, cast
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
@@ -218,6 +218,7 @@ class Heston(SDE):
         if param is None:
             param = self.param
         assert param is not None
+        assert isinstance(param, HestonParam)
         res = (
             (self.mat_a0(param=param, aggh=1) + self.mat_a1(param=param, aggh=1) + self.mat_a2(param=param, aggh=1))
             * self.depvar_unc_mean(param=param, aggh=aggh)
@@ -227,7 +228,7 @@ class Heston(SDE):
         return np.squeeze(res)
 
     @staticmethod
-    def mat_a0(*, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a0(*, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_0 in integrated moments.
 
         Parameters
@@ -246,7 +247,7 @@ class Heston(SDE):
         _ = (param, aggh)
         return np.diag([0, 1, 0, 0]).astype(float)
 
-    def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a1(self, *, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_1 in integrated moments.
 
         Parameters
@@ -268,7 +269,7 @@ class Heston(SDE):
         mat_a[3, 1] = 0.5 - param.lmbd
         return mat_a
 
-    def mat_a2(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a2(self, *, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_2 in integrated moments.
 
         Parameters
