@@ -1,4 +1,3 @@
-# ruff: noqa
 """Try Heston model."""
 
 from __future__ import annotations
@@ -10,13 +9,14 @@ import matplotlib.pylab as plt
 import numpy as np
 import seaborn as sns
 from load_real_data import load_data  # type: ignore
+from mygmm import Results
 from statsmodels.tsa.stattools import acf
 
 from affidiff import Heston, HestonParam
 from affidiff.helper_functions import plot_final_distr, plot_realized, plot_trajectories, take_time
 
 
-def try_simulation():
+def try_simulation() -> None:
     """Try simulating and plotting Heston model."""
     riskfree = 0.0
     lmbd = 0.0
@@ -40,7 +40,7 @@ def try_simulation():
     plot_trajectories(paths=volatility, nsub=nsub, names="volatility")
 
 
-def try_simulation_pq():
+def try_simulation_pq() -> None:
     """Try simulating and plotting Heston model."""
     riskfree = 0.0
     lmbd = 0.0
@@ -76,7 +76,7 @@ def try_simulation_pq():
     plot_trajectories(paths=[volatility, volatility_q], nsub=nsub, names=["volatility", "volatility_q"])
 
 
-def try_marginal():
+def try_marginal() -> None:
     """Simulate and plot marginal distribution of the data in Heston model."""
     riskfree = 0.0
     lmbd = 0.0
@@ -100,7 +100,7 @@ def try_marginal():
     plot_final_distr(paths=volatility, names="volatility")
 
 
-def try_sim_realized():
+def try_sim_realized() -> None:
     """Simulate realized data from Heston model and plot it."""
     riskfree = 0.0
     lmbd = 0.0
@@ -121,7 +121,7 @@ def try_sim_realized():
     plot_realized(returns=returns, rvar=rvar)
 
 
-def try_sim_realized_pq():
+def try_sim_realized_pq() -> None:
     """Simulate realized data from Heston model under P and Q measures."""
     riskfree = 0.0
     mean_v = 0.5
@@ -151,7 +151,7 @@ def try_sim_realized_pq():
     )
 
 
-def try_integrated_gmm_single():
+def try_integrated_gmm_single() -> None:
     """Simulate realized data from Heston model. Estimate parameters."""
     riskfree = 0.0
 
@@ -196,8 +196,9 @@ def try_integrated_gmm_single():
     print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-def try_integrated_gmm_single_rn():
+def try_integrated_gmm_single_rn() -> None:
     """Simulate realized data from risk-neutral Heston model.
+
     Estimate parameters.
 
     """
@@ -261,8 +262,9 @@ def try_integrated_gmm_single_rn():
     print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-def try_integrated_gmm_joint():
+def try_integrated_gmm_joint() -> Results:
     """Simulate realized data from risk-neutral Heston model.
+
     Estimate parameters.
 
     """
@@ -313,7 +315,7 @@ def try_integrated_gmm_joint():
     return res
 
 
-def try_integrated_gmm_real():
+def try_integrated_gmm_real() -> None:
     """Estimate Heston model parameters with real data."""
     riskfree = 0.0
 
@@ -353,8 +355,9 @@ def try_integrated_gmm_real():
     print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-def try_integrated_gmm_opt_methods():
+def try_integrated_gmm_opt_methods() -> None:
     """Simulate realized data from Heston model. Estimate parameters.
+
     Check various optimization methods.
 
     """

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from math import exp
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Sequence, cast
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
@@ -13,15 +13,15 @@ from affidiff.model_generic import SDE
 from affidiff.param_ct import CentTendParam
 
 if TYPE_CHECKING:
-    pass
+    from affidiff.param_generic import GenericParam
 
 
 class CentTend(SDE):
     """Central Tendency model."""
 
-    param: Any
+    param: CentTendParam | None
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    def __init__(self, param: CentTendParam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -35,18 +35,12 @@ class CentTend(SDE):
         super().__init__(param)
 
     def get_start(self) -> list[float]:
-        """Get starting values for simulation.
-
-        Returns
-        -------
-        array_like
-            Starting values for price and variance
-
-        """
+        """Return starting values for simulation."""
+        assert self.param is not None
         return [1.0, float(self.param.mean_v), float(self.param.mean_v)]
 
     @staticmethod
-    def coef_big_as(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_as(*, param: CentTendParam, aggh: float) -> float:
         r"""Coefficient A^\sigma_h in exact discretization of volatility.
 
         Parameters
@@ -64,7 +58,7 @@ class CentTend(SDE):
         """
         return float(np.exp(-param.kappa_s * aggh))
 
-    def coef_big_bs(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_bs(self, *, param: CentTendParam, aggh: float) -> float:
         r"""Coefficient B^\sigma_h in exact discretization of volatility.
 
         Parameters
@@ -87,7 +81,7 @@ class CentTend(SDE):
             * (self.coef_big_ay(param=param, aggh=aggh) - self.coef_big_as(param=param, aggh=aggh))
         )
 
-    def coef_big_cs(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_cs(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient C^s_h in exact discretization of volatility.
 
         Parameters
@@ -108,7 +102,7 @@ class CentTend(SDE):
         )
 
     @staticmethod
-    def coef_big_ay(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_ay(*, param: CentTendParam, aggh: float) -> float:
         """Coefficient A^v_h in exact discretization of volatility.
 
         Parameters
@@ -125,7 +119,7 @@ class CentTend(SDE):
         """
         return float(np.exp(-param.kappa_y * aggh))
 
-    def coef_big_cy(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_cy(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient C^y_h in exact discretization of volatility.
 
         Parameters
@@ -143,7 +137,7 @@ class CentTend(SDE):
         """
         return float(param.mean_v * (1 - self.coef_big_ay(param=param, aggh=aggh)))
 
-    def coef_small_as(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_as(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient a^s_h in exact discretization of volatility.
 
         Parameters
@@ -161,7 +155,7 @@ class CentTend(SDE):
         """
         return float((1 - self.coef_big_as(param=param, aggh=aggh)) / param.kappa_s / aggh)
 
-    def coef_small_bs(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_bs(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient b^s_h in exact discretization of volatility.
 
         Parameters
@@ -184,7 +178,7 @@ class CentTend(SDE):
             * (self.coef_small_ay(param=param, aggh=aggh) - self.coef_small_as(param=param, aggh=aggh))
         )
 
-    def coef_small_cs(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_cs(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient c^s_h in exact discretization of volatility.
 
         Parameters
@@ -204,7 +198,7 @@ class CentTend(SDE):
             param.mean_v * (1 - self.coef_small_as(param=param, aggh=aggh) - self.coef_small_bs(param=param, aggh=aggh))
         )
 
-    def coef_small_ay(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_ay(self, *, param: CentTendParam, aggh: float) -> float:
         """Coefficient a^v_h in exact discretization of volatility.
 
         Parameters
@@ -221,7 +215,7 @@ class CentTend(SDE):
         """
         return float((1 - self.coef_big_ay(param=param, aggh=aggh)) / param.kappa_y / aggh)
 
-    def roots(self, *, param: Any, aggh: float) -> list[float]:  # noqa: ANN401
+    def roots(self, *, param: CentTendParam, aggh: float) -> list[float]:
         r"""Roots of the polynomial in moment restrictions.
 
         .. math::
@@ -253,7 +247,7 @@ class CentTend(SDE):
         ]
 
     @staticmethod
-    def mean_vol(*, param: Any, aggh: float) -> float:  # noqa: ARG004, ANN401
+    def mean_vol(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -268,9 +262,11 @@ class CentTend(SDE):
         float
 
         """
+        _ = aggh
+        assert isinstance(param, CentTendParam)
         return float(param.mean_v)
 
-    def mean_vol2(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_vol2(self, *, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of squared realized volatiliy.
 
         Parameters
@@ -285,6 +281,7 @@ class CentTend(SDE):
         float
 
         """
+        assert isinstance(param, CentTendParam)
         return float(
             self.coef_small_as(param=param, aggh=aggh) ** 2 * unc_var_sigma(param)
             + self.coef_small_bs(param=param, aggh=aggh) ** 2 * unc_var_ct(param)
@@ -292,7 +289,7 @@ class CentTend(SDE):
         )
 
     @staticmethod
-    def mean_ret(*, param: Any, aggh: float) -> float:  # noqa: ARG004, ANN401
+    def mean_ret(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns.
 
         Parameters
@@ -307,9 +304,11 @@ class CentTend(SDE):
         float
 
         """
+        _ = aggh
+        assert isinstance(param, CentTendParam)
         return float((param.lmbd - 0.5) * param.mean_v)
 
-    def mean_cross(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_cross(self, *, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns times volatility.
 
         Parameters
@@ -324,13 +323,16 @@ class CentTend(SDE):
         float
 
         """
+        assert isinstance(param, CentTendParam)
         p = param
         return float(
             (p.lmbd - 0.5) * self.mean_vol2(param=param, aggh=aggh)
             + p.rho * p.mean_v * p.eta_s / p.kappa_s * (1 - self.coef_small_as(param=param, aggh=aggh)) / aggh
         )
 
-    def realized_const(self, *, param: Any = None, aggh: float = 1, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def realized_const(
+        self, *, param: GenericParam | None = None, aggh: float = 1, subset: slice | None = None
+    ) -> np.ndarray:
         """Intercept in the realized moment conditions.
 
         Parameters
@@ -348,6 +350,9 @@ class CentTend(SDE):
             Intercept
 
         """
+        if param is None:
+            param = self.param
+        assert isinstance(param, CentTendParam)
         res = (
             (
                 self.mat_a0(param=param, aggh=1)
@@ -363,7 +368,7 @@ class CentTend(SDE):
             res = res[subset]
         return np.squeeze(res)
 
-    def mat_a0(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a0(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_0 in integrated moments.
 
         Parameters
@@ -383,7 +388,7 @@ class CentTend(SDE):
         mat[1, 1] = poly_coef(self.roots(param=param, aggh=aggh))[0]
         return mat
 
-    def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a1(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_1 in integrated moments.
 
         Parameters
@@ -403,7 +408,7 @@ class CentTend(SDE):
         mat[1, 1] = poly_coef(self.roots(param=param, aggh=aggh))[1]
         return mat
 
-    def mat_a2(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a2(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_2 in integrated moments.
 
         Parameters
@@ -423,7 +428,7 @@ class CentTend(SDE):
         mat[1, 1] = poly_coef(self.roots(param=param, aggh=aggh))[2]
         return mat
 
-    def mat_a3(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a3(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_3 in integrated moments.
 
         Parameters
@@ -446,7 +451,7 @@ class CentTend(SDE):
         mat[3, 3] = mat[0, 0]
         return mat
 
-    def mat_a4(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a4(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_4 in integrated moments.
 
         Parameters
@@ -469,7 +474,7 @@ class CentTend(SDE):
         mat[3, 3] = mat[0, 0]
         return mat
 
-    def mat_a5(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
+    def mat_a5(self, *, param: CentTendParam, aggh: float) -> np.ndarray:
         """Matrix A_5 in integrated moments.
 
         Parameters
@@ -494,7 +499,7 @@ class CentTend(SDE):
         mat[3, 1] = (0.5 - param.lmbd) * mat[0, 0]
         return mat
 
-    def mat_a(self, *, param: Any, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def mat_a(self, *, param: GenericParam, subset: slice | None = None) -> np.ndarray:
         """Matrix A in integrated moments.
 
         Parameters
@@ -506,10 +511,11 @@ class CentTend(SDE):
 
         Returns
         -------
-        (nmoms, 6*nmoms) array
+        (nmoms, 3*nmoms) array
             Matrix A
 
         """
+        assert isinstance(param, CentTendParam)
         mat_a_tuple = (
             self.mat_a0(param=param, aggh=1),
             self.mat_a1(param=param, aggh=1),
@@ -524,7 +530,7 @@ class CentTend(SDE):
         return np.squeeze(res)
 
     @staticmethod
-    def realized_depvar(*, data: Any, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Array of the left-hand side variables in realized moment conditions.
 
         Parameters
@@ -549,7 +555,7 @@ class CentTend(SDE):
         return cast(np.ndarray, lagmat(var_s.T, maxlag=5, original="in"))
 
 
-def unc_mean_ct2(param: Any) -> float:  # noqa: ANN401
+def unc_mean_ct2(param: CentTendParam) -> float:
     """Calculate unconditional second moment of CT, E[y_t**4].
 
     Parameters
@@ -566,7 +572,7 @@ def unc_mean_ct2(param: Any) -> float:  # noqa: ANN401
     return float(p.mean_v * p.eta_y**2 / p.kappa_y / 2)
 
 
-def unc_mean_sigma2(param: Any) -> float:  # noqa: ANN401
+def unc_mean_sigma2(param: CentTendParam) -> float:
     r"""Calculate unconditional second moment of volatility, E[\sigma_t**4].
 
     Parameters
@@ -583,7 +589,7 @@ def unc_mean_sigma2(param: Any) -> float:  # noqa: ANN401
     return float(unc_mean_ct2(param) * p.kappa_s / (p.kappa_s + p.kappa_y) + p.mean_v * p.eta_s**2 / p.kappa_s / 2)
 
 
-def unc_var_ct(param: Any) -> float:  # noqa: ANN401
+def unc_var_ct(param: CentTendParam) -> float:
     """Calculate unconditional variance of CT, V[y_t**2].
 
     Parameters
@@ -600,7 +606,7 @@ def unc_var_ct(param: Any) -> float:  # noqa: ANN401
     return float(p.mean_v**2 + unc_mean_ct2(param))
 
 
-def unc_var_sigma(param: Any) -> float:  # noqa: ANN401
+def unc_var_sigma(param: CentTendParam) -> float:
     r"""Calculate unconditional variance of volatility, V[\sigma_t**2].
 
     Parameters
@@ -617,7 +623,7 @@ def unc_var_sigma(param: Any) -> float:  # noqa: ANN401
     return float(p.mean_v**2 + unc_mean_sigma2(param))
 
 
-def unc_var_error(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+def unc_var_error(*, param: CentTendParam, aggh: float) -> float:
     r"""Calculate unconditional variance of aggregated volatility error.
 
     :math:`V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]`.

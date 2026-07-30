@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, cast
+from typing import TYPE_CHECKING, Sequence, cast
 
 import numdifftools as nd
 import numpy as np
@@ -13,13 +13,13 @@ from affidiff.model_generic import SDE
 from affidiff.param_gbm import GBMparam
 
 if TYPE_CHECKING:
-    pass
+    from affidiff.param_generic import GenericParam
 
 
 class GBM(SDE):
     """Geometric Brownian Motion."""
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    def __init__(self, param: GBMparam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -35,7 +35,7 @@ class GBM(SDE):
         return [1.0]
 
     @staticmethod
-    def drift(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
+    def drift(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:
         """Drift function.
 
         Parameters
@@ -51,10 +51,13 @@ class GBM(SDE):
             Drift value
 
         """
-        return theta.mean - theta.sigma**2 / 2
+        _ = state
+        if isinstance(theta, GBMparam):
+            return theta.mean - theta.sigma**2 / 2
+        return float(theta[0]) - float(theta[1]) ** 2 / 2
 
     @staticmethod
-    def diff(*, state: np.ndarray | float, theta: Any) -> np.ndarray | float:  # noqa: ARG004, ANN401
+    def diff(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -70,7 +73,10 @@ class GBM(SDE):
             Diffusion value
 
         """
-        return theta.sigma
+        _ = state
+        if isinstance(theta, GBMparam):
+            return theta.sigma
+        return float(theta[1])
 
     def betamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Coefficients in linear representation of the first moment.
@@ -109,7 +115,7 @@ class GBM(SDE):
         scale = float(self.exact_scale(state=np.array(0), theta=param))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
-    def dbetamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+    def dbetamat(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the first moment coefficients (numerical).
 
         Parameters
@@ -126,7 +132,7 @@ class GBM(SDE):
         with np.errstate(divide="ignore"):
             return nd.Jacobian(self.betamat)(theta)
 
-    def dgammamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
+    def dgammamat(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the second moment coefficients (numerical).
 
         Parameters
@@ -188,7 +194,7 @@ class GBM(SDE):
         )
 
     @staticmethod
-    def realized_depvar(*, data: np.ndarray, subset: slice | None = None) -> np.ndarray:  # noqa: ARG004
+    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Array of the left-hand side variables in realized moment conditions.
 
         Parameters
@@ -204,15 +210,16 @@ class GBM(SDE):
             Dependend variables
 
         """
+        _ = subset
         ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 
     def realized_const(
         self,
         *,
-        param: Any = None,  # noqa: ANN401
-        aggh: Any = 1,  # noqa: ARG002, ANN401
-        subset: slice | None = None,  # noqa: ARG002
+        param: GenericParam | np.ndarray | Sequence[float] | None = None,
+        aggh: float = 1,
+        subset: slice | None = None,
     ) -> np.ndarray:
         """Intercept in the realized moment conditions.
 
@@ -231,11 +238,20 @@ class GBM(SDE):
             Intercept
 
         """
-        theta = param
-        mean, sigma = float(theta[0]), float(theta[1])
+        _ = (aggh, subset)
+        if param is None:
+            param = self.param
+        assert param is not None
+        if isinstance(param, GBMparam):
+            mean, sigma = param.mean, param.sigma
+        elif isinstance(param, (np.ndarray, Sequence)):
+            param_arr = np.asarray(param)
+            mean, sigma = float(param_arr[0]), float(param_arr[1])
+        else:
+            raise TypeError("Invalid param type for realized_const")
         return np.array([mean - sigma**2 / 2, sigma**2, sigma**4])
 
-    def drealized_const(self, theta: Any) -> np.ndarray:  # noqa: ANN401
+    def drealized_const(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the intercept in the realized moment conditions.
 
         Parameters
@@ -250,14 +266,14 @@ class GBM(SDE):
 
         """
 
-        def _realized_const_wrapper(theta: Any) -> np.ndarray:  # noqa: ANN401
+        def _realized_const_wrapper(theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
             return self.realized_const(param=theta)
 
         with np.errstate(divide="ignore"):
             return nd.Jacobian(_realized_const_wrapper)(theta)
 
     @staticmethod
-    def instruments(*, data: Any, instrlag: int = 1) -> np.ndarray:  # noqa: ANN401
+    def instruments(*, data: np.ndarray | Sequence[np.ndarray], instrlag: int = 1) -> np.ndarray:
         """Create an array of instruments.
 
         Parameters
@@ -280,14 +296,14 @@ class GBM(SDE):
     def integrated_mom(
         self,
         *,
-        theta: Any,  # noqa: ANN401
-        data: Any = None,  # noqa: ANN401
-        instr_data: Any = None,  # noqa: ARG002, ANN401
-        instr_choice: str = "const",  # noqa: ARG002
-        aggh: Any = 1,  # noqa: ARG002, ANN401
-        subset: str = "all",  # noqa: ARG002
+        theta: GenericParam | np.ndarray | Sequence[float],
+        data: np.ndarray | Sequence[np.ndarray] | None = None,
+        instr_data: np.ndarray | None = None,
+        instr_choice: str = "const",
+        aggh: float | Sequence[float] = 1,
+        subset: str = "all",
         instrlag: int = 1,
-        measure: str = "P",  # noqa: ARG002
+        measure: str = "P",
     ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 
@@ -297,7 +313,7 @@ class GBM(SDE):
             Model parameters
         data : (2, nobs) array
             Returns and realized variance
-        instr_data : object
+        instr_data : array_like, optional
             Instrument data
         instr_choice : str
             Instrument choice
@@ -318,6 +334,7 @@ class GBM(SDE):
             Average derivative of the moment restrictions
 
         """
+        _ = (instr_data, instr_choice, aggh, subset, measure)
         assert data is not None
         # (nobs - instrlag, 3) array
         error = self.realized_depvar(data=data).T[instrlag:] - self.realized_const(param=theta)
@@ -337,8 +354,8 @@ class GBM(SDE):
     def momcond(
         self,
         *,
-        theta: np.ndarray | Sequence[float],
-        data: Any = None,  # noqa: ANN401
+        theta: GenericParam | np.ndarray | Sequence[float],
+        data: np.ndarray | Sequence[np.ndarray] | None = None,
         instrlag: int = 1,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Moment function.
@@ -368,7 +385,11 @@ class GBM(SDE):
         datamat = np.hstack([np.ones((nobs, 1)), lagdata])
 
         # Coefficients in the first moment (mean)
-        linearcoef = [self.betamat(theta), self.gammamat(theta)]
+        if isinstance(theta, GenericParam):
+            theta_vec = theta.get_theta()
+        else:
+            theta_vec = theta
+        linearcoef = [self.betamat(theta_vec), self.gammamat(theta_vec)]
         # Coefficients in the second moment (variance)
         dlinearcoef = [self.dbetamat(theta), self.dgammamat(theta)]
 

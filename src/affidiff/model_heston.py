@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Sequence, cast
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
@@ -11,15 +11,15 @@ from affidiff.model_generic import SDE
 from affidiff.param_heston import HestonParam
 
 if TYPE_CHECKING:
-    pass
+    from affidiff.param_generic import GenericParam
 
 
 class Heston(SDE):
     """Heston model."""
 
-    param: Any
+    param: HestonParam | None
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    def __init__(self, param: HestonParam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -41,10 +41,11 @@ class Heston(SDE):
             Starting values for price and variance
 
         """
+        assert self.param is not None
         return [1.0, float(self.param.mean_v)]
 
     @staticmethod
-    def coef_big_a(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_a(*, param: HestonParam, aggh: float) -> float:
         """Coefficient A_h in exact discretization of volatility.
 
         Parameters
@@ -61,7 +62,7 @@ class Heston(SDE):
         """
         return float(np.exp(-param.kappa * aggh))
 
-    def coef_big_c(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_big_c(self, *, param: HestonParam, aggh: float) -> float:
         """Coefficient C_h in exact discretization of volatility.
 
         Parameters
@@ -78,7 +79,7 @@ class Heston(SDE):
         """
         return float(param.mean_v * (1 - self.coef_big_a(param=param, aggh=aggh)))
 
-    def coef_small_a(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_a(self, *, param: HestonParam, aggh: float) -> float:
         """Coefficient a_h in exact discretization of volatility.
 
         Parameters
@@ -95,7 +96,7 @@ class Heston(SDE):
         """
         return float((1 - self.coef_big_a(param=param, aggh=aggh)) / param.kappa / aggh)
 
-    def coef_small_c(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def coef_small_c(self, *, param: HestonParam, aggh: float) -> float:
         """Coefficient c_h in exact discretization of volatility.
 
         Parameters
@@ -113,7 +114,7 @@ class Heston(SDE):
         return float(param.mean_v * (1 - self.coef_small_a(param=param, aggh=aggh)))
 
     @staticmethod
-    def mean_vol(*, param: Any, aggh: float) -> float:  # noqa: ARG004, ANN401
+    def mean_vol(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -128,9 +129,11 @@ class Heston(SDE):
         float
 
         """
+        _ = aggh
+        assert isinstance(param, HestonParam)
         return float(param.mean_v)
 
-    def mean_vol2(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_vol2(self, *, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of squared realized volatiliy.
 
         Parameters
@@ -145,12 +148,13 @@ class Heston(SDE):
         float
 
         """
+        assert isinstance(param, HestonParam)
         return float(
             (param.eta / param.kappa) ** 2 * self.coef_small_c(param=param, aggh=aggh) / aggh + param.mean_v**2
         )
 
     @staticmethod
-    def mean_ret(*, param: Any, aggh: float) -> float:  # noqa: ARG004, ANN401
+    def mean_ret(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns.
 
         Parameters
@@ -165,9 +169,11 @@ class Heston(SDE):
         float
 
         """
+        _ = aggh
+        assert isinstance(param, HestonParam)
         return float((param.lmbd - 0.5) * param.mean_v)
 
-    def mean_cross(self, *, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_cross(self, *, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns times volatility.
 
         Parameters
@@ -182,13 +188,16 @@ class Heston(SDE):
         float
 
         """
+        assert isinstance(param, HestonParam)
         p = param
         val = (p.lmbd - 0.5) * self.mean_vol2(param=param, aggh=aggh) + (
             p.rho * p.eta / p.kappa * self.coef_small_c(param=param, aggh=aggh) / aggh
         )
         return float(val)
 
-    def realized_const(self, *, param: Any = None, aggh: float = 1, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def realized_const(
+        self, *, param: GenericParam | None = None, aggh: float = 1, subset: slice | None = None
+    ) -> np.ndarray:
         """Intercept in the realized moment conditions.
 
         Parameters
@@ -206,6 +215,10 @@ class Heston(SDE):
             Intercept
 
         """
+        if param is None:
+            param = self.param
+        assert param is not None
+        assert isinstance(param, HestonParam)
         res = (
             (self.mat_a0(param=param, aggh=1) + self.mat_a1(param=param, aggh=1) + self.mat_a2(param=param, aggh=1))
             * self.depvar_unc_mean(param=param, aggh=aggh)
@@ -215,7 +228,7 @@ class Heston(SDE):
         return np.squeeze(res)
 
     @staticmethod
-    def mat_a0(*, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG004, ANN401
+    def mat_a0(*, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_0 in integrated moments.
 
         Parameters
@@ -231,9 +244,10 @@ class Heston(SDE):
             Matrix A_0
 
         """
+        _ = (param, aggh)
         return np.diag([0, 1, 0, 0]).astype(float)
 
-    def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG002, ANN401
+    def mat_a1(self, *, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_1 in integrated moments.
 
         Parameters
@@ -249,12 +263,13 @@ class Heston(SDE):
             Matrix A_1
 
         """
+        _ = aggh
         mat_a = np.diag([1, 0, 0, 1]).astype(float)
         mat_a[1, 1] = -self.coef_big_a(param=param, aggh=1) * (1 + self.coef_big_a(param=param, aggh=1))
         mat_a[3, 1] = 0.5 - param.lmbd
         return mat_a
 
-    def mat_a2(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG002, ANN401
+    def mat_a2(self, *, param: HestonParam, aggh: float) -> np.ndarray:
         """Matrix A_2 in integrated moments.
 
         Parameters
@@ -270,6 +285,7 @@ class Heston(SDE):
             Matrix A_2
 
         """
+        _ = aggh
         mat_a = np.diag(
             [
                 -self.coef_big_a(param=param, aggh=1),
@@ -282,7 +298,7 @@ class Heston(SDE):
         mat_a[3, 1] = (param.lmbd - 0.5) * self.coef_big_a(param=param, aggh=1)
         return mat_a
 
-    def mat_a(self, *, param: Any, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def mat_a(self, *, param: GenericParam, subset: slice | None = None) -> np.ndarray:
         """Matrix A in integrated moments.
 
         Parameters
@@ -298,6 +314,7 @@ class Heston(SDE):
             Matrix A
 
         """
+        assert isinstance(param, HestonParam)
         mat_a_tuple = (
             self.mat_a0(param=param, aggh=1),
             self.mat_a1(param=param, aggh=1),
@@ -309,7 +326,7 @@ class Heston(SDE):
         return np.squeeze(res)
 
     @staticmethod
-    def realized_depvar(*, data: Any, subset: slice | None = None) -> np.ndarray:  # noqa: ANN401
+    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Array of the left-hand side variables in realized moment conditions.
 
         Parameters

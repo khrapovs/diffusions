@@ -22,6 +22,10 @@ class GenericParam(ABC):
     """
 
     measure: str = "P"
+    mat_k0: Any
+    mat_k1: Any
+    mat_h0: Any
+    mat_h1: Any
 
     def __init__(self) -> None:
         """Initialize class."""
@@ -87,7 +91,7 @@ class GenericParam(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_names() -> list[str]:
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
         """Return parameter names.
 
         Returns
@@ -99,7 +103,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @abstractmethod
-    def get_theta(self) -> np.ndarray:
+    def get_theta(self, *, subset: str = "all", measure: str = "P") -> np.ndarray:
         """Return vector of parameters.
 
         Returns
@@ -111,7 +115,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_bounds(*, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:  # noqa: ARG004
+    def get_bounds(*, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:
         """Get parameter bounds.
 
         Returns
@@ -120,6 +124,7 @@ class GenericParam(ABC):
             Parameter bounds
 
         """
+        _ = (subset, measure)
         return None
 
     def get_constraints(self) -> tuple[dict[str, Any], ...] | list[dict[str, Any]] | tuple[()]:

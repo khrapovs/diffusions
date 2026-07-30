@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
 import numpy as np
-from mygmm import GMM
+from mygmm import GMM, Results
 
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 
@@ -43,7 +43,7 @@ class SDE(ABC):
 
     """
 
-    def __init__(self, param: Any = None) -> None:  # noqa: ANN401
+    def __init__(self, param: GenericParam | None = None) -> None:
         """Initialize the class.
 
         Parameters
@@ -57,7 +57,7 @@ class SDE(ABC):
         self.param: Any = param
         self.errors: np.ndarray | None = None
 
-    def update_theta(self, param: GenericParam | object) -> None:
+    def update_theta(self, param: GenericParam) -> None:
         """Update model parameters.
 
         Parameters
@@ -74,25 +74,25 @@ class SDE(ABC):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def realized_depvar(*, data: Any, subset: Any = None) -> Any:  # noqa: ANN401
+    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Realized dependent variables."""
         raise NotImplementedError("Must be overridden")
 
-    def mat_a(self, *, param: Any, subset: Any = None) -> Any:  # noqa: ANN401
+    def mat_a(self, *, param: GenericParam, subset: slice | None = None) -> np.ndarray:
         """Matrix A in integrated moments."""
         raise NotImplementedError("Must be overridden")
 
     def realized_const(
         self,
         *,
-        param: Any = None,  # noqa: ANN401
-        aggh: Any = 1,  # noqa: ANN401
-        subset: Any = None,  # noqa: ANN401
-    ) -> Any:  # noqa: ANN401
+        param: GenericParam | None = None,
+        aggh: float = 1,
+        subset: slice | None = None,
+    ) -> np.ndarray:
         """Realized constant in integrated moments."""
         raise NotImplementedError("Must be overridden")
 
-    def euler_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def euler_loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Euler location.
 
         Parameters
@@ -110,7 +110,7 @@ class SDE(ABC):
         """
         return ajd_drift(state=state, theta=theta)
 
-    def euler_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def euler_scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Euler scale.
 
         Parameters
@@ -128,7 +128,7 @@ class SDE(ABC):
         """
         return ajd_diff(state=state, theta=theta)
 
-    def loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Location.
 
         Parameters
@@ -146,7 +146,7 @@ class SDE(ABC):
         """
         return self.euler_loc(state=state, theta=theta)
 
-    def scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Scale.
 
         Parameters
@@ -164,45 +164,45 @@ class SDE(ABC):
         """
         return self.euler_scale(state=state, theta=theta)
 
-    def exact_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def exact_loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Exact location."""
         return self.euler_loc(state=state, theta=theta)
 
-    def exact_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def exact_scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Exact scale."""
         return self.euler_scale(state=state, theta=theta)
 
     @staticmethod
-    def mean_vol(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_vol(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of volatility."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_vol2(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_vol2(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of squared volatility."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_ret(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_ret(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of returns."""
         raise NotImplementedError
 
     @staticmethod
-    def mean_cross(*, param: Any, aggh: float) -> float:  # noqa: ANN401
+    def mean_cross(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of returns times volatility."""
         raise NotImplementedError
 
     def momcond(
         self,
         *,
-        theta: Any,  # noqa: ANN401
-        data: Any = None,  # noqa: ANN401
+        theta: GenericParam | np.ndarray | Sequence[float],
+        data: np.ndarray | Sequence[np.ndarray] | None = None,
         instrlag: int = 1,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Moment conditions."""
         raise NotImplementedError
 
-    def depvar_unc_mean(self, *, param: GenericParam | object, aggh: float) -> np.ndarray:
+    def depvar_unc_mean(self, *, param: GenericParam, aggh: float) -> np.ndarray:
         """Unconditional means of realized data.
 
         Parameters
@@ -255,15 +255,15 @@ class SDE(ABC):
     def simulate(
         self,
         *,
-        start: Any = None,  # noqa: ANN401
+        start: np.ndarray | float | Sequence[float] | None = None,
         nsub: int = 80,
         ndiscr: int = 1,
         nobs: int = 500,
         nsim: int = 1,
-        diff: Any = None,  # noqa: ANN401
+        diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
-    ) -> Any:  # noqa: ANN401
+    ) -> np.ndarray:
         """Simulate observations from the model.
 
         Parameters
@@ -338,16 +338,16 @@ class SDE(ABC):
     def sim_realized(
         self,
         *,
-        start: Any = None,  # noqa: ANN401
+        start: np.ndarray | float | Sequence[float] | None = None,
         nsub: int = 80,
         ndiscr: int = 10,
         aggh: int = 1,
         nperiods: int = 500,
         nsim: int = 1,
-        diff: Any = None,  # noqa: ANN401
+        diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
-    ) -> tuple[Any, Any]:  # noqa: ANN401
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Simulate realized returns and variance from the model.
 
         Parameters
@@ -406,7 +406,7 @@ class SDE(ABC):
         ndiscr: int = 10,
         nperiods: int = 500,
         nsim: int = 1,
-        diff: Any = None,  # noqa: ANN401
+        diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
     ) -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
@@ -477,14 +477,14 @@ class SDE(ABC):
     def gmmest(
         self,
         *,
-        theta_start: Any,  # noqa: ANN401
-        data: Any = None,  # noqa: ANN401
+        theta_start: GenericParam,
+        data: np.ndarray | Sequence[np.ndarray] | None = None,
         instrlag: int = 1,
         iter: int = 2,
         method: str = "BFGS",
         kernel: str = "Bartlett",
         band: int | None = None,
-    ) -> object:
+    ) -> Results:
         """Estimate model parameters using GMM.
 
         Parameters
@@ -523,22 +523,22 @@ class SDE(ABC):
     def integrated_gmm(
         self,
         *,
-        param_start: GenericParam | object,
-        data: object = None,
-        instr_data: object = None,
+        param_start: GenericParam,
+        data: np.ndarray | Sequence[Any] | tuple[Any, ...] | None = None,
+        instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
-        aggh: object = 1,
+        aggh: float | Sequence[float] = 1,
         instrlag: int = 1,
         subset: str = "all",
         measure: str = "P",
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
-        constraints: object = (),
+        constraints: Sequence[dict[str, object]] | dict[str, object] | tuple[()] = (),
         iter: int = 2,
         method: str = "BFGS",
         kernel: str = "Bartlett",
         band: int | None = None,
-    ) -> object:
+    ) -> Results:
         """Estimate model parameters using Integrated GMM.
 
         Parameters
@@ -585,12 +585,12 @@ class SDE(ABC):
 
         """
         estimator = GMM(self.integrated_mom)
-        self.param: Any = param_start
-        theta_start = self.param.get_theta(subset=subset, measure=measure)
+        self.param = param_start
+        theta_start = self.param.get_theta(subset=subset, measure=measure)  # type: ignore[call-arg]
         if names is None:
-            names = self.param.get_names(subset=subset, measure=measure)
+            names = self.param.get_names(subset=subset, measure=measure)  # type: ignore[call-arg]
         if bounds is None:
-            bounds = self.param.get_bounds(subset=subset, measure=measure)
+            bounds = self.param.get_bounds(subset=subset, measure=measure)  # type: ignore[call-arg]
         if constraints == ():
             constraints = self.param.get_constraints()
         return estimator.gmmest(
@@ -615,14 +615,14 @@ class SDE(ABC):
         self,
         *,
         theta: np.ndarray | Sequence[float],
-        data: object = None,
-        instr_data: object = None,
+        data: np.ndarray | Sequence[np.ndarray] | None = None,
+        instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
-        aggh: object = 1,
+        aggh: float | Sequence[float] = 1,
         subset: str = "all",
         instrlag: int = 1,
         measure: str = "P",
-    ) -> tuple[np.ndarray, Any]:
+    ) -> tuple[np.ndarray, np.ndarray | None]:
         """Integrated moment function.
 
         Parameters
@@ -665,6 +665,7 @@ class SDE(ABC):
         if subset == "vol":
             subset_sl = slice(2)
 
+        assert self.param is not None
         self.param.update(theta=theta, subset=subset, measure=measure)
         lag = 2
 
@@ -680,16 +681,18 @@ class SDE(ABC):
                 # (nobs - lag, 4) array
                 error.append(
                     depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T)
-                    - self.realized_const(param=self.param, aggh=agg, subset=subset_sl)
+                    - self.realized_const(param=self.param, aggh=float(cast(float, agg)), subset=subset_sl)
                 )
 
             error = np.hstack(error)
 
         else:
-            depvar = self.realized_depvar(data=data)[lag:]  # type: ignore[arg-type]
+            assert data is not None
+            depvar = self.realized_depvar(data=data)[lag:]
+            aggh_val = aggh[0] if isinstance(aggh, Sequence) and not isinstance(aggh, (str, bytes)) else float(aggh)  # type: ignore[arg-type]
             # (nobs - lag, 4) array
             error = depvar.dot(self.mat_a(param=self.param, subset=subset_sl).T) - self.realized_const(
-                param=self.param, aggh=aggh, subset=subset_sl
+                param=self.param, aggh=float(cast(float, aggh_val)), subset=subset_sl
             )
 
         nobs = error.shape[0] + lag

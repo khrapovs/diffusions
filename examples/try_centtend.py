@@ -1,8 +1,6 @@
-# ruff: noqa
 """Try Central Tendency model."""
 
 from __future__ import annotations
-
 
 import itertools
 import time
@@ -74,7 +72,7 @@ def try_simulation_pq() -> None:
         eta_y=eta_y,
         rho=rho,
     )
-    centtend = CentTend(param_true)
+    _ = CentTend(param_true)
     print(param_true)
     print(param_true.is_valid())
 
@@ -164,11 +162,8 @@ def try_sim_realized() -> None:
     plt.show()
 
 
-def try_sim_realized_pq():
-    """Simulate realized data from Central Tendency model
-    under P and Q measures.
-
-    """
+def try_sim_realized_pq() -> None:
+    """Simulate realized data from Central Tendency model under P and Q measures."""
     riskfree = 0.0
     lmbd = 1.01
     lmbd_s, lmbd_y = 0.5, 0.5
@@ -209,7 +204,7 @@ def try_sim_realized_pq():
     )
 
 
-def try_integrated_gmm_single():
+def try_integrated_gmm_single() -> None:
     """Simulate realized data from Central Tendency model. Estimate parameters."""
     riskfree = 0.0
     mean_v = 0.2
@@ -274,7 +269,7 @@ def try_integrated_gmm_single():
     print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-def try_integrated_gmm_real():
+def try_integrated_gmm_real() -> None:
     """Estimate Central Tendency model parameters with real data."""
     riskfree = 0.0
 
@@ -327,8 +322,9 @@ def try_integrated_gmm_real():
     print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
-def try_integrated_gmm_opt_methods():
+def try_integrated_gmm_opt_methods() -> None:
     """Simulate realized data from Central Tendency model. Estimate parameters.
+
     Check various optimization methods.
 
     """
