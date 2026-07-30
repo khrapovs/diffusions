@@ -28,7 +28,7 @@ class CIRparam(GenericParam):
 
     """
 
-    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:  # noqa: ARG002
+    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:
         """Initialize class.
 
         Parameters
@@ -46,6 +46,7 @@ class CIRparam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        _ = measure
         super().__init__()
         self.mean = mean
         self.kappa = kappa
@@ -88,7 +89,7 @@ class CIRparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: ARG002
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -101,6 +102,7 @@ class CIRparam(GenericParam):
             Probability measure
 
         """
+        _ = (subset, measure)
         self.mean, self.kappa, self.eta = float(theta[0]), float(theta[1]), float(theta[2])
         self.update_ajd()
 
@@ -129,7 +131,7 @@ class CIRparam(GenericParam):
         _ = (subset, measure)
         return ["mean", "kappa", "eta"]
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: ARG002
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
         """Return vector of parameters.
 
         Returns
@@ -138,4 +140,5 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
+        _ = (subset, measure)
         return np.array([self.mean, self.kappa, self.eta])

@@ -246,7 +246,7 @@ class Heston(SDE):
         _ = (param, aggh)
         return np.diag([0, 1, 0, 0]).astype(float)
 
-    def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG002, ANN401
+    def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
         """Matrix A_1 in integrated moments.
 
         Parameters
@@ -262,12 +262,13 @@ class Heston(SDE):
             Matrix A_1
 
         """
+        _ = aggh
         mat_a = np.diag([1, 0, 0, 1]).astype(float)
         mat_a[1, 1] = -self.coef_big_a(param=param, aggh=1) * (1 + self.coef_big_a(param=param, aggh=1))
         mat_a[3, 1] = 0.5 - param.lmbd
         return mat_a
 
-    def mat_a2(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG002, ANN401
+    def mat_a2(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
         """Matrix A_2 in integrated moments.
 
         Parameters
@@ -283,6 +284,7 @@ class Heston(SDE):
             Matrix A_2
 
         """
+        _ = aggh
         mat_a = np.diag(
             [
                 -self.coef_big_a(param=param, aggh=1),

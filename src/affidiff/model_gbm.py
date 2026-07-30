@@ -218,8 +218,8 @@ class GBM(SDE):
         self,
         *,
         param: GenericParam | np.ndarray | Sequence[float] | None = None,
-        aggh: float = 1,  # noqa: ARG002
-        subset: slice | None = None,  # noqa: ARG002
+        aggh: float = 1,
+        subset: slice | None = None,
     ) -> np.ndarray:
         """Intercept in the realized moment conditions.
 
@@ -238,6 +238,7 @@ class GBM(SDE):
             Intercept
 
         """
+        _ = (aggh, subset)
         if param is None:
             param = self.param
         assert param is not None
@@ -297,12 +298,12 @@ class GBM(SDE):
         *,
         theta: GenericParam | np.ndarray | Sequence[float],
         data: np.ndarray | Sequence[np.ndarray] | None = None,
-        instr_data: np.ndarray | None = None,  # noqa: ARG002
-        instr_choice: str = "const",  # noqa: ARG002
-        aggh: float | Sequence[float] = 1,  # noqa: ARG002
-        subset: str = "all",  # noqa: ARG002
+        instr_data: np.ndarray | None = None,
+        instr_choice: str = "const",
+        aggh: float | Sequence[float] = 1,
+        subset: str = "all",
         instrlag: int = 1,
-        measure: str = "P",  # noqa: ARG002
+        measure: str = "P",
     ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 
@@ -333,6 +334,7 @@ class GBM(SDE):
             Average derivative of the moment restrictions
 
         """
+        _ = (instr_data, instr_choice, aggh, subset, measure)
         assert data is not None
         # (nobs - instrlag, 3) array
         error = self.realized_depvar(data=data).T[instrlag:] - self.realized_const(param=theta)

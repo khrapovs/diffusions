@@ -26,7 +26,7 @@ class GBMparam(GenericParam):
 
     """
 
-    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: str = "P") -> None:  # noqa: ARG002
+    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: str = "P") -> None:
         """Initialize class.
 
         Parameters
@@ -42,6 +42,7 @@ class GBMparam(GenericParam):
                 - 'Q' : risk-neutral
 
         """
+        _ = measure
         super().__init__()
         self.mean = mean
         self.sigma = sigma
@@ -81,7 +82,7 @@ class GBMparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:  # noqa: ARG002
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -94,6 +95,7 @@ class GBMparam(GenericParam):
             Probability measure
 
         """
+        _ = (subset, measure)
         self.mean, self.sigma = float(theta[0]), float(theta[1])
         self.update_ajd()
 
@@ -122,7 +124,7 @@ class GBMparam(GenericParam):
         _ = (subset, measure)
         return ["mean", "sigma"]
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: ARG002
+    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
         """Return vector of parameters.
 
         Returns
@@ -131,4 +133,5 @@ class GBMparam(GenericParam):
             Parameter vector
 
         """
+        _ = (subset, measure)
         return np.array([self.mean, self.sigma])
