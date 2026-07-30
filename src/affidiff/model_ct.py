@@ -247,7 +247,7 @@ class CentTend(SDE):
         ]
 
     @staticmethod
-    def mean_vol(*, param: GenericParam, aggh: float) -> float:  # noqa: ARG004
+    def mean_vol(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -262,6 +262,7 @@ class CentTend(SDE):
         float
 
         """
+        _ = aggh
         assert isinstance(param, CentTendParam)
         return float(param.mean_v)
 
@@ -288,7 +289,7 @@ class CentTend(SDE):
         )
 
     @staticmethod
-    def mean_ret(*, param: GenericParam, aggh: float) -> float:  # noqa: ARG004
+    def mean_ret(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns.
 
         Parameters
@@ -303,6 +304,7 @@ class CentTend(SDE):
         float
 
         """
+        _ = aggh
         assert isinstance(param, CentTendParam)
         return float((param.lmbd - 0.5) * param.mean_v)
 

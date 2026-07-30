@@ -117,7 +117,7 @@ class CIRparam(GenericParam):
         return "CIR"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:  # noqa: ARG004
+    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
         """Return parameter names.
 
         Returns
@@ -126,6 +126,7 @@ class CIRparam(GenericParam):
             Parameter names
 
         """
+        _ = (subset, measure)
         return ["mean", "kappa", "eta"]
 
     def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:  # noqa: ARG002

@@ -35,7 +35,7 @@ class GBM(SDE):
         return [1.0]
 
     @staticmethod
-    def drift(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:  # noqa: ARG004
+    def drift(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:
         """Drift function.
 
         Parameters
@@ -51,12 +51,13 @@ class GBM(SDE):
             Drift value
 
         """
+        _ = state
         if isinstance(theta, GBMparam):
             return theta.mean - theta.sigma**2 / 2
         return float(theta[0]) - float(theta[1]) ** 2 / 2
 
     @staticmethod
-    def diff(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:  # noqa: ARG004
+    def diff(*, state: np.ndarray | float, theta: GBMparam | np.ndarray | Sequence[float]) -> np.ndarray | float:
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -72,6 +73,7 @@ class GBM(SDE):
             Diffusion value
 
         """
+        _ = state
         if isinstance(theta, GBMparam):
             return theta.sigma
         return float(theta[1])
@@ -192,7 +194,7 @@ class GBM(SDE):
         )
 
     @staticmethod
-    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:  # noqa: ARG004
+    def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Array of the left-hand side variables in realized moment conditions.
 
         Parameters
@@ -208,6 +210,7 @@ class GBM(SDE):
             Dependend variables
 
         """
+        _ = subset
         ret, rvar = data
         return np.vstack([ret, rvar, rvar**2])
 

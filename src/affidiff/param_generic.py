@@ -115,7 +115,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @staticmethod
-    def get_bounds(*, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:  # noqa: ARG004
+    def get_bounds(*, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]] | None:
         """Get parameter bounds.
 
         Returns
@@ -124,6 +124,7 @@ class GenericParam(ABC):
             Parameter bounds
 
         """
+        _ = (subset, measure)
         return None
 
     def get_constraints(self) -> tuple[dict[str, Any], ...] | list[dict[str, Any]] | tuple[()]:

@@ -114,7 +114,7 @@ class Heston(SDE):
         return float(param.mean_v * (1 - self.coef_small_a(param=param, aggh=aggh)))
 
     @staticmethod
-    def mean_vol(*, param: GenericParam, aggh: float) -> float:  # noqa: ARG004
+    def mean_vol(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized volatiliy.
 
         Parameters
@@ -129,6 +129,7 @@ class Heston(SDE):
         float
 
         """
+        _ = aggh
         assert isinstance(param, HestonParam)
         return float(param.mean_v)
 
@@ -153,7 +154,7 @@ class Heston(SDE):
         )
 
     @staticmethod
-    def mean_ret(*, param: GenericParam, aggh: float) -> float:  # noqa: ARG004
+    def mean_ret(*, param: GenericParam, aggh: float) -> float:
         """Unconditional mean of realized returns.
 
         Parameters
@@ -168,6 +169,7 @@ class Heston(SDE):
         float
 
         """
+        _ = aggh
         assert isinstance(param, HestonParam)
         return float((param.lmbd - 0.5) * param.mean_v)
 
@@ -225,7 +227,7 @@ class Heston(SDE):
         return np.squeeze(res)
 
     @staticmethod
-    def mat_a0(*, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG004, ANN401
+    def mat_a0(*, param: Any, aggh: float) -> np.ndarray:  # noqa: ANN401
         """Matrix A_0 in integrated moments.
 
         Parameters
@@ -241,6 +243,7 @@ class Heston(SDE):
             Matrix A_0
 
         """
+        _ = (param, aggh)
         return np.diag([0, 1, 0, 0]).astype(float)
 
     def mat_a1(self, *, param: Any, aggh: float) -> np.ndarray:  # noqa: ARG002, ANN401

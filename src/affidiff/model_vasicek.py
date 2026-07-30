@@ -60,7 +60,7 @@ class Vasicek(SDE):
         return theta.kappa * (theta.mean - state)
 
     @staticmethod
-    def diff(*, state: np.ndarray | float, theta: VasicekParam) -> float:  # noqa: ARG004
+    def diff(*, state: np.ndarray | float, theta: VasicekParam) -> float:
         """Diffusion (instantaneous volatility) function.
 
         Parameters
@@ -76,6 +76,7 @@ class Vasicek(SDE):
             Diffusion value
 
         """
+        _ = state
         return theta.eta
 
 
