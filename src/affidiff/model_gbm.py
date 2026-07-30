@@ -297,7 +297,7 @@ class GBM(SDE):
             Model parameters
         data : (2, nobs) array
             Returns and realized variance
-        instr_data : object
+        instr_data : array_like, optional
             Instrument data
         instr_choice : str
             Instrument choice

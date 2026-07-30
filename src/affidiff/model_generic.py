@@ -57,7 +57,7 @@ class SDE(ABC):
         self.param: Any = param
         self.errors: np.ndarray | None = None
 
-    def update_theta(self, param: GenericParam | object) -> None:
+    def update_theta(self, param: GenericParam) -> None:
         """Update model parameters.
 
         Parameters
@@ -92,7 +92,7 @@ class SDE(ABC):
         """Realized constant in integrated moments."""
         raise NotImplementedError("Must be overridden")
 
-    def euler_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def euler_loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Euler location.
 
         Parameters
@@ -110,7 +110,7 @@ class SDE(ABC):
         """
         return ajd_drift(state=state, theta=theta)
 
-    def euler_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def euler_scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Euler scale.
 
         Parameters
@@ -128,7 +128,7 @@ class SDE(ABC):
         """
         return ajd_diff(state=state, theta=theta)
 
-    def loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Location.
 
         Parameters
@@ -146,7 +146,7 @@ class SDE(ABC):
         """
         return self.euler_loc(state=state, theta=theta)
 
-    def scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Scale.
 
         Parameters
@@ -164,11 +164,11 @@ class SDE(ABC):
         """
         return self.euler_scale(state=state, theta=theta)
 
-    def exact_loc(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def exact_loc(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Exact location."""
         return self.euler_loc(state=state, theta=theta)
 
-    def exact_scale(self, *, state: np.ndarray, theta: GenericParam | object) -> np.ndarray:
+    def exact_scale(self, *, state: np.ndarray, theta: GenericParam) -> np.ndarray:
         """Exact scale."""
         return self.euler_scale(state=state, theta=theta)
 
@@ -202,7 +202,7 @@ class SDE(ABC):
         """Moment conditions."""
         raise NotImplementedError
 
-    def depvar_unc_mean(self, *, param: GenericParam | object, aggh: float) -> np.ndarray:
+    def depvar_unc_mean(self, *, param: GenericParam, aggh: float) -> np.ndarray:
         """Unconditional means of realized data.
 
         Parameters
@@ -484,7 +484,7 @@ class SDE(ABC):
         method: str = "BFGS",
         kernel: str = "Bartlett",
         band: int | None = None,
-    ) -> object:
+    ) -> Any:  # noqa: ANN401
         """Estimate model parameters using GMM.
 
         Parameters
@@ -523,22 +523,22 @@ class SDE(ABC):
     def integrated_gmm(
         self,
         *,
-        param_start: GenericParam | object,
-        data: object = None,
-        instr_data: object = None,
+        param_start: GenericParam,
+        data: Any = None,  # noqa: ANN401
+        instr_data: Any = None,  # noqa: ANN401
         instr_choice: str = "const",
-        aggh: object = 1,
+        aggh: float | Sequence[float] = 1,
         instrlag: int = 1,
         subset: str = "all",
         measure: str = "P",
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
-        constraints: object = (),
+        constraints: Any = (),  # noqa: ANN401
         iter: int = 2,
         method: str = "BFGS",
         kernel: str = "Bartlett",
         band: int | None = None,
-    ) -> object:
+    ) -> Any:  # noqa: ANN401
         """Estimate model parameters using Integrated GMM.
 
         Parameters
@@ -615,10 +615,10 @@ class SDE(ABC):
         self,
         *,
         theta: np.ndarray | Sequence[float],
-        data: object = None,
-        instr_data: object = None,
+        data: Any = None,  # noqa: ANN401
+        instr_data: Any = None,  # noqa: ANN401
         instr_choice: str = "const",
-        aggh: object = 1,
+        aggh: float | Sequence[float] = 1,
         subset: str = "all",
         instrlag: int = 1,
         measure: str = "P",
