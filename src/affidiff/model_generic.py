@@ -9,16 +9,12 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 import numpy as np
 from mygmm import GMM, Results
 
+from affidiff._cython import get_cython_simulate
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 from affidiff.random import get_random_generator
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
-
-try:
-    from affidiff.simulate import simulate  # type: ignore
-except Exception:
-    simulate = None
 
 
 class SDE(ABC):
@@ -318,10 +314,16 @@ class SDE(ABC):
             self.errors = nice_errors(errors=self.errors, sdim=1)
 
         if cython:
-            assert simulate is not None
+            cython_simulate = get_cython_simulate()
+            if cython_simulate is None:
+                raise RuntimeError(
+                    "Cython simulation is not available. "
+                    "Ensure the affidiff.simulate extension is built and installed. "
+                    "Try: uv build && uv sync"
+                )
             dt = 1 / ndiscr / nsub
 
-            paths = simulate(
+            paths = cython_simulate(
                 self.errors,
                 np.atleast_1d(start).astype(float),
                 np.atleast_1d(self.param.mat_k0).astype(float),
