@@ -7,9 +7,6 @@ from collections.abc import Callable
 def get_cython_simulate() -> Callable | None:
     """Load the Cython simulate function if available.
 
-    Uses functools.lru_cache for lazy loading with caching.
-    First call loads and caches the result, subsequent calls return the cached value.
-
     Returns
     -------
     Callable or None
