@@ -10,7 +10,18 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# Create the extension module
+# Cythonize the .pyx file
+execute_process(
+  COMMAND "${Python_EXECUTABLE}" -m cython "src/affidiff/simulate.pyx"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  RESULT_VARIABLE CYTHON_RESULT
+)
+
+if(NOT CYTHON_RESULT EQUAL 0)
+  message(FATAL_ERROR "Cythonization of simulate.pyx failed")
+endif()
+
+# Create the extension module from generated .c file
 python_add_library(simulate MODULE
   "src/affidiff/simulate.c"
   WITH_SOABI

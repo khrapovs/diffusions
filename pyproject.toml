@@ -23,7 +23,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["scikit-build-core>=0.10", "numpy>=2.4.4", "scipy>=1.17.1"]
+requires = ["scikit-build-core>=0.10", "numpy>=2.4.4", "scipy>=1.17.1", "Cython>=3.0"]
 build-backend = "scikit_build_core.build"
 
 [tool.commitizen]
