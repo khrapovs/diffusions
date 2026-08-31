@@ -267,6 +267,7 @@ class SDE(ABC):
         diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
+        seed: int | None = None,
     ) -> np.ndarray:
         """Simulate observations from the model.
 
@@ -290,6 +291,8 @@ class SDE(ABC):
             or use already stored (False)
         cython : bool
             Whether to use cython-optimized simulation (True) or not (False)
+        seed : int, optional
+            Random seed for reproducibility. If None (default), simulations are non-reproducible.
 
         Returns
         -------
@@ -307,6 +310,8 @@ class SDE(ABC):
         npoints = nobs * ndiscr
 
         if self.errors is None or new_innov:
+            # Initialize random number generator with provided seed
+            self.rng = get_random_generator(seed=seed)
             # Generate new errors
             self.errors = self.rng.normal(size=(npoints, nsim, nvars))
             # Standardize the errors
