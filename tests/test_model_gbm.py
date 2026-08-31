@@ -20,15 +20,7 @@ class TestGBMSimulation:
 
         start, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 2
         nobs = nperiods * nsub
-        paths = gbm.simulate(
-            start=start,
-            nsub=nsub,
-            ndiscr=ndiscr,
-            nobs=nobs,
-            nsim=nsim,
-            diff=0,
-            cython=False,
-        )
+        paths = gbm.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=False)
 
         # After simulation and nice_errors antithetic sampling, nsim is doubled
         # Output shape: (nobs, 2*nsim, nvars) where nvars = 1 for GBM
@@ -60,15 +52,7 @@ class TestGBMSimulation:
 
         start, nperiods, nsub, ndiscr, nsim = 1, 500, 2, 10, 2
         nobs = nperiods * nsub
-        paths = gbm.simulate(
-            start=start,
-            nsub=nsub,
-            ndiscr=ndiscr,
-            nobs=nobs,
-            nsim=nsim,
-            diff=0,
-            cython=True,
-        )
+        paths = gbm.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=True)
 
         # After simulation and nice_errors antithetic sampling, nsim is doubled
         # Output shape: (nobs, 2*nsim, nvars) where nvars = 1 for GBM
@@ -105,27 +89,11 @@ class TestGBMSimulation:
 
         # Simulate with Python backend
         np.random.seed(42)
-        paths_py = gbm_py.simulate(
-            start=start,
-            nsub=nsub,
-            ndiscr=ndiscr,
-            nobs=nobs,
-            nsim=nsim,
-            diff=0,
-            cython=False,
-        )
+        paths_py = gbm_py.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=False)
 
         # Simulate with Cython backend (same seed)
         np.random.seed(42)
-        paths_cy = gbm_cy.simulate(
-            start=start,
-            nsub=nsub,
-            ndiscr=ndiscr,
-            nobs=nobs,
-            nsim=nsim,
-            diff=0,
-            cython=True,
-        )
+        paths_cy = gbm_cy.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=True)
 
         # Both should have same shape
         assert paths_py.shape == paths_cy.shape
