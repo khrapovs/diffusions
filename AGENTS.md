@@ -29,6 +29,15 @@
     uv run prek run -v --show-diff-on-failure --all-files
     ```
 
+## Build System
+
+- **Modern build backend**: Uses `scikit-build-core` with PEP 517 instead of legacy `setup.py`.
+- **Cython compilation**: The `simulate.pyx` module is pre-compiled to `simulate.c` and built via CMakeLists.txt.
+- **Workflow for Cython changes**:
+  1. Edit `src/affidiff/simulate.pyx` as needed
+  2. Pre-compile to C: `uv run cython src/affidiff/simulate.pyx`
+  3. Build with `uv build`
+  4. Test with `uv run pytest`
 
 # DOX framework
 

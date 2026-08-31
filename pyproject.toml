@@ -2,6 +2,7 @@
 name = "affidiff"
 description = "Affine Diffusions. Simulation and estimation."
 readme = "README.md"
+version = "1.0.0"
 requires-python = ">=3.14"
 authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 dependencies = [
@@ -12,27 +13,24 @@ dependencies = [
   "seaborn>=0.13.2",
   "statsmodels>=0.14.6",
 ]
-dynamic = ["version"]
 
 [dependency-groups]
 dev = [
+  "Cython>=3.0",
   "prek>=0.4.11",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
 ]
 
 [build-system]
-requires = ["hatchling", "uv-dynamic-versioning"]
-build-backend = "hatchling.build"
+requires = ["scikit-build-core>=0.10", "numpy>=2.4.4", "scipy>=1.17.1"]
+build-backend = "scikit_build_core.build"
 
 [tool.commitizen]
 version_scheme = "semver"
 version_provider = "scm"
 update_changelog_on_bump = true
 tag_format = "v$version"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
 
 [tool.pytest.ini_options]
 addopts = "--cov-config=.coveragerc"
