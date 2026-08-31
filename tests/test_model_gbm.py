@@ -62,12 +62,14 @@ class TestGBMSimulation:
         nobs = nperiods * nsub
 
         # Simulate with Python backend
-        np.random.seed(42)
-        paths_py = gbm_py.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=False)
+        paths_py = gbm_py.simulate(
+            start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=False, seed=42
+        )
 
         # Simulate with Cython backend (same seed)
-        np.random.seed(42)
-        paths_cy = gbm_cy.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=True)
+        paths_cy = gbm_cy.simulate(
+            start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, cython=True, seed=42
+        )
 
         # Both should have same shape
         assert paths_py.shape == paths_cy.shape

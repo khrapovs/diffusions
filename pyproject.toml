@@ -20,6 +20,7 @@ dev = [
   "prek>=0.4.11",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
+  "scipy-stubs~=1.17.1",
 ]
 
 [build-system]
