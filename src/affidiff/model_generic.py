@@ -248,7 +248,9 @@ class SDE(ABC):
         scale = self.euler_scale(state=state, theta=self.param)
 
         assert self.ndiscr is not None
-        new_state = loc / self.ndiscr + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T / self.ndiscr**0.5
+        assert self.nsub is not None
+        dt = 1 / self.ndiscr / self.nsub
+        new_state = loc * dt + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T * np.sqrt(dt)
 
         return new_state
 
