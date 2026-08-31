@@ -32,4 +32,3 @@ target_include_directories(simulate PRIVATE ${NumPy_INCLUDE_DIRS})
 
 # Install the module
 install(TARGETS simulate DESTINATION affidiff)
-

@@ -1,7 +1,6 @@
 """Test suite for GBM model simulation."""
 
 import numpy as np
-import numpy.testing as npt
 
 from affidiff import GBM, GBMparam
 

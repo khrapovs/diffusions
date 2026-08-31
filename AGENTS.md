@@ -29,6 +29,8 @@
     uv run prek run -v --show-diff-on-failure --all-files
     ```
 
+- Do not commit anything. Only add to the staging area. Committing is the responsibility of the user.
+
 ## Build System
 
 - **Modern build backend**: Uses `scikit-build-core` with PEP 517 instead of legacy `setup.py`.
