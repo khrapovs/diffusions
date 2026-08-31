@@ -10,6 +10,7 @@ import numpy as np
 from mygmm import GMM, Results
 
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
+from affidiff.random import get_random_generator
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -56,6 +57,7 @@ class SDE(ABC):
         self.ndiscr: int | None = None
         self.param: Any = param
         self.errors: np.ndarray | None = None
+        self.rng = get_random_generator()
 
     def update_theta(self, param: GenericParam) -> None:
         """Update model parameters.
@@ -306,7 +308,7 @@ class SDE(ABC):
 
         if self.errors is None or new_innov:
             # Generate new errors
-            self.errors = np.random.normal(size=(npoints, nsim, nvars))
+            self.errors = self.rng.normal(size=(npoints, nsim, nvars))
             # Standardize the errors
             self.errors = nice_errors(errors=self.errors, sdim=1)
 
