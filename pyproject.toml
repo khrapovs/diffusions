@@ -29,7 +29,7 @@ build-backend = "scikit_build_core.build"
 
 [tool.commitizen]
 version_scheme = "semver"
-version_provider = "scm"
+version_provider = "uv"
 update_changelog_on_bump = true
 tag_format = "v$version"
 
