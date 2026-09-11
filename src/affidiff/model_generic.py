@@ -9,15 +9,12 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 import numpy as np
 from mygmm import GMM, Results
 
+from affidiff._cython import get_cython_simulate
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
+from affidiff.random import get_random_generator
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
-
-try:
-    from affidiff.simulate import simulate  # type: ignore
-except Exception:
-    simulate = None
 
 
 class SDE(ABC):
@@ -56,6 +53,7 @@ class SDE(ABC):
         self.ndiscr: int | None = None
         self.param: Any = param
         self.errors: np.ndarray | None = None
+        self.rng = get_random_generator()
 
     def update_theta(self, param: GenericParam) -> None:
         """Update model parameters.
@@ -248,7 +246,9 @@ class SDE(ABC):
         scale = self.euler_scale(state=state, theta=self.param)
 
         assert self.ndiscr is not None
-        new_state = loc / self.ndiscr + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T / self.ndiscr**0.5
+        assert self.nsub is not None
+        dt = 1 / self.ndiscr / self.nsub
+        new_state = loc * dt + (np.transpose(scale, axes=[1, 2, 0]) * error.T).sum(1).T * np.sqrt(dt)
 
         return new_state
 
@@ -263,6 +263,7 @@ class SDE(ABC):
         diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
+        seed: int | None = None,
     ) -> np.ndarray:
         """Simulate observations from the model.
 
@@ -286,6 +287,8 @@ class SDE(ABC):
             or use already stored (False)
         cython : bool
             Whether to use cython-optimized simulation (True) or not (False)
+        seed : int, optional
+            Random seed for reproducibility. If None (default), simulations are non-reproducible.
 
         Returns
         -------
@@ -303,16 +306,24 @@ class SDE(ABC):
         npoints = nobs * ndiscr
 
         if self.errors is None or new_innov:
+            # Initialize random number generator with provided seed
+            self.rng = get_random_generator(seed=seed)
             # Generate new errors
-            self.errors = np.random.normal(size=(npoints, nsim, nvars))
+            self.errors = self.rng.normal(size=(npoints, nsim, nvars))
             # Standardize the errors
             self.errors = nice_errors(errors=self.errors, sdim=1)
 
         if cython:
-            assert simulate is not None
+            cython_simulate = get_cython_simulate()
+            if cython_simulate is None:
+                raise RuntimeError(
+                    "Cython simulation is not available. "
+                    "Ensure the affidiff.simulate extension is built and installed. "
+                    "Try: uv build && uv sync"
+                )
             dt = 1 / ndiscr / nsub
 
-            paths = simulate(
+            paths = cython_simulate(
                 self.errors,
                 np.atleast_1d(start).astype(float),
                 np.atleast_1d(self.param.mat_k0).astype(float),

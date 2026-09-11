@@ -115,7 +115,7 @@ class GBM(SDE):
         scale = float(self.exact_scale(state=np.array(0), theta=param))
         return np.array([loc**2 + scale**2, 0], dtype=float)
 
-    def dbetamat(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
+    def dbetamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the first moment coefficients (numerical).
 
         Parameters
@@ -130,9 +130,9 @@ class GBM(SDE):
 
         """
         with np.errstate(divide="ignore"):
-            return nd.Jacobian(self.betamat)(theta)
+            return cast(np.ndarray, nd.Jacobian(self.betamat)(theta))
 
-    def dgammamat(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
+    def dgammamat(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the second moment coefficients (numerical).
 
         Parameters
@@ -147,7 +147,7 @@ class GBM(SDE):
 
         """
         with np.errstate(divide="ignore"):
-            return nd.Jacobian(self.gammamat)(theta)
+            return cast(np.ndarray, nd.Jacobian(self.gammamat)(theta))
 
     def dbetamat_exact(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the first moment coefficients (exact).
@@ -251,7 +251,7 @@ class GBM(SDE):
             raise TypeError("Invalid param type for realized_const")
         return np.array([mean - sigma**2 / 2, sigma**2, sigma**4])
 
-    def drealized_const(self, theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
+    def drealized_const(self, theta: np.ndarray | Sequence[float]) -> np.ndarray:
         """Calculate derivative of the intercept in the realized moment conditions.
 
         Parameters
@@ -266,11 +266,11 @@ class GBM(SDE):
 
         """
 
-        def _realized_const_wrapper(theta: GenericParam | np.ndarray | Sequence[float]) -> np.ndarray:
+        def _realized_const_wrapper(theta: np.ndarray | Sequence[float]) -> np.ndarray:
             return self.realized_const(param=theta)
 
         with np.errstate(divide="ignore"):
-            return nd.Jacobian(_realized_const_wrapper)(theta)
+            return cast(np.ndarray, nd.Jacobian(_realized_const_wrapper)(theta))
 
     @staticmethod
     def instruments(*, data: np.ndarray | Sequence[np.ndarray], instrlag: int = 1) -> np.ndarray:
@@ -336,6 +336,11 @@ class GBM(SDE):
         """
         _ = (instr_data, instr_choice, aggh, subset, measure)
         assert data is not None
+        # Convert theta to array if needed
+        try:
+            theta_vec = theta.get_theta()  # type: ignore
+        except AttributeError:
+            theta_vec = theta
         # (nobs - instrlag, 3) array
         error = self.realized_depvar(data=data).T[instrlag:] - self.realized_const(param=theta)
         # (nobs - instrlag, ninstr)
@@ -343,7 +348,7 @@ class GBM(SDE):
         # (nobs - instrlag, 3 * ninstr = nmoms)
         moms = columnwise_prod(left=error, right=instr)
         # (nintercepts, nparams)
-        dmoms = -self.drealized_const(theta)
+        dmoms = -self.drealized_const(theta_vec)  # type: ignore
         dmoments = []
         for minstr in instr.mean(0):
             dmoments.append(dmoms * minstr)
@@ -391,7 +396,7 @@ class GBM(SDE):
             theta_vec = theta
         linearcoef = [self.betamat(theta_vec), self.gammamat(theta_vec)]
         # Coefficients in the second moment (variance)
-        dlinearcoef = [self.dbetamat(theta), self.dgammamat(theta)]
+        dlinearcoef = [self.dbetamat(theta_vec), self.dgammamat(theta_vec)]
 
         modelerror = []
         for i in range(len(linearcoef)):

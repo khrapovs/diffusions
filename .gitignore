@@ -7,3 +7,6 @@ __pycache__/
 *.egg-info
 .coverage
 dist/
+*.so
+build/
+src/affidiff/simulate.c

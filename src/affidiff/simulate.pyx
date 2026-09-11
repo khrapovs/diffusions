@@ -39,7 +39,7 @@ def simulate(double[:, :, :] errors, double[:] start,
 
     """
     cdef:
-        Py_ssize_t i, j, s, t
+        Py_ssize_t i, j, s, t, k
         int info = 0
         int npoints = errors.shape[0]
         int nsim = errors.shape[1]
