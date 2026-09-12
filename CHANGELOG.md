@@ -1,3 +1,9 @@
+## v0.2.1 (2026-09-12)
+
+### Fix
+
+- Build with C extension for multiple platforms (#7)
+
 ## v0.2.0 (2026-09-11)
 
 ### Feat
