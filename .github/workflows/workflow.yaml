@@ -109,7 +109,7 @@ jobs:
     needs: [ build_wheels, build_sdist ]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: testpypi
       url: https://pypi.org/p/affidiff/
     permissions:
       id-token: write
