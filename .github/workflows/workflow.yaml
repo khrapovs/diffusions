@@ -62,8 +62,8 @@ jobs:
         include:
           - os: linux-intel
             runs-on: ubuntu-latest
-          - os: windows-intel
-            runs-on: windows-latest
+#          - os: windows-intel
+#            runs-on: windows-latest
           - os: macos-arm
             runs-on: macos-latest
     needs: [ test, code-quality ]
