@@ -16,27 +16,25 @@ if TYPE_CHECKING:
 TEST_CONFIG = {"nobs": 500, "nsub": 2, "ndiscr": 10, "nsim": 2, "seed": 42}
 
 
-def get_model_fixtures() -> list[tuple[type[SDE], type[GenericParam], GenericParam, int]]:
-    """Return list of (ModelClass, ParamClass, param_instance, nvars) tuples.
+def get_model_fixtures() -> list[tuple[type[SDE], GenericParam, int]]:
+    """Return list of (ModelClass, param_instance, nvars) tuples.
 
     Returns
     -------
-    list[tuple[type[SDE], type[GenericParam], GenericParam, int]]
+    list[tuple[type[SDE], GenericParam, int]]
         List of model fixtures where each tuple contains:
         - Model class (e.g., GBM, Vasicek)
-        - Parameter class (e.g., GBMparam, VasicekParam)
         - Parameter instance (initialized with test values)
         - Number of state variables (nvars)
 
     """
     return [
-        (GBM, GBMparam, GBMparam(mean=0.05, sigma=0.2), 1),
-        (Vasicek, VasicekParam, VasicekParam(mean=0.5, kappa=0.1, eta=0.2), 1),
-        (Heston, HestonParam, HestonParam(riskfree=0.0, lmbd=0.0, mean_v=0.5, kappa=0.1, eta=0.02**0.5, rho=-0.9), 2),
-        (CIR, CIRparam, CIRparam(mean=0.5, kappa=0.1, eta=0.2), 1),
+        (GBM, GBMparam(mean=0.05, sigma=0.2), 1),
+        (Vasicek, VasicekParam(mean=0.5, kappa=0.1, eta=0.2), 1),
+        (Heston, HestonParam(riskfree=0.0, lmbd=0.0, mean_v=0.5, kappa=0.1, eta=0.02**0.5, rho=-0.9), 2),
+        (CIR, CIRparam(mean=0.5, kappa=0.1, eta=0.2), 1),
         (
             CentTend,
-            CentTendParam,
             CentTendParam(
                 riskfree=0.01,
                 lmbd=0.01,

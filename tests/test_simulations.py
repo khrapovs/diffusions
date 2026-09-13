@@ -21,19 +21,10 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "model_class,param_class,params,nvars",
-    get_model_fixtures(),
-    ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"],
+    "model_class,params,nvars", get_model_fixtures(), ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"]
 )
 @pytest.mark.parametrize("use_cython", [False, True], ids=["python", "cython"])
-def test_simulate_all_models(
-    *,
-    model_class: type[SDE],
-    param_class: type[GenericParam],
-    params: GenericParam,
-    nvars: int,
-    use_cython: bool,
-) -> None:
+def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nvars: int, use_cython: bool) -> None:
     """Test simulation runs successfully for all models with both backends.
 
     Validates that:
@@ -46,8 +37,6 @@ def test_simulate_all_models(
     ----------
     model_class : type[SDE]
         The model class to test (GBM, Vasicek, etc.)
-    param_class : type[GenericParam]
-        The parameter class (included by fixture parametrization).
     params : GenericParam
         Initialized parameter instance
     nvars : int
@@ -56,7 +45,6 @@ def test_simulate_all_models(
         Whether to test Cython backend (True) or Python backend (False)
 
     """
-    del param_class  # Fixture provides it but we use params directly
     cfg = TEST_CONFIG
     nobs = cfg["nobs"] * cfg["nsub"]
     expected_nsim = 2 * cfg["nsim"]  # antithetic sampling doubles nsim
@@ -72,17 +60,9 @@ def test_simulate_all_models(
 
 
 @pytest.mark.parametrize(
-    "model_class,param_class,params,nvars",
-    get_model_fixtures(),
-    ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"],
+    "model_class,params,nvars", get_model_fixtures(), ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"]
 )
-def test_simulate_python_vs_cython_equivalence(
-    *,
-    model_class: type[SDE],
-    param_class: type[GenericParam],
-    params: GenericParam,
-    nvars: int,
-) -> None:
+def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam, nvars: int) -> None:
     """Test Python and Cython backends produce statistically equivalent results.
 
     Uses identical parameters and seeds to verify both implementations
@@ -93,15 +73,12 @@ def test_simulate_python_vs_cython_equivalence(
     ----------
     model_class : type[SDE]
         The model class to test (GBM, Vasicek, etc.)
-    param_class : type[GenericParam]
-        The parameter class (included by fixture parametrization).
     params : GenericParam
         Initialized parameter instance
     nvars : int
         Expected number of state variables
 
     """
-    del param_class  # Fixture provides it but we use params directly
     cfg = TEST_CONFIG
     nobs = cfg["nobs"] * cfg["nsub"]
     expected_nsim = 2 * cfg["nsim"]  # antithetic sampling doubles nsim
