@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from conftest import (
-    TEST_CONFIG,
+    TestSimulationConfig,
     assert_finite_values,
     assert_simulation_shape,
     assert_statistical_equivalence,
@@ -45,13 +45,13 @@ def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nv
         Whether to test Cython backend (True) or Python backend (False)
 
     """
-    cfg = TEST_CONFIG
-    nobs = cfg["nobs"] * cfg["nsub"]
-    expected_nsim = 2 * cfg["nsim"]  # antithetic sampling doubles nsim
+    cfg = TestSimulationConfig()
+    nobs = cfg.nobs * cfg.nsub
+    expected_nsim = 2 * cfg.nsim  # antithetic sampling doubles nsim
 
     model = model_class(params)
     paths = model.simulate(
-        nsub=cfg["nsub"], ndiscr=cfg["ndiscr"], nobs=nobs, nsim=cfg["nsim"], diff=0, cython=use_cython, seed=cfg["seed"]
+        nsub=cfg.nsub, ndiscr=cfg.ndiscr, nobs=nobs, nsim=cfg.nsim, diff=0, cython=use_cython, seed=cfg.seed
     )
 
     assert_simulation_shape(paths=paths, nobs=nobs, expected_nsim=expected_nsim, nvars=nvars)
@@ -79,19 +79,19 @@ def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params
         Expected number of state variables
 
     """
-    cfg = TEST_CONFIG
-    nobs = cfg["nobs"] * cfg["nsub"]
-    expected_nsim = 2 * cfg["nsim"]  # antithetic sampling doubles nsim
+    cfg = TestSimulationConfig()
+    nobs = cfg.nobs * cfg.nsub
+    expected_nsim = 2 * cfg.nsim  # antithetic sampling doubles nsim
 
     model_py = model_class(params)
     model_cy = model_class(params)
 
     paths_py = model_py.simulate(
-        nsub=cfg["nsub"], ndiscr=cfg["ndiscr"], nobs=nobs, nsim=cfg["nsim"], diff=0, cython=False, seed=cfg["seed"]
+        nsub=cfg.nsub, ndiscr=cfg.ndiscr, nobs=nobs, nsim=cfg.nsim, diff=0, cython=False, seed=cfg.seed
     )
 
     paths_cy = model_cy.simulate(
-        nsub=cfg["nsub"], ndiscr=cfg["ndiscr"], nobs=nobs, nsim=cfg["nsim"], diff=0, cython=True, seed=cfg["seed"]
+        nsub=cfg.nsub, ndiscr=cfg.ndiscr, nobs=nobs, nsim=cfg.nsim, diff=0, cython=True, seed=cfg.seed
     )
 
     assert_simulation_shape(paths=paths_py, nobs=nobs, expected_nsim=expected_nsim, nvars=nvars)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -12,8 +13,31 @@ if TYPE_CHECKING:
     from affidiff.model_generic import SDE
     from affidiff.param_generic import GenericParam
 
-# Test configuration shared across all model simulations
-TEST_CONFIG = {"nobs": 500, "nsub": 2, "ndiscr": 10, "nsim": 2, "seed": 42}
+
+@dataclass(frozen=True)
+class TestSimulationConfig:
+    """Configuration for simulation tests.
+
+    Attributes
+    ----------
+    nobs : int
+        Number of observations
+    nsub : int
+        Subsampling interval
+    ndiscr : int
+        Number of discretization steps
+    nsim : int
+        Number of simulations
+    seed : int
+        Random seed for reproducibility
+
+    """
+
+    nobs: int = 500
+    nsub: int = 2
+    ndiscr: int = 10
+    nsim: int = 2
+    seed: int = 42
 
 
 def get_model_fixtures() -> list[tuple[type[SDE], GenericParam, int]]:
