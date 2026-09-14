@@ -13,9 +13,9 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.16.5
+    rev: v0.16.7
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [ --config, pyproject.toml, --fix, --exit-non-zero-on-fix ]
         types_or: [ python ]
       - id: ruff-format
@@ -23,6 +23,6 @@ repos:
         types_or: [ python ]
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.75
+    rev: v0.0.80
     hooks:
       - id: ty
