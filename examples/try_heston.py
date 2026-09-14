@@ -389,7 +389,7 @@ def try_integrated_gmm_opt_methods() -> None:
         res = heston.integrated_gmm(
             param_start=param_start,
             data=data,
-            instrlag=lag,
+            instrlag=int(lag),
             instr_data=instr_data,
             aggh=aggh,
             instr_choice="var",
