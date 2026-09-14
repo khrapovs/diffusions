@@ -1,5 +1,3 @@
-"""Pytest configuration and shared fixtures for simulation tests."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
