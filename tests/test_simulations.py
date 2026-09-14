@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from conftest import (
-    TestSimulationConfig,
+from assertions import (
     assert_finite_values,
     assert_realized_equivalence,
     assert_realized_finite_variation,
@@ -15,8 +14,8 @@ from conftest import (
     assert_simulation_shape,
     assert_statistical_equivalence,
     assert_variation,
-    get_model_fixtures,
 )
+from config import SimulationConfigForTests, get_model_fixtures
 
 if TYPE_CHECKING:
     from affidiff.model_generic import SDE
@@ -46,7 +45,7 @@ def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nv
         Whether to test Cython backend (True) or Python backend (False)
 
     """
-    cfg = TestSimulationConfig()
+    cfg = SimulationConfigForTests()
     nobs = cfg.nobs * cfg.nsub
     expected_nsim = 2 * cfg.nsim  # antithetic sampling doubles nsim
 
@@ -78,7 +77,7 @@ def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params
         Expected number of state variables
 
     """
-    cfg = TestSimulationConfig()
+    cfg = SimulationConfigForTests()
     nobs = cfg.nobs * cfg.nsub
     expected_nsim = 2 * cfg.nsim  # antithetic sampling doubles nsim
 
@@ -156,7 +155,7 @@ def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], pa
 
     """
     del nvars
-    cfg = TestSimulationConfig()
+    cfg = SimulationConfigForTests()
     nsub = 80
     ndiscr = 1
     aggh = 10

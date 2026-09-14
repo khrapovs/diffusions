@@ -1,75 +1,8 @@
+"""Assertion helpers for simulation tests."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
 import numpy as np
-
-from affidiff import CIR, GBM, CentTend, CentTendParam, CIRparam, GBMparam, Heston, HestonParam, Vasicek, VasicekParam
-
-if TYPE_CHECKING:
-    from affidiff.model_generic import SDE
-    from affidiff.param_generic import GenericParam
-
-
-@dataclass(frozen=True)
-class TestSimulationConfig:
-    """Configuration for simulation tests.
-
-    Attributes
-    ----------
-    nobs : int
-        Number of observations
-    nsub : int
-        Subsampling interval
-    ndiscr : int
-        Number of discretization steps
-    nsim : int
-        Number of simulations
-    seed : int
-        Random seed for reproducibility
-
-    """
-
-    nobs: int = 500
-    nsub: int = 2
-    ndiscr: int = 10
-    nsim: int = 2
-    seed: int = 42
-
-
-def get_model_fixtures() -> list[tuple[type[SDE], GenericParam, int]]:
-    """Return list of (ModelClass, param_instance, nvars) tuples.
-
-    Returns
-    -------
-    list[tuple[type[SDE], GenericParam, int]]
-        List of model fixtures where each tuple contains:
-        - Model class (e.g., GBM, Vasicek)
-        - Parameter instance (initialized with test values)
-        - Number of state variables (nvars)
-
-    """
-    return [
-        (GBM, GBMparam(mean=0.05, sigma=0.2), 1),
-        (Vasicek, VasicekParam(mean=0.5, kappa=0.1, eta=0.2), 1),
-        (Heston, HestonParam(riskfree=0.0, lmbd=0.0, mean_v=0.5, kappa=0.1, eta=0.02**0.5, rho=-0.9), 2),
-        (CIR, CIRparam(mean=0.5, kappa=0.1, eta=0.2), 1),
-        (
-            CentTend,
-            CentTendParam(
-                riskfree=0.01,
-                lmbd=0.01,
-                mean_v=0.5,
-                kappa_s=1.5,
-                kappa_y=0.05,
-                eta_s=0.02**0.5,
-                eta_y=0.001**0.5,
-                rho=-0.9,
-            ),
-            3,
-        ),
-    ]
 
 
 def assert_simulation_shape(*, paths: np.ndarray, nobs: int, expected_nsim: int, nvars: int) -> None:
