@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pytest
 
 from conftest import (
     TestSimulationConfig,
     assert_finite_values,
+    assert_realized_equivalence,
+    assert_realized_finite_variation,
+    assert_realized_shape,
     assert_simulation_shape,
     assert_statistical_equivalence,
     assert_variation,
@@ -132,12 +134,8 @@ def test_sim_realized_all_models(*, model_class: type[SDE], params: GenericParam
 
     expected_length = nperiods - aggh + 1
 
-    assert returns.shape == (expected_length,)
-    assert rvar.shape == (expected_length,)
-    assert np.all(np.isfinite(returns))
-    assert np.all(np.isfinite(rvar))
-    assert np.std(returns) > 0
-    assert np.std(rvar) > 0
+    assert_realized_shape(returns=returns, rvar=rvar, expected_length=expected_length)
+    assert_realized_finite_variation(returns=returns, rvar=rvar)
 
 
 @pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
@@ -145,7 +143,7 @@ def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], pa
     """Test Python and Cython backends produce statistically equivalent realized results.
 
     Uses identical parameters and seeding to verify both implementations
-    generate samples with matching statistical properties (mean, std, quantiles).
+    generate samples with matching statistical properties (mean, std).
 
     Parameters
     ----------
@@ -176,29 +174,6 @@ def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], pa
 
     expected_length = nperiods - aggh + 1
 
-    assert returns_py.shape == (expected_length,)
-    assert returns_cy.shape == (expected_length,)
-    assert rvar_py.shape == (expected_length,)
-    assert rvar_cy.shape == (expected_length,)
-
-    # Check statistical equivalence for returns
-    mean_py = np.mean(returns_py)
-    mean_cy = np.mean(returns_cy)
-    rel_diff_mean = np.abs(mean_py - mean_cy) / (np.abs(mean_py) + 1e-10)
-    assert rel_diff_mean < 0.01
-
-    std_py = np.std(returns_py)
-    std_cy = np.std(returns_cy)
-    rel_diff_std = np.abs(std_py - std_cy) / std_py
-    assert rel_diff_std < 0.05
-
-    # Check statistical equivalence for realized variance
-    mean_rvar_py = np.mean(rvar_py)
-    mean_rvar_cy = np.mean(rvar_cy)
-    rel_diff_rvar_mean = np.abs(mean_rvar_py - mean_rvar_cy) / (np.abs(mean_rvar_py) + 1e-10)
-    assert rel_diff_rvar_mean < 0.01
-
-    std_rvar_py = np.std(rvar_py)
-    std_rvar_cy = np.std(rvar_cy)
-    rel_diff_rvar_std = np.abs(std_rvar_py - std_rvar_cy) / std_rvar_py
-    assert rel_diff_rvar_std < 0.05
+    assert_realized_shape(returns=returns_py, rvar=rvar_py, expected_length=expected_length)
+    assert_realized_shape(returns=returns_cy, rvar=rvar_cy, expected_length=expected_length)
+    assert_realized_equivalence(returns_py=returns_py, returns_cy=returns_cy, rvar_py=rvar_py, rvar_cy=rvar_cy)
