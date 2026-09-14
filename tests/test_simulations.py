@@ -20,10 +20,8 @@ if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
 
 
-@pytest.mark.parametrize(
-    "model_class,params,nvars", get_model_fixtures(), ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"]
-)
-@pytest.mark.parametrize("use_cython", [False, True], ids=["python", "cython"])
+@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
+@pytest.mark.parametrize("use_cython", [False, True])
 def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nvars: int, use_cython: bool) -> None:
     """Test simulation runs successfully for all models with both backends.
 
@@ -59,9 +57,7 @@ def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nv
     assert_variation(paths=paths)
 
 
-@pytest.mark.parametrize(
-    "model_class,params,nvars", get_model_fixtures(), ids=["GBM", "Vasicek", "Heston", "CIR", "CentTend"]
-)
+@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
 def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam, nvars: int) -> None:
     """Test Python and Cython backends produce statistically equivalent results.
 
