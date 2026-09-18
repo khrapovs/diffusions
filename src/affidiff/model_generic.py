@@ -695,13 +695,13 @@ class SDE(ABC):
         self.param.update(theta=theta, subset=subset, measure=measure)
         lag = 2
 
-        if measure == "PQ":
+        if measure == Measure.PQ:
             error = []
             data_list = list(cast(Iterable, data)) if data is not None else []
             aggh_list = list(aggh) if isinstance(aggh, (list, tuple)) else [aggh, aggh]  # type: ignore[arg-type]
             measure_list = list(measure)
             for data_x, agg, meas in zip(data_list, aggh_list, measure_list, strict=False):
-                if meas == "Q":
+                if meas == Measure.Q:
                     self.param.convert_to_q()
                 depvar = self.realized_depvar(data=data_x)[lag:]
                 # (nobs - lag, 4) array

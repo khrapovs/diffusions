@@ -138,13 +138,13 @@ class CentTendParam(GenericParam):
         """
         names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        if subset == "all" and measure == "PQ":
+        if subset == "all" and measure == Measure.PQ:
             return names
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == "all" and measure in (Measure.P, Measure.Q):
             return names[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == "vol" and measure == Measure.PQ:
             return names[:5] + names[-2:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == "vol" and measure in (Measure.P, Measure.Q):
             return names[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
@@ -251,19 +251,19 @@ class CentTendParam(GenericParam):
         """
         [self.mean_v, self.kappa_s, self.kappa_y, self.eta_s, self.eta_y] = [float(x) for x in theta[:5]]
 
-        if subset == "all" and measure == "PQ":
+        if subset == "all" and measure == Measure.PQ:
             [self.rho, self.lmbd, self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[5:]]
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == "all" and measure in (Measure.P, Measure.Q):
             [self.rho, self.lmbd] = [float(x) for x in theta[5:7]]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == "vol" and measure == Measure.PQ:
             [self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[-2:]]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == "vol" and measure in (Measure.P, Measure.Q):
             pass
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
         self.measure = Measure.P
-        if measure == "Q":
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
@@ -305,13 +305,13 @@ class CentTendParam(GenericParam):
                 self.lmbd_y,
             ]
         )
-        if subset == "all" and measure == "PQ":
+        if subset == "all" and measure == Measure.PQ:
             return theta
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == "all" and measure in (Measure.P, Measure.Q):
             return theta[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == "vol" and measure == Measure.PQ:
             return np.concatenate((theta[:5], theta[-2:]))
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == "vol" and measure in (Measure.P, Measure.Q):
             return theta[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
@@ -346,13 +346,13 @@ class CentTendParam(GenericParam):
         ub: list[float | None] = [None, None, None, None, None, 1.0, None, None, None]
         bounds = list(zip(lb, ub, strict=False))
 
-        if subset == "all" and measure == "PQ":
+        if subset == "all" and measure == Measure.PQ:
             return bounds
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == "all" and measure in (Measure.P, Measure.Q):
             return bounds[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == "vol" and measure == Measure.PQ:
             return bounds[:5] + bounds[-2:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == "vol" and measure in (Measure.P, Measure.Q):
             return bounds[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
