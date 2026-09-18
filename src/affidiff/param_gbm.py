@@ -19,7 +19,7 @@ class GBMparam(GenericParam):
         Mean of the process
     sigma : float
         Instantaneous standard deviation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """

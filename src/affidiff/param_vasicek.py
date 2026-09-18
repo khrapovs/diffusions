@@ -21,7 +21,7 @@ class VasicekParam(GenericParam):
         Mean reversion speed
     eta : float
         Instantaneous standard deviation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """

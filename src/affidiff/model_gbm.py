@@ -324,7 +324,7 @@ class GBM(SDE):
             Subset
         instrlag : int
             Number of lags for the instruments
-        measure : str
+        measure : Measure
             Measure
 
         Returns

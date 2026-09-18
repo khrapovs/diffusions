@@ -32,7 +32,7 @@ class CentTendParam(GenericParam):
         Equity risk premium
     rho : float
         Correlation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """
@@ -123,7 +123,7 @@ class CentTendParam(GenericParam):
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -241,7 +241,7 @@ class CentTendParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -279,7 +279,7 @@ class CentTendParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -330,7 +330,7 @@ class CentTendParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure

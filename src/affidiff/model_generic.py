@@ -589,7 +589,7 @@ class SDE(ABC):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure to estimate:
                 - 'P' : physical measure
@@ -673,13 +673,11 @@ class SDE(ABC):
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
             Under which measure to estimate:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
                 - 'PQ' : both
-        kwargs : dict
-            Anything that needs to go through mygmm
 
         Returns
         -------

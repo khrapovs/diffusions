@@ -30,7 +30,7 @@ class HestonParam(GenericParam):
         Volatility risk price
     rho : float
         Correlation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     Methods
@@ -110,7 +110,7 @@ class HestonParam(GenericParam):
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -217,7 +217,7 @@ class HestonParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -255,7 +255,7 @@ class HestonParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -294,7 +294,7 @@ class HestonParam(GenericParam):
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
