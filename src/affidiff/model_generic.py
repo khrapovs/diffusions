@@ -71,6 +71,11 @@ class SDE(ABC):
         """Return starting values for simulation."""
         raise NotImplementedError("Must be overridden")
 
+    @property
+    def nvars(self) -> int:
+        """Number of state variables."""
+        return len(self.get_start())
+
     @staticmethod
     def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Realized dependent variables."""
@@ -358,6 +363,7 @@ class SDE(ABC):
         diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
+        seed: int | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Simulate realized returns and variance from the model.
 
@@ -383,6 +389,8 @@ class SDE(ABC):
             or use already stored (False)
         cython : bool
             Whether to use cython-optimized simulation (True) or not (False)
+        seed : int, optional
+            Random seed for reproducibility
 
         Returns
         -------
@@ -396,7 +404,15 @@ class SDE(ABC):
             start = self.get_start()
         nobs = nperiods * nsub
         paths = self.simulate(
-            start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=diff, new_innov=new_innov, cython=cython
+            start=start,
+            nsub=nsub,
+            ndiscr=ndiscr,
+            nobs=nobs,
+            nsim=nsim,
+            diff=diff,
+            new_innov=new_innov,
+            cython=cython,
+            seed=seed,
         )
         returns = paths[:, 0, 0].reshape((nperiods, nsub))
         # Compute realized var and returns over one day
