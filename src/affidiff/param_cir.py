@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
+from affidiff.types import Measure, Subset
 
 
 class CIRparam(GenericParam):
@@ -23,12 +21,14 @@ class CIRparam(GenericParam):
         Mean reversion speed
     eta : float
         Instantaneous standard deviation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """
 
-    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:
+    def __init__(
+        self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: Measure = Measure.P
+    ) -> None:
         """Initialize class.
 
         Parameters
@@ -39,11 +39,7 @@ class CIRparam(GenericParam):
             Mean reversion speed
         eta : float
             Instantaneous standard deviation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         _ = measure
@@ -51,7 +47,7 @@ class CIRparam(GenericParam):
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        self.measure = "P"
+        self.measure = Measure.P
         self.update_ajd()
 
     def is_valid(self) -> bool:
@@ -76,7 +72,7 @@ class CIRparam(GenericParam):
         self.mat_h1 = self.eta**2
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> CIRparam:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -89,16 +85,18 @@ class CIRparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.P
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
-        measure : str
+        measure : Measure
             Probability measure
 
         """
@@ -119,7 +117,7 @@ class CIRparam(GenericParam):
         return "CIR"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Returns
@@ -131,7 +129,7 @@ class CIRparam(GenericParam):
         _ = (subset, measure)
         return ["mean", "kappa", "eta"]
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.
 
         Returns

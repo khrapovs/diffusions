@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
+from affidiff.types import Measure, Subset
 
 
 class HestonParam(GenericParam):
@@ -32,7 +30,7 @@ class HestonParam(GenericParam):
         Volatility risk price
     rho : float
         Correlation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     Methods
@@ -54,7 +52,7 @@ class HestonParam(GenericParam):
         rho: float = -0.5,
         lmbd: float = 0.1,
         lmbd_v: float = 0.0,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> None:
         """Initialize class.
 
@@ -74,11 +72,7 @@ class HestonParam(GenericParam):
             Volatility risk price
         rho : float
             Correlation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         super().__init__()
@@ -89,8 +83,8 @@ class HestonParam(GenericParam):
         self.rho = rho
         self.lmbd = lmbd
         self.lmbd_v = lmbd_v
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
@@ -107,16 +101,16 @@ class HestonParam(GenericParam):
         return "Heston"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
             Under which measure:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
@@ -130,27 +124,27 @@ class HestonParam(GenericParam):
         """
         names = ["mean_v", "kappa", "eta", "rho", "lmbd", "lmbd_v"]
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return names
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return names[:-1]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return names[:3] + names[5:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return names[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
     def convert_to_q(self) -> None:
         """Convert parameters to risk-neutral version."""
-        if self.measure == "Q":
+        if self.measure == Measure.Q:
             warnings.warn("Parameters are already converted to Q!", stacklevel=2)
         else:
             kappa_p = self.kappa
             self.kappa = kappa_p - self.lmbd_v * self.eta
             self.mean_v *= kappa_p / self.kappa
             self.lmbd = 0.0
-            self.measure = "Q"
+            self.measure = Measure.Q
             self.update_ajd()
 
     def update_ajd(self) -> None:
@@ -186,18 +180,14 @@ class HestonParam(GenericParam):
         return bool(posit & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: Measure = Measure.P) -> HestonParam:
         """Initialize parameters from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         return cls(
@@ -211,21 +201,23 @@ class HestonParam(GenericParam):
             measure=measure,
         )
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.PQ
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -235,35 +227,35 @@ class HestonParam(GenericParam):
         """
         [self.mean_v, self.kappa, self.eta] = [float(x) for x in theta[:3]]
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             [self.rho, self.lmbd, self.lmbd_v] = [float(x) for x in theta[3:]]
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             [self.rho, self.lmbd] = [float(x) for x in theta[3:5]]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             [self.lmbd_v] = [float(x) for x in theta[3:]]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             pass
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -277,30 +269,32 @@ class HestonParam(GenericParam):
 
         """
         theta = np.array([self.mean_v, self.kappa, self.eta, self.rho, self.lmbd, self.lmbd_v])
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return theta
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return theta[:-1]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return np.concatenate((theta[:3], theta[5:]))
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return theta[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
+    def get_bounds(
+        self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ
+    ) -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -317,13 +311,13 @@ class HestonParam(GenericParam):
         ub: list[float | None] = [None, None, None, 1.0, None, None]
         bounds = list(zip(lb, ub, strict=False))
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return bounds
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return bounds[:-1]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return bounds[:3] + bounds[5:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return bounds[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")

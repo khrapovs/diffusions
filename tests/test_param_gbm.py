@@ -3,7 +3,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from affidiff import GBMparam
+from affidiff.param_gbm import GBMparam
 
 
 class TestSDEParameter:

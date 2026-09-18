@@ -3,7 +3,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from affidiff import VasicekParam
+from affidiff.param_vasicek import VasicekParam
 
 
 class TestSDEParameter:

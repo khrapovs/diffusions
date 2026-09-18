@@ -5,18 +5,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from affidiff import (
-    CIR,
-    GBM,
-    CentTend,
-    CentTendParam,
-    CIRparam,
-    GBMparam,
-    Heston,
-    HestonParam,
-    Vasicek,
-    VasicekParam,
-)
+from affidiff.model_cir import CIR
+from affidiff.model_ct import CentTend
+from affidiff.model_gbm import GBM
+from affidiff.model_heston import Heston
+from affidiff.model_vasicek import Vasicek
+from affidiff.param_cir import CIRparam
+from affidiff.param_ct import CentTendParam
+from affidiff.param_gbm import GBMparam
+from affidiff.param_heston import HestonParam
+from affidiff.param_vasicek import VasicekParam
 
 if TYPE_CHECKING:
     from affidiff.model_generic import SDE

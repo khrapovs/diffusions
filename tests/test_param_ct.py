@@ -6,7 +6,8 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff import CentTendParam
+from affidiff.param_ct import CentTendParam
+from affidiff.types import Measure, Subset
 
 
 class TestSDEParameter:
@@ -36,15 +37,15 @@ class TestSDEParameter:
 
         names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.get_model_name() == "Central Tendency"
         assert param.get_names() == names
-        assert param.get_names(subset="all") == names
-        assert param.get_names(subset="vol") == names[:5] + names[-2:]
-        assert param.get_names(subset="vol", measure="P") == names[:5]
-        assert param.get_names(subset="vol", measure="Q") == names[:5]
-        assert param.get_names(subset="all", measure="P") == names[:-2]
-        assert param.get_names(subset="all", measure="Q") == names[:-2]
+        assert param.get_names(subset=Subset.all) == names
+        assert param.get_names(subset=Subset.vol) == names[:5] + names[-2:]
+        assert param.get_names(subset=Subset.vol, measure=Measure.P) == names[:5]
+        assert param.get_names(subset=Subset.vol, measure=Measure.Q) == names[:5]
+        assert param.get_names(subset=Subset.all, measure=Measure.P) == names[:-2]
+        assert param.get_names(subset=Subset.all, measure=Measure.Q) == names[:-2]
 
         assert param.riskfree == riskfree
         assert param.lmbd == lmbd
@@ -132,14 +133,14 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="Q",
+            measure=Measure.Q,
         )
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -170,9 +171,9 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta=theta, measure="P")
+        param = CentTendParam.from_theta(theta=theta, measure=Measure.P)
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.riskfree == riskfree
         assert param.lmbd == lmbd
         assert param.lmbd_s == lmbd_s
@@ -199,13 +200,13 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta=theta, measure="Q")
+        param = CentTendParam.from_theta(theta=theta, measure=Measure.Q)
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -317,7 +318,7 @@ class TestSDEParameter:
         param = CentTendParam()
         param.update(theta=theta)
         npt.assert_array_equal(param.get_theta(), theta)
-        npt.assert_array_equal(param.get_theta(subset="vol"), theta_vol)
+        npt.assert_array_equal(param.get_theta(subset=Subset.vol), theta_vol)
 
         mat_k0 = [param.riskfree, 0.0, param.kappa_y * param.mean_v]
         mat_k1 = [[0, param.lmbd - 0.5, 0], [0, -param.kappa_s, param.kappa_s], [0, 0, -param.kappa_y]]
@@ -361,7 +362,7 @@ class TestSDEParameter:
         mean_v, kappa_s, kappa_y = 0.6, 1.7, 0.6
         eta_s, eta_y, rho, lmbd = 0.2, 0.02, -0.6, 0.05
         theta = np.array([mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd])
-        param.update(theta=theta, measure="Q")
+        param.update(theta=theta, measure=Measure.Q)
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
@@ -369,7 +370,7 @@ class TestSDEParameter:
         mean_vq = mean_v * kappa_y / kappa_yq * scale
         eta_yq = eta_y * scale**0.5
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -412,26 +413,26 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="P",
+            measure=Measure.P,
         )
 
         theta = [mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
         theta_vol = np.concatenate((theta[:5], theta[-2:]))
 
         npt.assert_array_equal(param.get_theta(), theta)
-        npt.assert_array_equal(param.get_theta(subset="all"), theta)
-        npt.assert_array_equal(param.get_theta(subset="all", measure="PQ"), theta)
-        npt.assert_array_equal(param.get_theta(subset="all", measure="P"), theta[:-2])
-        npt.assert_array_equal(param.get_theta(subset="all", measure="Q"), theta[:-2])
-        npt.assert_array_equal(param.get_theta(subset="vol"), theta_vol)
-        npt.assert_array_equal(param.get_theta(subset="vol", measure="PQ"), theta_vol)
-        npt.assert_array_equal(param.get_theta(subset="vol", measure="P"), theta_vol[:-2])
-        npt.assert_array_equal(param.get_theta(subset="vol", measure="Q"), theta_vol[:-2])
+        npt.assert_array_equal(param.get_theta(subset=Subset.all), theta)
+        npt.assert_array_equal(param.get_theta(subset=Subset.all, measure=Measure.PQ), theta)
+        npt.assert_array_equal(param.get_theta(subset=Subset.all, measure=Measure.P), theta[:-2])
+        npt.assert_array_equal(param.get_theta(subset=Subset.all, measure=Measure.Q), theta[:-2])
+        npt.assert_array_equal(param.get_theta(subset=Subset.vol), theta_vol)
+        npt.assert_array_equal(param.get_theta(subset=Subset.vol, measure=Measure.PQ), theta_vol)
+        npt.assert_array_equal(param.get_theta(subset=Subset.vol, measure=Measure.P), theta_vol[:-2])
+        npt.assert_array_equal(param.get_theta(subset=Subset.vol, measure=Measure.Q), theta_vol[:-2])
 
         theta = np.arange(9)
         param.update(theta=theta)
         theta_vol = np.ones(5) * 2
-        param.update(theta=theta_vol, subset="vol", measure="P")
+        param.update(theta=theta_vol, subset=Subset.vol, measure=Measure.P)
         theta[:5] = theta_vol
         npt.assert_array_equal(param.get_theta(), theta)
 
@@ -440,21 +441,21 @@ class TestSDEParameter:
         param = CentTendParam()
         bounds = param.get_bounds()
         assert bounds is not None and len(bounds) == 9
-        bounds_all = param.get_bounds(subset="all")
+        bounds_all = param.get_bounds(subset=Subset.all)
         assert bounds_all is not None and len(bounds_all) == 9
-        bounds_pq = param.get_bounds(subset="all", measure="PQ")
+        bounds_pq = param.get_bounds(subset=Subset.all, measure=Measure.PQ)
         assert bounds_pq is not None and len(bounds_pq) == 9
-        bounds_p = param.get_bounds(subset="all", measure="P")
+        bounds_p = param.get_bounds(subset=Subset.all, measure=Measure.P)
         assert bounds_p is not None and len(bounds_p) == 7
-        bounds_q = param.get_bounds(subset="all", measure="Q")
+        bounds_q = param.get_bounds(subset=Subset.all, measure=Measure.Q)
         assert bounds_q is not None and len(bounds_q) == 7
-        bounds_vol = param.get_bounds(subset="vol")
+        bounds_vol = param.get_bounds(subset=Subset.vol)
         assert bounds_vol is not None and len(bounds_vol) == 7
-        bounds_vol_pq = param.get_bounds(subset="vol", measure="PQ")
+        bounds_vol_pq = param.get_bounds(subset=Subset.vol, measure=Measure.PQ)
         assert bounds_vol_pq is not None and len(bounds_vol_pq) == 7
-        bounds_vol_p = param.get_bounds(subset="vol", measure="P")
+        bounds_vol_p = param.get_bounds(subset=Subset.vol, measure=Measure.P)
         assert bounds_vol_p is not None and len(bounds_vol_p) == 5
-        bounds_vol_q = param.get_bounds(subset="vol", measure="Q")
+        bounds_vol_q = param.get_bounds(subset=Subset.vol, measure=Measure.Q)
         assert bounds_vol_q is not None and len(bounds_vol_q) == 5
 
     def test_validity(self) -> None:
@@ -481,7 +482,7 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="P",
+            measure=Measure.P,
         )
 
         assert param.is_valid()

@@ -1,6 +1,7 @@
 """Test suite for generic classes."""
 
-from affidiff import GBM, GBMparam
+from affidiff.model_gbm import GBM
+from affidiff.param_gbm import GBMparam
 
 
 class TestGenericModel:

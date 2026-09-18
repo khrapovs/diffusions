@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
+from affidiff.types import Measure, Subset
 
 
 class CentTendParam(GenericParam):
@@ -34,7 +32,7 @@ class CentTendParam(GenericParam):
         Equity risk premium
     rho : float
         Correlation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """
@@ -52,7 +50,7 @@ class CentTendParam(GenericParam):
         eta_s: float = 0.1,
         eta_y: float = 0.01,
         rho: float = -0.5,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> None:
         """Initialize class.
 
@@ -78,11 +76,11 @@ class CentTendParam(GenericParam):
             Central tendency risk price
         rho : float
             Correlation
-        measure : str
+        measure : Measure
 
             Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+                - Measure.P : physical measure
+                - Measure.Q : risk-neutral
 
         """
         super().__init__()
@@ -97,8 +95,8 @@ class CentTendParam(GenericParam):
         self.eta_s = eta_s
         self.rho = rho
         self.scale = 1.0
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
@@ -115,17 +113,17 @@ class CentTendParam(GenericParam):
         return "Central Tendency"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
 
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -140,20 +138,20 @@ class CentTendParam(GenericParam):
         """
         names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return names
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return names[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return names[:5] + names[-2:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return names[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
     def convert_to_q(self) -> None:
         """Convert parameters to risk-neutral version."""
-        if self.measure == "Q":
+        if self.measure == Measure.Q:
             warnings.warn("Parameters are already converted to Q!", stacklevel=2)
         else:
             kappa_sp = self.kappa_s
@@ -164,7 +162,7 @@ class CentTendParam(GenericParam):
             self.mean_v *= kappa_yp / self.kappa_y * self.scale
             self.lmbd = 0.0
             self.eta_y *= self.scale**0.5
-            self.measure = "Q"
+            self.measure = Measure.Q
             self.update_ajd()
 
     def update_ajd(self) -> None:
@@ -203,18 +201,14 @@ class CentTendParam(GenericParam):
         return bool(posit1 & posit2 & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: Measure = Measure.P) -> CentTendParam:
         """Initialize parameters from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         return cls(
@@ -231,21 +225,23 @@ class CentTendParam(GenericParam):
             measure=measure,
         )
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.PQ
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -255,35 +251,35 @@ class CentTendParam(GenericParam):
         """
         [self.mean_v, self.kappa_s, self.kappa_y, self.eta_s, self.eta_y] = [float(x) for x in theta[:5]]
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             [self.rho, self.lmbd, self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[5:]]
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             [self.rho, self.lmbd] = [float(x) for x in theta[5:7]]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             [self.lmbd_s, self.lmbd_y] = [float(x) for x in theta[-2:]]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             pass
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to return
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -309,30 +305,32 @@ class CentTendParam(GenericParam):
                 self.lmbd_y,
             ]
         )
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return theta
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return theta[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return np.concatenate((theta[:5], theta[-2:]))
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return theta[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
+    def get_bounds(
+        self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ
+    ) -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure:
                 - 'P' : physical measure
@@ -348,13 +346,13 @@ class CentTendParam(GenericParam):
         ub: list[float | None] = [None, None, None, None, None, 1.0, None, None, None]
         bounds = list(zip(lb, ub, strict=False))
 
-        if subset == "all" and measure == "PQ":
+        if subset == Subset.all and measure == Measure.PQ:
             return bounds
-        elif subset == "all" and measure in ("P", "Q"):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return bounds[:-2]
-        elif subset == "vol" and measure == "PQ":
+        elif subset == Subset.vol and measure == Measure.PQ:
             return bounds[:5] + bounds[-2:]
-        elif subset == "vol" and measure in ("P", "Q"):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return bounds[:5]
         else:
             raise NotImplementedError("Keyword variable is not supported!")

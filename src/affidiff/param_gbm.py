@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
+from affidiff.types import Measure, Subset
 
 
 class GBMparam(GenericParam):
@@ -21,12 +19,12 @@ class GBMparam(GenericParam):
         Mean of the process
     sigma : float
         Instantaneous standard deviation
-    measure : str
+    measure : Measure
         Under which measure (P or Q)
 
     """
 
-    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: str = "P") -> None:
+    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: Measure = Measure.P) -> None:
         """Initialize class.
 
         Parameters
@@ -35,18 +33,14 @@ class GBMparam(GenericParam):
             Mean of the process
         sigma : float
             Instantaneous standard deviation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         _ = measure
         super().__init__()
         self.mean = mean
         self.sigma = sigma
-        self.measure = "P"
+        self.measure = Measure.P
         self.update_ajd()
 
     def is_valid(self) -> bool:
@@ -69,7 +63,7 @@ class GBMparam(GenericParam):
         self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> GBMparam:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -82,16 +76,18 @@ class GBMparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.P
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
-        measure : str
+        measure : Measure
             Probability measure
 
         """
@@ -112,7 +108,7 @@ class GBMparam(GenericParam):
         return "GBM"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Returns
@@ -124,7 +120,7 @@ class GBMparam(GenericParam):
         _ = (subset, measure)
         return ["mean", "sigma"]
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.
 
         Returns

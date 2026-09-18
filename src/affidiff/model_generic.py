@@ -12,6 +12,7 @@ from mygmm import GMM, Results
 from affidiff._cython import get_cython_simulate
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 from affidiff.random import get_random_generator
+from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -556,8 +557,8 @@ class SDE(ABC):
         instr_choice: str = "const",
         aggh: float | Sequence[float] = 1,
         instrlag: int = 1,
-        subset: str = "all",
-        measure: str = "P",
+        subset: Subset = Subset.all,
+        measure: Measure = Measure.P,
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
         constraints: Sequence[dict[str, object]] | dict[str, object] | tuple[()] = (),
@@ -582,13 +583,13 @@ class SDE(ABC):
             Number of intervals (days) to aggregate over using rolling mean
         instrlag : int
             Number of lags for the instruments
-        subset : str
+        subset : Subset
 
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
 
-        measure : str
+        measure : Measure
 
             Under which measure to estimate:
                 - 'P' : physical measure
@@ -646,9 +647,9 @@ class SDE(ABC):
         instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
         aggh: float | Sequence[float] = 1,
-        subset: str = "all",
+        subset: Subset = Subset.all,
         instrlag: int = 1,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> tuple[np.ndarray, np.ndarray | None]:
         """Integrated moment function.
 
@@ -668,17 +669,15 @@ class SDE(ABC):
                 - 'var' : lags of instrument data
         aggh : int
             Number of intervals (days) to aggregate over using rolling mean
-        subset : str
+        subset : Subset
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
-        measure : str
+        measure : Measure
             Under which measure to estimate:
                 - 'P' : physical measure
                 - 'Q' : risk-neutral
                 - 'PQ' : both
-        kwargs : dict
-            Anything that needs to go through mygmm
 
         Returns
         -------
@@ -689,20 +688,20 @@ class SDE(ABC):
 
         """
         subset_sl = None
-        if subset == "vol":
+        if subset == Subset.vol:
             subset_sl = slice(2)
 
         assert self.param is not None
         self.param.update(theta=theta, subset=subset, measure=measure)
         lag = 2
 
-        if measure == "PQ":
+        if measure == Measure.PQ:
             error = []
             data_list = list(cast(Iterable, data)) if data is not None else []
             aggh_list = list(aggh) if isinstance(aggh, (list, tuple)) else [aggh, aggh]  # type: ignore[arg-type]
             measure_list = list(measure)
             for data_x, agg, meas in zip(data_list, aggh_list, measure_list, strict=False):
-                if meas == "Q":
+                if meas == Measure.Q:
                     self.param.convert_to_q()
                 depvar = self.realized_depvar(data=data_x)[lag:]
                 # (nobs - lag, 4) array

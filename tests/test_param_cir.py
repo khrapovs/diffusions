@@ -3,7 +3,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from affidiff import CIRparam
+from affidiff.param_cir import CIRparam
 
 
 class TestSDEParameter:

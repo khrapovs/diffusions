@@ -4,7 +4,9 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff import Heston, HestonParam
+from affidiff.model_heston import Heston
+from affidiff.param_heston import HestonParam
+from affidiff.types import Measure, Subset
 
 
 class TestRealizedMomentsHeston:
@@ -43,7 +45,7 @@ class TestRealizedMomentsHeston:
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
-        theta = param.get_theta(subset="all", measure="P")
+        theta = param.get_theta(subset=Subset.all, measure=Measure.P)
 
         instr_data = np.vstack([rvar, rvar**2])
         ninstr = instr_data.shape[0]
@@ -73,7 +75,7 @@ class TestRealizedMomentsHeston:
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
-        theta = param.get_theta(subset="all", measure="P")
+        theta = param.get_theta(subset=Subset.all, measure=Measure.P)
 
         depvar = heston.realized_depvar(data=data)
 
@@ -122,8 +124,7 @@ class TestRealizedMomentsHeston:
             heston.mean_ret(param=param, aggh=aggh),
             heston.mean_cross(param=param, aggh=aggh),
         ]
-
-        subset = "vol"
+        subset = Subset.vol
         theta = param.get_theta(subset=subset)
         mom, dmom = heston.integrated_mom(
             theta=theta, subset=subset, instr_choice="const", data=data, instrlag=instrlag
@@ -157,9 +158,8 @@ class TestRealizedMomentsHeston:
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
-
-        subset = "vol"
-        measure = "Q"
+        subset = Subset.vol
+        measure = Measure.Q
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -185,9 +185,8 @@ class TestRealizedMomentsHeston:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "vol"
-        measure = "P"
+        subset = Subset.vol
+        measure = Measure.P
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -216,8 +215,8 @@ class TestRealizedMomentsHeston:
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
-        subset = "vol"
-        measure = "PQ"
+        subset = Subset.vol
+        measure = Measure.PQ
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta,
@@ -292,9 +291,8 @@ class TestRealizedMomentsHeston:
         ret = np.ones(nperiods) * (lmbd - 0.5) * mean_v
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
-
-        subset = "all"
-        measure = "Q"
+        subset = Subset.all
+        measure = Measure.Q
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
         theta = param.get_theta(subset=subset, measure=measure)
@@ -322,9 +320,8 @@ class TestRealizedMomentsHeston:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "all"
-        measure = "P"
+        subset = Subset.all
+        measure = Measure.P
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
@@ -351,9 +348,8 @@ class TestRealizedMomentsHeston:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "all"
-        measure = "PQ"
+        subset = Subset.all
+        measure = Measure.PQ
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(

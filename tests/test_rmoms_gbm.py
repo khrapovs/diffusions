@@ -2,13 +2,14 @@
 
 import numpy as np
 
-from affidiff import GBM, GBMparam
+from affidiff.model_gbm import GBM
+from affidiff.param_gbm import GBMparam
 
 
 class TestRealizedMomentsGBM:
     """Test realized moments for GBM."""
 
-    def test_gbm_relized_mom(self) -> None:
+    def test_gbm_realized_mom(self) -> None:
         """Test realized moments of GBM model."""
         mean, sigma = 1.5, 0.2
         param = GBMparam(mean=mean, sigma=sigma)
