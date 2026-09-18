@@ -12,39 +12,7 @@ from load_real_data import load_data  # type: ignore
 from statsmodels.tsa.stattools import acf
 
 from affidiff import CentTend, CentTendParam
-from affidiff.helper_functions import plot_final_distr, plot_realized, plot_trajectories, take_time
-
-
-def try_simulation() -> None:
-    """Try simulating and plotting Central Tendency model."""
-    riskfree = 0.01
-    lmbd = 0.01
-    mean_v = 0.5
-    kappa_s = 1.5
-    kappa_y = 0.05
-    eta_s = 0.02**0.5
-    eta_y = 0.001**0.5
-    rho = -0.9
-
-    param_true = CentTendParam(
-        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
-    )
-    centtend = CentTend(param_true)
-    print(param_true)
-    print(param_true.is_valid())
-
-    start = [1, mean_v, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
-    nobs = nperiods * nsub
-    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
-
-    returns = paths[:, 0, 0]
-    volatility = paths[:, 0, 1]
-    tendency = paths[:, 0, 2]
-
-    plot_trajectories(paths=returns, nsub=nsub, names="returns")
-    names = ["vol", "ct"]
-    plot_trajectories(paths=[volatility, tendency], nsub=nsub, names=names)
+from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
 
 
 def try_simulation_pq() -> None:
@@ -101,65 +69,6 @@ def try_simulation_pq() -> None:
 
     names = ["P", "Q"]
     plot_trajectories(paths=[returns_p, returns_q], nsub=nsub, names=names)
-
-
-def try_marginal() -> None:
-    """Simulate and plot marginal distribution of the data in Central Tendency model."""
-    riskfree = 0.01
-    lmbd = 0.01
-    mean_v = 0.5
-    kappa_s = 1.5
-    kappa_y = 0.05
-    eta_s = 0.02**0.5
-    eta_y = 0.001**0.5
-    rho = -0.9
-
-    param_true = CentTendParam(
-        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
-    )
-    centtend = CentTend(param_true)
-
-    start = [1, mean_v, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 500
-    nobs = nperiods * nsub
-    paths = centtend.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
-
-    returns = paths[:, :, 0]
-    volatility = paths[:, :, 1]
-    tendency = paths[:, :, 2]
-
-    plot_final_distr(paths=returns * nsub, names="returns")
-    plot_final_distr(paths=volatility, names="volatility")
-    plot_final_distr(paths=tendency, names="tendency")
-
-
-def try_sim_realized() -> None:
-    """Simulate realized data from Central Tendency model and plot it."""
-    riskfree = 0.0
-    mean_v = 0.5
-    kappa_s = 0.05
-    kappa_y = 0.02
-    eta_s = 0.1
-    eta_y = 0.01
-    rho = -0.9
-    lmbd = 0.5
-
-    param_true = CentTendParam(
-        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
-    )
-    centtend = CentTend(param_true)
-
-    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
-    aggh = 1
-
-    returns, rvar = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-
-    plot_realized(returns=returns, rvar=rvar)
-
-    nlags, lw = 90, 2
-    grid = range(nlags + 1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
-    plt.show()
 
 
 def try_sim_realized_pq() -> None:

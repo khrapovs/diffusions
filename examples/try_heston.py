@@ -13,31 +13,7 @@ from mygmm import Results
 from statsmodels.tsa.stattools import acf
 
 from affidiff import Heston, HestonParam
-from affidiff.helper_functions import plot_final_distr, plot_realized, plot_trajectories, take_time
-
-
-def try_simulation() -> None:
-    """Try simulating and plotting Heston model."""
-    riskfree = 0.0
-    lmbd = 0.0
-    mean_v = 0.5
-    kappa = 0.1
-    eta = 0.02**0.5
-    rho = -0.9
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
-    heston = Heston(param_true)
-    print(param_true.is_valid())
-
-    start = [1, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 3
-    nobs = nperiods * nsub
-    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
-
-    returns = paths[:, 0, 0]
-    volatility = paths[:, 0, 1]
-    plot_trajectories(paths=returns, nsub=nsub, names="returns")
-    plot_trajectories(paths=volatility, nsub=nsub, names="volatility")
+from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
 
 
 def try_simulation_pq() -> None:
@@ -74,51 +50,6 @@ def try_simulation_pq() -> None:
     volatility_q = paths_q[:, 0, 1]
     plot_trajectories(paths=[returns, returns_q], nsub=nsub, names=["returns", "returns_q"])
     plot_trajectories(paths=[volatility, volatility_q], nsub=nsub, names=["volatility", "volatility_q"])
-
-
-def try_marginal() -> None:
-    """Simulate and plot marginal distribution of the data in Heston model."""
-    riskfree = 0.0
-    lmbd = 0.0
-    mean_v = 0.5
-    kappa = 0.1
-    eta = 0.02**0.5
-    rho = -0.9
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
-    heston = Heston(param_true)
-
-    start = [1, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 10, 200
-    nobs = nperiods * nsub
-    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
-
-    returns = paths[:, :, 0]
-    volatility = paths[:, :, 1]
-
-    plot_final_distr(paths=returns, names="returns")
-    plot_final_distr(paths=volatility, names="volatility")
-
-
-def try_sim_realized() -> None:
-    """Simulate realized data from Heston model and plot it."""
-    riskfree = 0.0
-    lmbd = 0.0
-    mean_v = 0.5
-    kappa = 0.1
-    eta = 0.02**0.5
-    rho = -0.9
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
-    heston = Heston(param_true)
-
-    # start = [1, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 80, 1, 1
-    aggh = 10
-
-    returns, rvar = heston.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-
-    plot_realized(returns=returns, rvar=rvar)
 
 
 def try_sim_realized_pq() -> None:
