@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 
 class CentTendParam(GenericParam):
@@ -203,7 +200,7 @@ class CentTendParam(GenericParam):
         return bool(posit1 & posit2 & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> CentTendParam:
         """Initialize parameters from parameter vector.
 
         Parameters

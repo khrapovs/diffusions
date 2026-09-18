@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 
 class GBMparam(GenericParam):
@@ -69,7 +66,7 @@ class GBMparam(GenericParam):
         self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> GBMparam:
         """Initialize parameters from parameter vector.
 
         Parameters

@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 
 class HestonParam(GenericParam):
@@ -186,7 +183,7 @@ class HestonParam(GenericParam):
         return bool(posit & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> HestonParam:
         """Initialize parameters from parameter vector.
 
         Parameters

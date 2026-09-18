@@ -9,7 +9,6 @@ import pandas as pd
 
 if TYPE_CHECKING:
     import numpy as np
-    from typing_extensions import Self
 
 
 class GenericParam(ABC):
@@ -49,7 +48,7 @@ class GenericParam(ABC):
 
     @classmethod
     @abstractmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> Self:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> GenericParam:
         """Initialize parameters from parameter vector.
 
         Parameters
