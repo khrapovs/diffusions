@@ -12,7 +12,7 @@ from mygmm import GMM, Results
 from affidiff._cython import get_cython_simulate
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 from affidiff.random import get_random_generator
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -557,7 +557,7 @@ class SDE(ABC):
         instr_choice: str = "const",
         aggh: float | Sequence[float] = 1,
         instrlag: int = 1,
-        subset: str = "all",
+        subset: Subset = Subset.all,
         measure: Measure = Measure.P,
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
@@ -583,7 +583,7 @@ class SDE(ABC):
             Number of intervals (days) to aggregate over using rolling mean
         instrlag : int
             Number of lags for the instruments
-        subset : str
+        subset : Subset
 
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
@@ -647,7 +647,7 @@ class SDE(ABC):
         instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
         aggh: float | Sequence[float] = 1,
-        subset: str = "all",
+        subset: Subset = Subset.all,
         instrlag: int = 1,
         measure: Measure = Measure.P,
     ) -> tuple[np.ndarray, np.ndarray | None]:
@@ -669,7 +669,7 @@ class SDE(ABC):
                 - 'var' : lags of instrument data
         aggh : int
             Number of intervals (days) to aggregate over using rolling mean
-        subset : str
+        subset : Subset
             Which parameters to estimate. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
@@ -688,7 +688,7 @@ class SDE(ABC):
 
         """
         subset_sl = None
-        if subset == "vol":
+        if subset == Subset.vol:
             subset_sl = slice(2)
 
         assert self.param is not None

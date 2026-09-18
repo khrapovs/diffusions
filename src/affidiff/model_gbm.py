@@ -11,7 +11,7 @@ from statsmodels.tsa.tsatools import lagmat
 from affidiff.helper_functions import columnwise_prod
 from affidiff.model_generic import SDE
 from affidiff.param_gbm import GBMparam
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -302,7 +302,7 @@ class GBM(SDE):
         instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
         aggh: float | Sequence[float] = 1,
-        subset: str = "all",
+        subset: Subset = Subset.all,
         instrlag: int = 1,
         measure: Measure = Measure.P,
     ) -> tuple[np.ndarray, np.ndarray]:
@@ -320,7 +320,7 @@ class GBM(SDE):
             Instrument choice
         aggh : int
             Aggregation horizon
-        subset : str
+        subset : Subset
             Subset
         instrlag : int
             Number of lags for the instruments

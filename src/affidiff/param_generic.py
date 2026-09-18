@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 import pandas as pd
 
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
     import numpy as np
@@ -62,14 +62,16 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @abstractmethod
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.P) -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.P
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update. Belongs to ['all', 'vol']
         measure : Measure
             Either physical measure (P), or risk-neutral (Q)
@@ -92,7 +94,7 @@ class GenericParam(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_names(*, subset: str = "all", measure: Measure = Measure.PQ) -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Returns
@@ -104,7 +106,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @abstractmethod
-    def get_theta(self, *, subset: str = "all", measure: Measure = Measure.P) -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.P) -> np.ndarray:
         """Return vector of parameters.
 
         Returns
@@ -117,7 +119,7 @@ class GenericParam(ABC):
 
     @staticmethod
     def get_bounds(
-        *, subset: str = "all", measure: Measure = Measure.PQ
+        *, subset: Subset = Subset.all, measure: Measure = Measure.PQ
     ) -> list[tuple[float | None, float | None]] | None:
         """Get parameter bounds.
 

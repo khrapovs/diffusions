@@ -6,7 +6,7 @@ import pytest
 
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 
 class TestRealizedMomentsCT:
@@ -186,8 +186,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-
-        subset = "vol"
+        subset = Subset.vol
         mom, dmom = centtend.integrated_mom(
             theta=param.get_theta(subset=subset), subset=subset, instr_choice="const", data=data, instrlag=instrlag
         )
@@ -238,8 +237,7 @@ class TestRealizedMomentsCT:
         rvar = ret**2
         data = np.vstack([ret, rvar])
         instrlag = 2
-
-        subset = "vol"
+        subset = Subset.vol
         measure = Measure.Q
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
@@ -266,8 +264,7 @@ class TestRealizedMomentsCT:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "vol"
+        subset = Subset.vol
         measure = Measure.P
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
@@ -306,7 +303,7 @@ class TestRealizedMomentsCT:
             rho=rho,
         )
         centtend = CentTend(param)
-        subset = "vol"
+        subset = Subset.vol
         measure = Measure.PQ
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
@@ -422,8 +419,7 @@ class TestRealizedMomentsCT:
         rvar = ret**2
         data = np.vstack([ret, rvar])
         instrlag = 2
-
-        subset = "all"
+        subset = Subset.all
         measure = Measure.Q
         param = CentTendParam(
             riskfree=riskfree,
@@ -462,8 +458,7 @@ class TestRealizedMomentsCT:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "all"
+        subset = Subset.all
         measure = Measure.P
         param = CentTendParam(
             riskfree=riskfree,
@@ -502,8 +497,7 @@ class TestRealizedMomentsCT:
         )
 
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
-
-        subset = "all"
+        subset = Subset.all
         measure = Measure.PQ
         param = CentTendParam(
             riskfree=riskfree,

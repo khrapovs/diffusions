@@ -7,7 +7,7 @@ from typing import Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 
 class VasicekParam(GenericParam):
@@ -83,14 +83,16 @@ class VasicekParam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.P) -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.P
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
         measure : Measure
             Probability measure
@@ -113,7 +115,7 @@ class VasicekParam(GenericParam):
         return "Vasicek"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: Measure = Measure.PQ) -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Returns
@@ -125,7 +127,7 @@ class VasicekParam(GenericParam):
         _ = (subset, measure)
         return ["mean", "kappa", "eta"]
 
-    def get_theta(self, *, subset: str = "all", measure: Measure = Measure.PQ) -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.
 
         Returns

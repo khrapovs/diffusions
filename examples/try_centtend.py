@@ -14,7 +14,7 @@ from statsmodels.tsa.stattools import acf
 from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 
 def try_simulation_pq() -> None:
@@ -145,7 +145,7 @@ def try_integrated_gmm_single() -> None:
 
     instr_data = np.vstack([rvar])
 
-    subset = "vol"
+    subset = Subset.vol
     measure = Measure.P
 
     #    theta = param_true.get_theta(subset=subset, measure=measure)
@@ -215,7 +215,7 @@ def try_integrated_gmm_real() -> None:
 
     instr_data = np.vstack([rvar, rvar**2])
 
-    subset = "vol"
+    subset = Subset.vol
 
     time_start = time.time()
     res = centtend.integrated_gmm(
@@ -280,7 +280,7 @@ def try_integrated_gmm_opt_methods() -> None:
             aggh=aggh,
             instr_choice="var",
             method=method,
-            subset="vol",
+            subset=Subset.vol,
             iter=3,
         )
         print(res)

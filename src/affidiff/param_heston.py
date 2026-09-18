@@ -8,7 +8,7 @@ from typing import Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
-from affidiff.types import Measure
+from affidiff.types import Measure, Subset
 
 
 class HestonParam(GenericParam):
@@ -101,12 +101,12 @@ class HestonParam(GenericParam):
         return "Heston"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: Measure = Measure.PQ) -> list[str]:
+    def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to return. Belongs to
                 - 'all' : all parameters, including those related to returns
                 - 'vol' : only those related to volatility
@@ -124,13 +124,13 @@ class HestonParam(GenericParam):
         """
         names = ["mean_v", "kappa", "eta", "rho", "lmbd", "lmbd_v"]
 
-        if subset == "all" and measure == Measure.PQ:
+        if subset == Subset.all and measure == Measure.PQ:
             return names
-        elif subset == "all" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return names[:-1]
-        elif subset == "vol" and measure == Measure.PQ:
+        elif subset == Subset.vol and measure == Measure.PQ:
             return names[:3] + names[5:]
-        elif subset == "vol" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return names[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
@@ -202,7 +202,7 @@ class HestonParam(GenericParam):
         )
 
     def update(
-        self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.PQ
+        self, *, theta: np.ndarray | Sequence[float], subset: Subset = Subset.all, measure: Measure = Measure.PQ
     ) -> None:
         """Update attributes from parameter vector.
 
@@ -210,7 +210,7 @@ class HestonParam(GenericParam):
         ----------
         theta : (nparams, ) array
             Parameter vector
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
@@ -227,13 +227,13 @@ class HestonParam(GenericParam):
         """
         [self.mean_v, self.kappa, self.eta] = [float(x) for x in theta[:3]]
 
-        if subset == "all" and measure == Measure.PQ:
+        if subset == Subset.all and measure == Measure.PQ:
             [self.rho, self.lmbd, self.lmbd_v] = [float(x) for x in theta[3:]]
-        elif subset == "all" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             [self.rho, self.lmbd] = [float(x) for x in theta[3:5]]
-        elif subset == "vol" and measure == Measure.PQ:
+        elif subset == Subset.vol and measure == Measure.PQ:
             [self.lmbd_v] = [float(x) for x in theta[3:]]
-        elif subset == "vol" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             pass
         else:
             raise NotImplementedError("Keyword variable is not supported!")
@@ -243,12 +243,12 @@ class HestonParam(GenericParam):
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, *, subset: str = "all", measure: Measure = Measure.PQ) -> np.ndarray:
+    def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
@@ -269,25 +269,25 @@ class HestonParam(GenericParam):
 
         """
         theta = np.array([self.mean_v, self.kappa, self.eta, self.rho, self.lmbd, self.lmbd_v])
-        if subset == "all" and measure == Measure.PQ:
+        if subset == Subset.all and measure == Measure.PQ:
             return theta
-        elif subset == "all" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return theta[:-1]
-        elif subset == "vol" and measure == Measure.PQ:
+        elif subset == Subset.vol and measure == Measure.PQ:
             return np.concatenate((theta[:3], theta[5:]))
-        elif subset == "vol" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return theta[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
     def get_bounds(
-        self, *, subset: str = "all", measure: Measure = Measure.PQ
+        self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ
     ) -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters
         ----------
-        subset : str
+        subset : Subset
             Which parameters to update
 
             Belongs to
@@ -311,13 +311,13 @@ class HestonParam(GenericParam):
         ub: list[float | None] = [None, None, None, 1.0, None, None]
         bounds = list(zip(lb, ub, strict=False))
 
-        if subset == "all" and measure == Measure.PQ:
+        if subset == Subset.all and measure == Measure.PQ:
             return bounds
-        elif subset == "all" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.all and measure in (Measure.P, Measure.Q):
             return bounds[:-1]
-        elif subset == "vol" and measure == Measure.PQ:
+        elif subset == Subset.vol and measure == Measure.PQ:
             return bounds[:3] + bounds[5:]
-        elif subset == "vol" and measure in (Measure.P, Measure.Q):
+        elif subset == Subset.vol and measure in (Measure.P, Measure.Q):
             return bounds[:3]
         else:
             raise NotImplementedError("Keyword variable is not supported!")
