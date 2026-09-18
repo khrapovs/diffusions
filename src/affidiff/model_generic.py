@@ -71,6 +71,11 @@ class SDE(ABC):
         """Return starting values for simulation."""
         raise NotImplementedError("Must be overridden")
 
+    @property
+    def nvars(self) -> int:
+        """Number of state variables."""
+        return len(self.get_start())
+
     @staticmethod
     def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Realized dependent variables."""

@@ -49,23 +49,22 @@ class SimulationConfigForTests:
     seed: int = 42
 
 
-def get_model_fixtures() -> list[tuple[type[SDE], GenericParam, int]]:
-    """Return list of (ModelClass, param_instance, nvars) tuples.
+def get_model_fixtures() -> list[tuple[type[SDE], GenericParam]]:
+    """Return list of (ModelClass, param_instance) tuples.
 
     Returns
     -------
-    list[tuple[type[SDE], GenericParam, int]]
+    list[tuple[type[SDE], GenericParam]]
         List of model fixtures where each tuple contains:
         - Model class (e.g., GBM, Vasicek)
         - Parameter instance (initialized with test values)
-        - Number of state variables (nvars)
 
     """
     return [
-        (GBM, GBMparam(mean=0.05, sigma=0.2), 1),
-        (Vasicek, VasicekParam(mean=0.5, kappa=0.1, eta=0.2), 1),
-        (Heston, HestonParam(riskfree=0.0, lmbd=0.0, mean_v=0.5, kappa=0.1, eta=0.02**0.5, rho=-0.9), 2),
-        (CIR, CIRparam(mean=0.5, kappa=0.1, eta=0.2), 1),
+        (GBM, GBMparam(mean=0.05, sigma=0.2)),
+        (Vasicek, VasicekParam(mean=0.5, kappa=0.1, eta=0.2)),
+        (Heston, HestonParam(riskfree=0.0, lmbd=0.0, mean_v=0.5, kappa=0.1, eta=0.02**0.5, rho=-0.9)),
+        (CIR, CIRparam(mean=0.5, kappa=0.1, eta=0.2)),
         (
             CentTend,
             CentTendParam(
@@ -78,6 +77,5 @@ def get_model_fixtures() -> list[tuple[type[SDE], GenericParam, int]]:
                 eta_y=0.001**0.5,
                 rho=-0.9,
             ),
-            3,
         ),
     ]

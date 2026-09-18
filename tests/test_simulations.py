@@ -22,9 +22,9 @@ if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
 
 
-@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
+@pytest.mark.parametrize("model_class,params", get_model_fixtures())
 @pytest.mark.parametrize("use_cython", [False, True])
-def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nvars: int, use_cython: bool) -> None:
+def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, use_cython: bool) -> None:
     """Test simulation runs successfully for all models with both backends.
 
     Validates that:
@@ -39,8 +39,6 @@ def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nv
         The model class to test (GBM, Vasicek, etc.)
     params : GenericParam
         Initialized parameter instance
-    nvars : int
-        Expected number of state variables
     use_cython : bool
         Whether to test Cython backend (True) or Python backend (False)
 
@@ -54,13 +52,13 @@ def test_simulate_all_models(*, model_class: type[SDE], params: GenericParam, nv
         nsub=cfg.nsub, ndiscr=cfg.ndiscr, nobs=nobs, nsim=cfg.nsim, diff=0, cython=use_cython, seed=cfg.seed
     )
 
-    assert_simulation_shape(paths=paths, nobs=nobs, expected_nsim=expected_nsim, nvars=nvars)
+    assert_simulation_shape(paths=paths, nobs=nobs, expected_nsim=expected_nsim, nvars=model.nvars)
     assert_finite_values(paths=paths)
     assert_variation(paths=paths)
 
 
-@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
-def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam, nvars: int) -> None:
+@pytest.mark.parametrize("model_class,params", get_model_fixtures())
+def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam) -> None:
     """Test Python and Cython backends produce statistically equivalent results.
 
     Uses identical parameters and seeds to verify both implementations
@@ -73,8 +71,6 @@ def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params
         The model class to test (GBM, Vasicek, etc.)
     params : GenericParam
         Initialized parameter instance
-    nvars : int
-        Expected number of state variables
 
     """
     cfg = SimulationConfigForTests()
@@ -92,14 +88,14 @@ def test_simulate_python_vs_cython_equivalence(*, model_class: type[SDE], params
         nsub=cfg.nsub, ndiscr=cfg.ndiscr, nobs=nobs, nsim=cfg.nsim, diff=0, cython=True, seed=cfg.seed
     )
 
-    assert_simulation_shape(paths=paths_py, nobs=nobs, expected_nsim=expected_nsim, nvars=nvars)
-    assert_simulation_shape(paths=paths_cy, nobs=nobs, expected_nsim=expected_nsim, nvars=nvars)
+    assert_simulation_shape(paths=paths_py, nobs=nobs, expected_nsim=expected_nsim, nvars=model_py.nvars)
+    assert_simulation_shape(paths=paths_cy, nobs=nobs, expected_nsim=expected_nsim, nvars=model_cy.nvars)
     assert_statistical_equivalence(paths_py=paths_py, paths_cy=paths_cy)
 
 
-@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
+@pytest.mark.parametrize("model_class,params", get_model_fixtures())
 @pytest.mark.parametrize("use_cython", [False, True])
-def test_sim_realized_all_models(*, model_class: type[SDE], params: GenericParam, nvars: int, use_cython: bool) -> None:
+def test_sim_realized_all_models(*, model_class: type[SDE], params: GenericParam, use_cython: bool) -> None:
     """Test sim_realized runs successfully for all models with both backends.
 
     Validates that:
@@ -114,13 +110,10 @@ def test_sim_realized_all_models(*, model_class: type[SDE], params: GenericParam
         The model class to test (GBM, Vasicek, etc.)
     params : GenericParam
         Initialized parameter instance
-    nvars : int
-        Expected number of state variables
     use_cython : bool
         Whether to test Cython backend (True) or Python backend (False)
 
     """
-    del nvars
     nsub = 80
     ndiscr = 1
     aggh = 10
@@ -137,8 +130,8 @@ def test_sim_realized_all_models(*, model_class: type[SDE], params: GenericParam
     assert_realized_finite_variation(returns=returns, rvar=rvar)
 
 
-@pytest.mark.parametrize("model_class,params,nvars", get_model_fixtures())
-def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam, nvars: int) -> None:
+@pytest.mark.parametrize("model_class,params", get_model_fixtures())
+def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], params: GenericParam) -> None:
     """Test Python and Cython backends produce statistically equivalent realized results.
 
     Uses identical parameters and seeding to verify both implementations
@@ -150,11 +143,8 @@ def test_sim_realized_python_vs_cython_equivalence(*, model_class: type[SDE], pa
         The model class to test (GBM, Vasicek, etc.)
     params : GenericParam
         Initialized parameter instance
-    nvars : int
-        Expected number of state variables
 
     """
-    del nvars
     cfg = SimulationConfigForTests()
     nsub = 80
     ndiscr = 1
