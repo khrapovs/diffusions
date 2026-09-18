@@ -1,5 +1,7 @@
 """Test suite for GBM model simulation."""
 
+from __future__ import annotations
+
 import numpy as np
 import pytest
 
@@ -100,3 +102,43 @@ class TestGBMSimulation:
             # Use absolute tolerance for quantiles near zero
             abs_tol = max(1e-6, 0.05 * np.abs(q_py))
             assert np.abs(q_py - q_cy) < abs_tol
+
+    def test_integrated_gmm(self) -> None:
+        """Test integrated GMM estimation for GBM model.
+
+        Verifies that the estimator can recover true parameters from simulated data
+        using integrated moment conditions.
+        """
+        mean_true, sigma_true = 1.5, 0.2
+        theta_true = GBMparam(mean=mean_true, sigma=sigma_true)
+        gbm = GBM(theta_true)
+
+        start, nperiods, nsub, ndiscr, nsim = 1, 500, 80, 1, 1
+        aggh = 10
+        returns, rvar = gbm.sim_realized(
+            start=start, nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0
+        )
+        data = np.vstack([returns, rvar])
+
+        mean_start, sigma_start = 2.5, 0.4
+        theta_start = GBMparam(mean=mean_start, sigma=sigma_start)
+        res = gbm.integrated_gmm(param_start=theta_start, data=data, instrlag=2)
+
+        # Check that we got valid results
+        assert res.theta is not None
+        assert len(res.theta) == 2
+
+        # Check that estimates are reasonable (close to true parameters)
+        # Allow 50% relative error due to simulation variability
+        mean_est, sigma_est = res.theta[0], res.theta[1]
+        assert np.abs(mean_est - mean_true) / np.abs(mean_true) < 0.5
+        assert np.abs(sigma_est - sigma_true) / np.abs(sigma_true) < 0.5
+
+        # Check that we have valid standard errors
+        assert res.stde is not None
+        assert len(res.stde) == 2
+        assert np.all(res.stde > 0)
+
+        # Check J-statistic is computed
+        assert hasattr(res, "jstat")
+        assert res.jstat > 0
