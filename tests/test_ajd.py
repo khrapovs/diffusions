@@ -3,8 +3,12 @@
 import numpy as np
 import numpy.testing as npt
 
-from affidiff import CentTendParam, CIRparam, GBMparam, HestonParam, VasicekParam
 from affidiff.helper_functions import ajd_diff, ajd_drift
+from affidiff.param_cir import CIRparam
+from affidiff.param_ct import CentTendParam
+from affidiff.param_gbm import GBMparam
+from affidiff.param_heston import HestonParam
+from affidiff.param_vasicek import VasicekParam
 
 
 class TestDrift:

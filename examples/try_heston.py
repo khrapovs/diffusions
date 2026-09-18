@@ -12,8 +12,9 @@ from load_real_data import load_data  # type: ignore
 from mygmm import Results
 from statsmodels.tsa.stattools import acf
 
-from affidiff import Heston, HestonParam
 from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
+from affidiff.model_heston import Heston
+from affidiff.param_heston import HestonParam
 
 
 def try_simulation_pq() -> None:

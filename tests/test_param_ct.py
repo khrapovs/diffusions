@@ -6,7 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff import CentTendParam
+from affidiff.param_ct import CentTendParam
 
 
 class TestSDEParameter:

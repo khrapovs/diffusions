@@ -11,8 +11,9 @@ import seaborn as sns
 from load_real_data import load_data  # type: ignore
 from statsmodels.tsa.stattools import acf
 
-from affidiff import CentTend, CentTendParam
 from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
+from affidiff.model_ct import CentTend
+from affidiff.param_ct import CentTendParam
 
 
 def try_simulation_pq() -> None:

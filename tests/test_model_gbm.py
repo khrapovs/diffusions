@@ -3,7 +3,8 @@
 import numpy as np
 import pytest
 
-from affidiff import GBM, GBMparam
+from affidiff.model_gbm import GBM
+from affidiff.param_gbm import GBMparam
 
 
 class TestGBMSimulation:

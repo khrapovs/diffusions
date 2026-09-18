@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from affidiff import GBM, GBMparam
 from affidiff.helper_functions import plot_realized
+from affidiff.model_gbm import GBM
+from affidiff.param_gbm import GBMparam
 
 
 def try_integrated_gmm() -> None:

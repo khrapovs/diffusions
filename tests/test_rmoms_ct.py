@@ -4,7 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff import CentTend, CentTendParam
+from affidiff.model_ct import CentTend
+from affidiff.param_ct import CentTendParam
 
 
 class TestRealizedMomentsCT:

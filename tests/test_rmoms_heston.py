@@ -4,7 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff import Heston, HestonParam
+from affidiff.model_heston import Heston
+from affidiff.param_heston import HestonParam
 
 
 class TestRealizedMomentsHeston:
