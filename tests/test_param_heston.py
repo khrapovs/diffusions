@@ -7,6 +7,7 @@ import numpy.testing as npt
 import pytest
 
 from affidiff.param_heston import HestonParam
+from affidiff.types import Measure
 
 
 class TestSDEParameter:
@@ -24,7 +25,7 @@ class TestSDEParameter:
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
         names = ["mean_v", "kappa", "eta", "rho", "lmbd", "lmbd_v"]
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.get_model_name() == "Heston"
         assert param.get_names() == names
         assert param.get_names(subset="all") == names
@@ -67,10 +68,10 @@ class TestSDEParameter:
         rho = -0.5
 
         param = HestonParam(
-            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="Q"
+            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.Q
         )
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_v == lmbd_v
@@ -95,9 +96,9 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa, eta, rho, lmbd, lmbd_v]
-        param = HestonParam.from_theta(theta=theta, measure="P")
+        param = HestonParam.from_theta(theta=theta, measure=Measure.P)
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.riskfree == riskfree
         assert param.lmbd == lmbd
         assert param.lmbd_v == lmbd_v
@@ -118,9 +119,9 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa, eta, rho, lmbd, lmbd_v]
-        param = HestonParam.from_theta(theta=theta, measure="Q")
+        param = HestonParam.from_theta(theta=theta, measure=Measure.Q)
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_v == lmbd_v
@@ -250,7 +251,7 @@ class TestSDEParameter:
         rho = -0.5
 
         param = HestonParam(
-            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="P"
+            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.P
         )
 
         theta = np.array([mean_v, kappa, eta, rho, lmbd, lmbd_v])
@@ -306,7 +307,7 @@ class TestSDEParameter:
         rho = -0.5
 
         param = HestonParam(
-            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="P"
+            riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.P
         )
 
         assert param.is_valid()

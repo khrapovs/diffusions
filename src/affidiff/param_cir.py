@@ -7,6 +7,7 @@ from typing import Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
+from affidiff.types import Measure
 
 
 class CIRparam(GenericParam):
@@ -25,7 +26,9 @@ class CIRparam(GenericParam):
 
     """
 
-    def __init__(self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: str = "P") -> None:
+    def __init__(
+        self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: Measure = Measure.P
+    ) -> None:
         """Initialize class.
 
         Parameters
@@ -36,11 +39,7 @@ class CIRparam(GenericParam):
             Mean reversion speed
         eta : float
             Instantaneous standard deviation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         _ = measure
@@ -48,7 +47,7 @@ class CIRparam(GenericParam):
         self.mean = mean
         self.kappa = kappa
         self.eta = eta
-        self.measure = "P"
+        self.measure = Measure.P
         self.update_ajd()
 
     def is_valid(self) -> bool:
@@ -86,7 +85,7 @@ class CIRparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.P) -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -95,7 +94,7 @@ class CIRparam(GenericParam):
             Parameter vector
         subset : str
             Which parameters to update
-        measure : str
+        measure : Measure
             Probability measure
 
         """

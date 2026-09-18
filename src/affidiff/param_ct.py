@@ -8,6 +8,7 @@ from typing import Any, Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
+from affidiff.types import Measure
 
 
 class CentTendParam(GenericParam):
@@ -49,7 +50,7 @@ class CentTendParam(GenericParam):
         eta_s: float = 0.1,
         eta_y: float = 0.01,
         rho: float = -0.5,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> None:
         """Initialize class.
 
@@ -75,11 +76,11 @@ class CentTendParam(GenericParam):
             Central tendency risk price
         rho : float
             Correlation
-        measure : str
+        measure : Measure
 
             Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+                - Measure.P : physical measure
+                - Measure.Q : risk-neutral
 
         """
         super().__init__()
@@ -94,8 +95,8 @@ class CentTendParam(GenericParam):
         self.eta_s = eta_s
         self.rho = rho
         self.scale = 1.0
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
@@ -150,7 +151,7 @@ class CentTendParam(GenericParam):
 
     def convert_to_q(self) -> None:
         """Convert parameters to risk-neutral version."""
-        if self.measure == "Q":
+        if self.measure == Measure.Q:
             warnings.warn("Parameters are already converted to Q!", stacklevel=2)
         else:
             kappa_sp = self.kappa_s
@@ -161,7 +162,7 @@ class CentTendParam(GenericParam):
             self.mean_v *= kappa_yp / self.kappa_y * self.scale
             self.lmbd = 0.0
             self.eta_y *= self.scale**0.5
-            self.measure = "Q"
+            self.measure = Measure.Q
             self.update_ajd()
 
     def update_ajd(self) -> None:
@@ -200,18 +201,14 @@ class CentTendParam(GenericParam):
         return bool(posit1 & posit2 & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> CentTendParam:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: Measure = Measure.P) -> CentTendParam:
         """Initialize parameters from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         return cls(
@@ -263,7 +260,7 @@ class CentTendParam(GenericParam):
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-        self.measure = "P"
+        self.measure = Measure.P
         if measure == "Q":
             self.convert_to_q()
         self.update_ajd()

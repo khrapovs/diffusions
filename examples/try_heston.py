@@ -15,6 +15,7 @@ from statsmodels.tsa.stattools import acf
 from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
+from affidiff.types import Measure
 
 
 def try_simulation_pq() -> None:
@@ -28,7 +29,7 @@ def try_simulation_pq() -> None:
     rho = -0.9
     # 2 * kappa * mean_v - eta**2 > 0
     param_true = HestonParam(
-        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="P"
+        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.P
     )
     heston = Heston(param_true)
     print(param_true.is_valid())
@@ -39,7 +40,7 @@ def try_simulation_pq() -> None:
     paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
 
     param_true = HestonParam(
-        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure="Q"
+        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.Q
     )
     heston.update_theta(param_true)
     start_q = [1, param_true.mean_v]

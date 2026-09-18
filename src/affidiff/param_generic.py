@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 import pandas as pd
 
+from affidiff.types import Measure
+
 if TYPE_CHECKING:
     import numpy as np
 
@@ -16,11 +18,11 @@ class GenericParam(ABC):
 
     Attributes
     ----------
-    measure : str
+    measure : Measure
         Probability measure.
     """
 
-    measure: str = "P"
+    measure: Measure = Measure.P
     mat_k0: Any
     mat_k1: Any
     mat_h0: Any
@@ -28,7 +30,7 @@ class GenericParam(ABC):
 
     def __init__(self) -> None:
         """Initialize class."""
-        self.measure = "P"
+        self.measure = Measure.P
 
     def is_valid(self) -> bool:
         """Check whether parameters are valid.
@@ -60,7 +62,7 @@ class GenericParam(ABC):
         raise NotImplementedError("Must be overridden")
 
     @abstractmethod
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.P) -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -69,7 +71,7 @@ class GenericParam(ABC):
             Parameter vector
         subset : str
             Which parameters to update. Belongs to ['all', 'vol']
-        measure : str
+        measure : Measure
             Either physical measure (P), or risk-neutral (Q)
 
         """

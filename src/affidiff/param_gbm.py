@@ -7,6 +7,7 @@ from typing import Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
+from affidiff.types import Measure
 
 
 class GBMparam(GenericParam):
@@ -23,7 +24,7 @@ class GBMparam(GenericParam):
 
     """
 
-    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: str = "P") -> None:
+    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: Measure = Measure.P) -> None:
         """Initialize class.
 
         Parameters
@@ -32,18 +33,14 @@ class GBMparam(GenericParam):
             Mean of the process
         sigma : float
             Instantaneous standard deviation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         _ = measure
         super().__init__()
         self.mean = mean
         self.sigma = sigma
-        self.measure = "P"
+        self.measure = Measure.P
         self.update_ajd()
 
     def is_valid(self) -> bool:
@@ -79,7 +76,7 @@ class GBMparam(GenericParam):
         param.update_ajd()
         return param
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "P") -> None:
+    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.P) -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -88,7 +85,7 @@ class GBMparam(GenericParam):
             Parameter vector
         subset : str
             Which parameters to update
-        measure : str
+        measure : Measure
             Probability measure
 
         """

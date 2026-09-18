@@ -7,6 +7,7 @@ import numpy.testing as npt
 import pytest
 
 from affidiff.param_ct import CentTendParam
+from affidiff.types import Measure
 
 
 class TestSDEParameter:
@@ -36,7 +37,7 @@ class TestSDEParameter:
 
         names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.get_model_name() == "Central Tendency"
         assert param.get_names() == names
         assert param.get_names(subset="all") == names
@@ -132,14 +133,14 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="Q",
+            measure=Measure.Q,
         )
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -170,9 +171,9 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta=theta, measure="P")
+        param = CentTendParam.from_theta(theta=theta, measure=Measure.P)
 
-        assert param.measure == "P"
+        assert param.measure == Measure.P
         assert param.riskfree == riskfree
         assert param.lmbd == lmbd
         assert param.lmbd_s == lmbd_s
@@ -199,13 +200,13 @@ class TestSDEParameter:
         rho = -0.5
 
         theta = [riskfree, mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
-        param = CentTendParam.from_theta(theta=theta, measure="Q")
+        param = CentTendParam.from_theta(theta=theta, measure=Measure.Q)
 
         kappa_sq = kappa_s - lmbd_s * eta_s
         kappa_yq = kappa_y - lmbd_y * eta_y
         scale = kappa_s / kappa_sq
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -369,7 +370,7 @@ class TestSDEParameter:
         mean_vq = mean_v * kappa_y / kappa_yq * scale
         eta_yq = eta_y * scale**0.5
 
-        assert param.measure == "Q"
+        assert param.measure == Measure.Q
         assert param.riskfree == riskfree
         assert param.lmbd == 0
         assert param.lmbd_s == lmbd_s
@@ -412,7 +413,7 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="P",
+            measure=Measure.P,
         )
 
         theta = [mean_v, kappa_s, kappa_y, eta_s, eta_y, rho, lmbd, lmbd_s, lmbd_y]
@@ -481,7 +482,7 @@ class TestSDEParameter:
             eta_s=eta_s,
             eta_y=eta_y,
             rho=rho,
-            measure="P",
+            measure=Measure.P,
         )
 
         assert param.is_valid()

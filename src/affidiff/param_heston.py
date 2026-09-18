@@ -8,6 +8,7 @@ from typing import Sequence
 import numpy as np
 
 from affidiff.param_generic import GenericParam
+from affidiff.types import Measure
 
 
 class HestonParam(GenericParam):
@@ -51,7 +52,7 @@ class HestonParam(GenericParam):
         rho: float = -0.5,
         lmbd: float = 0.1,
         lmbd_v: float = 0.0,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> None:
         """Initialize class.
 
@@ -71,11 +72,7 @@ class HestonParam(GenericParam):
             Volatility risk price
         rho : float
             Correlation
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         super().__init__()
@@ -86,8 +83,8 @@ class HestonParam(GenericParam):
         self.rho = rho
         self.lmbd = lmbd
         self.lmbd_v = lmbd_v
-        self.measure = "P"
-        if measure == "Q":
+        self.measure = Measure.P
+        if measure == Measure.Q:
             self.convert_to_q()
         self.update_ajd()
 
@@ -140,14 +137,14 @@ class HestonParam(GenericParam):
 
     def convert_to_q(self) -> None:
         """Convert parameters to risk-neutral version."""
-        if self.measure == "Q":
+        if self.measure == Measure.Q:
             warnings.warn("Parameters are already converted to Q!", stacklevel=2)
         else:
             kappa_p = self.kappa
             self.kappa = kappa_p - self.lmbd_v * self.eta
             self.mean_v *= kappa_p / self.kappa
             self.lmbd = 0.0
-            self.measure = "Q"
+            self.measure = Measure.Q
             self.update_ajd()
 
     def update_ajd(self) -> None:
@@ -183,18 +180,14 @@ class HestonParam(GenericParam):
         return bool(posit & self.feller())
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: str = "P") -> HestonParam:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float], measure: Measure = Measure.P) -> HestonParam:
         """Initialize parameters from parameter vector.
 
         Parameters
         ----------
         theta : (nparams, ) array
             Parameter vector
-        measure : str
-
-            Under which measure:
-                - 'P' : physical measure
-                - 'Q' : risk-neutral
+        measure : Measure
 
         """
         return cls(
@@ -243,7 +236,7 @@ class HestonParam(GenericParam):
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-        self.measure = "P"
+        self.measure = Measure.P
         if measure == "Q":
             self.convert_to_q()
         self.update_ajd()
