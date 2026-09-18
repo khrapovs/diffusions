@@ -111,7 +111,7 @@ def try_integrated_gmm_single() -> None:
     instr_data = np.vstack([rvar, rvar**2])
 
     subset = "vol"
-    measure = "P"
+    measure = Measure.P
     time_start = time.time()
     res = heston.integrated_gmm(
         param_start=param_true,
@@ -161,7 +161,7 @@ def try_integrated_gmm_single_rn() -> None:
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
     subset = "vol"
-    measure = "P"
+    measure = Measure.P
 
     res = heston.integrated_gmm(
         param_start=param_true,
@@ -227,7 +227,7 @@ def try_integrated_gmm_joint() -> Results:
     instr_data = np.vstack([rvar_p, rvar_p**2])
 
     subset = "vol"
-    measure = "PQ"
+    measure = Measure.PQ
 
     time_start = time.time()
     res = heston.integrated_gmm(

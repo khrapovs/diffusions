@@ -6,6 +6,7 @@ import pytest
 
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
+from affidiff.types import Measure
 
 
 class TestRealizedMomentsHeston:
@@ -44,7 +45,7 @@ class TestRealizedMomentsHeston:
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
-        theta = param.get_theta(subset="all", measure="P")
+        theta = param.get_theta(subset="all", measure=Measure.P)
 
         instr_data = np.vstack([rvar, rvar**2])
         ninstr = instr_data.shape[0]
@@ -74,7 +75,7 @@ class TestRealizedMomentsHeston:
         rvar = np.ones(nperiods) * mean_v
         data = np.vstack([ret, rvar])
         instrlag = 2
-        theta = param.get_theta(subset="all", measure="P")
+        theta = param.get_theta(subset="all", measure=Measure.P)
 
         depvar = heston.realized_depvar(data=data)
 
@@ -160,7 +161,7 @@ class TestRealizedMomentsHeston:
         instrlag = 2
 
         subset = "vol"
-        measure = "Q"
+        measure = Measure.Q
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -188,7 +189,7 @@ class TestRealizedMomentsHeston:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "vol"
-        measure = "P"
+        measure = Measure.P
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -218,7 +219,7 @@ class TestRealizedMomentsHeston:
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
         subset = "vol"
-        measure = "PQ"
+        measure = Measure.PQ
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
             theta=theta,
@@ -295,7 +296,7 @@ class TestRealizedMomentsHeston:
         data = np.vstack([ret, rvar])
 
         subset = "all"
-        measure = "Q"
+        measure = Measure.Q
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         heston = Heston(param)
         theta = param.get_theta(subset=subset, measure=measure)
@@ -325,7 +326,7 @@ class TestRealizedMomentsHeston:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "all"
-        measure = "P"
+        measure = Measure.P
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(
@@ -354,7 +355,7 @@ class TestRealizedMomentsHeston:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "all"
-        measure = "PQ"
+        measure = Measure.PQ
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = heston.integrated_mom(

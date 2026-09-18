@@ -113,7 +113,7 @@ class CentTendParam(GenericParam):
         return "Central Tendency"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: str = "all", measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Parameters
@@ -225,7 +225,9 @@ class CentTendParam(GenericParam):
             measure=measure,
         )
 
-    def update(self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: str = "PQ") -> None:
+    def update(
+        self, *, theta: np.ndarray | Sequence[float], subset: str = "all", measure: Measure = Measure.PQ
+    ) -> None:
         """Update attributes from parameter vector.
 
         Parameters
@@ -265,7 +267,7 @@ class CentTendParam(GenericParam):
             self.convert_to_q()
         self.update_ajd()
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: str = "all", measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of model parameters.
 
         Parameters
@@ -314,7 +316,9 @@ class CentTendParam(GenericParam):
         else:
             raise NotImplementedError("Keyword variable is not supported!")
 
-    def get_bounds(self, *, subset: str = "all", measure: str = "PQ") -> list[tuple[float | None, float | None]]:
+    def get_bounds(
+        self, *, subset: str = "all", measure: Measure = Measure.PQ
+    ) -> list[tuple[float | None, float | None]]:
         """Bounds on parameters.
 
         Parameters

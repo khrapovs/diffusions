@@ -6,6 +6,7 @@ import pytest
 
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
+from affidiff.types import Measure
 
 
 class TestRealizedMomentsCT:
@@ -239,7 +240,7 @@ class TestRealizedMomentsCT:
         instrlag = 2
 
         subset = "vol"
-        measure = "Q"
+        measure = Measure.Q
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -267,7 +268,7 @@ class TestRealizedMomentsCT:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "vol"
-        measure = "P"
+        measure = Measure.P
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
@@ -306,7 +307,7 @@ class TestRealizedMomentsCT:
         )
         centtend = CentTend(param)
         subset = "vol"
-        measure = "PQ"
+        measure = Measure.PQ
         theta = param.get_theta(subset=subset, measure=measure)
         mom, dmom = centtend.integrated_mom(
             theta=theta,
@@ -423,7 +424,7 @@ class TestRealizedMomentsCT:
         instrlag = 2
 
         subset = "all"
-        measure = "Q"
+        measure = Measure.Q
         param = CentTendParam(
             riskfree=riskfree,
             lmbd=lmbd,
@@ -463,7 +464,7 @@ class TestRealizedMomentsCT:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "all"
-        measure = "P"
+        measure = Measure.P
         param = CentTendParam(
             riskfree=riskfree,
             lmbd=lmbd,
@@ -503,7 +504,7 @@ class TestRealizedMomentsCT:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
 
         subset = "all"
-        measure = "PQ"
+        measure = Measure.PQ
         param = CentTendParam(
             riskfree=riskfree,
             lmbd=lmbd,

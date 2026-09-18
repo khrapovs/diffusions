@@ -11,6 +11,7 @@ from statsmodels.tsa.tsatools import lagmat
 from affidiff.helper_functions import columnwise_prod
 from affidiff.model_generic import SDE
 from affidiff.param_gbm import GBMparam
+from affidiff.types import Measure
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -303,7 +304,7 @@ class GBM(SDE):
         aggh: float | Sequence[float] = 1,
         subset: str = "all",
         instrlag: int = 1,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 

@@ -106,7 +106,7 @@ class GBMparam(GenericParam):
         return "GBM"
 
     @staticmethod
-    def get_names(*, subset: str = "all", measure: str = "PQ") -> list[str]:
+    def get_names(*, subset: str = "all", measure: Measure = Measure.PQ) -> list[str]:
         """Return parameter names.
 
         Returns
@@ -118,7 +118,7 @@ class GBMparam(GenericParam):
         _ = (subset, measure)
         return ["mean", "sigma"]
 
-    def get_theta(self, *, subset: str = "all", measure: str = "PQ") -> np.ndarray:
+    def get_theta(self, *, subset: str = "all", measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.
 
         Returns

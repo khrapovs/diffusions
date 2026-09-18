@@ -12,6 +12,7 @@ from mygmm import GMM, Results
 from affidiff._cython import get_cython_simulate
 from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
 from affidiff.random import get_random_generator
+from affidiff.types import Measure
 
 if TYPE_CHECKING:
     from affidiff.param_generic import GenericParam
@@ -557,7 +558,7 @@ class SDE(ABC):
         aggh: float | Sequence[float] = 1,
         instrlag: int = 1,
         subset: str = "all",
-        measure: str = "P",
+        measure: Measure = Measure.P,
         names: list[str] | None = None,
         bounds: list[tuple[float | None, float | None]] | None = None,
         constraints: Sequence[dict[str, object]] | dict[str, object] | tuple[()] = (),
@@ -648,7 +649,7 @@ class SDE(ABC):
         aggh: float | Sequence[float] = 1,
         subset: str = "all",
         instrlag: int = 1,
-        measure: str = "P",
+        measure: Measure = Measure.P,
     ) -> tuple[np.ndarray, np.ndarray | None]:
         """Integrated moment function.
 
