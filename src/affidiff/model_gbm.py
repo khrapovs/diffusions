@@ -296,8 +296,8 @@ class GBM(SDE):
 
     def integrated_mom(
         self,
-        *,
         theta: GenericParam | np.ndarray | Sequence[float],
+        *,
         data: np.ndarray | Sequence[np.ndarray] | None = None,
         instr_data: np.ndarray | None = None,
         instr_choice: str = "const",
