@@ -1,3 +1,9 @@
+## v0.3.0 (2026-09-23)
+
+### Feat
+
+- Load real data (SPX and VIX) from web (#14)
+
 ## v0.2.1 (2026-09-12)
 
 ### Fix
