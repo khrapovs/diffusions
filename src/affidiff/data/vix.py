@@ -1,7 +1,9 @@
 import polars as pl
 
+from affidiff.data.base import BaseDataLoader
 
-class VIX:
+
+class VIX(BaseDataLoader):
     _URL = "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
 
     def load(self) -> pl.LazyFrame:
