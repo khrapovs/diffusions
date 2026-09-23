@@ -9,6 +9,7 @@ dependencies = [
   "matplotlib>=3.10.8",
   "mygmm>=0.1.0",
   "numpy>=2.4.4",
+  "polars>=1.44.2",
   "scipy>=1.17.1",
   "seaborn>=0.13.2",
   "statsmodels>=0.14.6",
