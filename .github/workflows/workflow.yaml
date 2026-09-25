@@ -86,7 +86,7 @@ jobs:
           #            runs-on: windows-latest
           - os: macos-arm
             runs-on: macos-latest
-    needs: [ test, code-quality ]
+    needs: [ test, code-quality, docs ]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -103,7 +103,7 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
-    needs: [ test, code-quality ]
+    needs: [ test, code-quality, docs ]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
