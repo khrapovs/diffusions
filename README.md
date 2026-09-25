@@ -12,6 +12,10 @@ Install:
 pip install affidiff
 ```
 
+## Documentation
+
+[khrapovs.github.io/diffusions](https://khrapovs.github.io/diffusions/)
+
 ## Contribute
 
 ### Setup
@@ -41,13 +45,6 @@ Use pre-commit to automatically format and lint code:
 uv run prek install
 uv run prek run --all-files
 ```
-
-This runs:
-
-- Code formatting and linting (ruff)
-- Type checking (ty)
-- YAML validation
-- Common checks (trailing whitespace, end-of-file fixers, etc.)
 
 ### Testing
 
