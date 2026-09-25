@@ -2,7 +2,7 @@
 name = "affidiff"
 description = "Affine Diffusions. Simulation and estimation."
 readme = "README.md"
-version = "0.4.0"
+version = "0.5.0"
 requires-python = ">=3.14"
 authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 dependencies = [
