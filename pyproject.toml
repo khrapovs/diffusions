@@ -5,6 +5,10 @@ readme = "README.md"
 version = "0.5.1"
 requires-python = ">=3.14"
 authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "matplotlib>=3.10.8",
     "mygmm>=0.1.0",

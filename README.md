@@ -1,5 +1,9 @@
 # Affine Diffusions
 
+![pytest](https://github.com/khrapovs/diffusions/actions/workflows/workflow.yaml/badge.svg)
+[![!pypi](https://img.shields.io/pypi/v/affidiff)](https://pypi.org/project/affidiff)
+[![!python-versions](https://img.shields.io/pypi/pyversions/diffusions)](https://pypi.org/project/affidiff)
+
 Simulation and estimation of Affine Diffusion models.
 
 Install:
@@ -7,6 +11,10 @@ Install:
 ```shell
 pip install affidiff
 ```
+
+## Documentation
+
+[khrapovs.github.io/diffusions](https://khrapovs.github.io/diffusions/)
 
 ## Contribute
 
@@ -20,7 +28,8 @@ uv sync --all-groups
 
 ### Build
 
-The project uses [scikit-build-core](https://scikit-build-core.readthedocs.io/) with CMake to compile Cython extensions. The build process is automatic during installation, but you can manually trigger a build:
+The project uses [scikit-build-core](https://scikit-build-core.readthedocs.io/) with CMake to compile Cython extensions.
+The build process is automatic during installation, but you can manually trigger a build:
 
 ```shell
 uv build
@@ -36,12 +45,6 @@ Use pre-commit to automatically format and lint code:
 uv run prek install
 uv run prek run --all-files
 ```
-
-This runs:
-- Code formatting and linting (ruff)
-- Type checking (ty)
-- YAML validation
-- Common checks (trailing whitespace, end-of-file fixers, etc.)
 
 ### Testing
 
