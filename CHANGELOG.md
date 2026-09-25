@@ -1,3 +1,9 @@
+## v0.5.1 (2026-09-25)
+
+### Fix
+
+- Fix publishing docs in GH actions (#17)
+
 ## v0.5.0 (2026-09-25)
 
 ### Feat
