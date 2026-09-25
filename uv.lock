@@ -26,18 +26,16 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "cython" },
-    { name = "prek" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "scipy-stubs" },
-]
-doc = [
     { name = "mkdocs-gen-files" },
     { name = "mkdocs-literate-nav" },
     { name = "mkdocs-macros-plugin" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
+    { name = "prek" },
     { name = "pymdown-extensions" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "scipy-stubs" },
 ]
 
 [package.metadata]
@@ -56,18 +54,16 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "cython", specifier = ">=3.0" },
-    { name = "prek", specifier = ">=0.4.11" },
-    { name = "pytest", specifier = ">=9.0.3" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
-    { name = "scipy-stubs", specifier = ">=1.17.1" },
-]
-doc = [
     { name = "mkdocs-gen-files", specifier = ">=0.6.1" },
     { name = "mkdocs-literate-nav", specifier = ">=0.6.3" },
     { name = "mkdocs-macros-plugin", specifier = ">=1.5.0" },
     { name = "mkdocs-material", specifier = ">=9.7.7" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.6" },
+    { name = "prek", specifier = ">=0.4.11" },
     { name = "pymdown-extensions", specifier = ">=12.1" },
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "scipy-stubs", specifier = ">=1.17.1" },
 ]
 
 [[package]]
