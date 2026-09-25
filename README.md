@@ -1,5 +1,9 @@
 # Affine Diffusions
 
+![pytest](https://github.com/khrapovs/diffusions/actions/workflows/workflow.yaml/badge.svg)
+[![!pypi](https://img.shields.io/pypi/v/affidiff)](https://pypi.org/project/affidiff)
+[![!python-versions](https://img.shields.io/pypi/pyversions/diffusions)](https://pypi.org/project/affidiff)
+
 Simulation and estimation of Affine Diffusion models.
 
 Install:
@@ -20,7 +24,8 @@ uv sync --all-groups
 
 ### Build
 
-The project uses [scikit-build-core](https://scikit-build-core.readthedocs.io/) with CMake to compile Cython extensions. The build process is automatic during installation, but you can manually trigger a build:
+The project uses [scikit-build-core](https://scikit-build-core.readthedocs.io/) with CMake to compile Cython extensions.
+The build process is automatic during installation, but you can manually trigger a build:
 
 ```shell
 uv build
@@ -38,6 +43,7 @@ uv run prek run --all-files
 ```
 
 This runs:
+
 - Code formatting and linting (ruff)
 - Type checking (ty)
 - YAML validation
