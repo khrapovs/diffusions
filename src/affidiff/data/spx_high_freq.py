@@ -16,9 +16,8 @@ class SPXHighFreq(BaseDataLoader):
         """Load high-frequency S&P 500 historical data as a lazy polars dataframe."""
         t = Ticker("^GSPC")
         df = t.history(start=self._start_time, end=self._end_time, interval=self._interval)
-        df = df.reset_index()
-        df["Datetime"] = df["Datetime"].dt.tz_convert(None)
-        # Build columns manually to avoid the optional pyarrow dependency required by pl.from_pandas.
-        data = {col: df[col].to_numpy() for col in df.columns}
-        data["Datetime"] = data["Datetime"].astype("datetime64[us]")
-        return pl.DataFrame(data).rename({"Datetime": "DATE", "Close": "SPX"}).lazy()
+        return (
+            pl.LazyFrame(df.reset_index())
+            .rename({"Datetime": "DATE", "Close": "SPX"})
+            .with_columns(pl.col("DATE").dt.convert_time_zone("UTC"))
+        )
