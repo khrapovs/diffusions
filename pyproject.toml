@@ -6,24 +6,32 @@ version = "0.4.0"
 requires-python = ">=3.14"
 authors = [{ name = "Stanislav Khrapov", email = "khrapovs@gmail.com" }]
 dependencies = [
-  "matplotlib>=3.10.8",
-  "mygmm>=0.1.0",
-  "numpy>=2.4.4",
-  "polars>=1.44.2",
-  "pyarrow>=25.0.1",
-  "scipy>=1.17.1",
-  "seaborn>=0.13.2",
-  "statsmodels>=0.14.6",
-  "yfinance>=1.7.0",
+    "matplotlib>=3.10.8",
+    "mygmm>=0.1.0",
+    "numpy>=2.4.4",
+    "polars>=1.44.2",
+    "pyarrow>=25.0.1",
+    "scipy>=1.17.1",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.6",
+    "yfinance>=1.7.0",
 ]
 
 [dependency-groups]
 dev = [
-  "Cython>=3.0",
-  "prek>=0.4.11",
-  "pytest>=9.0.3",
-  "pytest-cov>=7.1.0",
-  "scipy-stubs>=1.17.1",
+    "Cython>=3.0",
+    "prek>=0.4.11",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "scipy-stubs>=1.17.1",
+]
+doc = [
+    "mkdocs-gen-files>=0.6.1",
+    "mkdocs-literate-nav>=0.6.3",
+    "mkdocs-macros-plugin>=1.5.0",
+    "mkdocs-material>=9.7.7",
+    "mkdocstrings[python]>=1.0.6",
+    "pymdown-extensions>=12.1",
 ]
 
 [build-system]
@@ -47,16 +55,16 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "D", "B", "I", "ARG", "ANN"]
 ignore = [
-  "D100",
-  "D101",
-  "D102",
-  "D103",
-  "D104",
-  "D105",
-  "D106",
-  "D107",
-  "D213",
-  "D417",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D213",
+    "D417",
 ]
 preview = true
 extend-select = ["PLR0917"]

@@ -10,3 +10,4 @@ dist/
 *.so
 build/
 src/affidiff/simulate.c
+docs_src/reference/

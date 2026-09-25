@@ -164,7 +164,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
 - `examples/AGENTS.md` - Runnable usage scripts for affine diffusions models and simulation/estimation workflows
-- `docs/AGENTS.md` - Sphinx documentation source files and configuration
+- `docs_src` - Sphinx documentation source files and configuration
 
 **Root-owned files** (no child DOX needed):
 

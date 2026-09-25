@@ -1,0 +1,48 @@
+site_name: Affine Diffusions
+
+docs_dir: docs_src
+site_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+repo_url: https://github.com/khrapovs/diffusions
+
+nav:
+  - Home: index.md
+
+watch:
+  - src
+
+plugins:
+  - search
+  - macros:
+      include_dir: .
+  - gen-files:
+      scripts:
+        - docs_src/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: false
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js
