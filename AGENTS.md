@@ -6,6 +6,7 @@
 - Run all tests in package: `uv run pytest tests -xvs`.
 - Run pre-commit hooks on all files before finishing off with a change:
   `uv run prek run -v --show-diff-on-failure --all-files`.
+- Build documentation: `uv run mkdocs build -s -c`.
 - Run Python scripts with `uv run path/to/script.py`.
 
 ## Coding Standards
@@ -164,7 +165,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
 - `examples/AGENTS.md` - Runnable usage scripts for affine diffusions models and simulation/estimation workflows
-- `docs_src` - Sphinx documentation source files and configuration
+- `docs_src` - MkDocs documentation source files (legacy Sphinx sources kept under `source/` for reference only)
 
 **Root-owned files** (no child DOX needed):
 

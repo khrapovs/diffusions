@@ -19,6 +19,14 @@ repo_url: https://github.com/khrapovs/diffusions
 
 nav:
   - Home: index.md
+  - Models:
+      - Overview: models/index.md
+      - General Affine Diffusions: models/generic_model.md
+      - GBM: models/gbm.md
+      - Vasicek: models/vasicek.md
+      - CIR: models/cir.md
+      - Heston: models/heston.md
+      - Central Tendency: models/centtend.md
 
 watch:
   - src
