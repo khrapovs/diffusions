@@ -1,4 +1,7 @@
+from io import BytesIO
+
 import polars as pl
+import requests
 
 from affidiff.data.base import BaseDataLoader
 
@@ -8,4 +11,6 @@ class SPX(BaseDataLoader):
 
     def load(self) -> pl.LazyFrame:
         """Load S&P 500 historical data as a lazy polars dataframe with date conversion."""
-        return pl.scan_csv(self._URL).with_columns(pl.col("DATE").str.to_date("%m/%d/%Y"))
+        response = requests.get(self._URL)
+        response.raise_for_status()
+        return pl.read_csv(BytesIO(response.content)).with_columns(pl.col("DATE").str.to_date("%m/%d/%Y")).lazy()
