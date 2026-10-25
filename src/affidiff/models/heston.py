@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, Sequence, cast
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
-from affidiff.model_generic import SDE
-from affidiff.param_heston import HestonParam
+from affidiff.models.generic import SDE
+from affidiff.parameters.heston import HestonParam
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 
 class Heston(SDE):

@@ -4,8 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff.model_heston import Heston
-from affidiff.param_heston import HestonParam
+from affidiff.models.heston import Heston
+from affidiff.parameters.heston import HestonParam
 from affidiff.types import Measure, Subset
 
 

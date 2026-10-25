@@ -4,6 +4,7 @@
 
 - Run a single test: `uv run pytest tests/path/to/test.py::TestClass::test_method -xvs`.
 - Run all tests in package: `uv run pytest tests -xvs`.
+- Run docstring examples as tests: `uv run pytest src` (enabled repo-wide via `--doctest-modules`).
 - Run pre-commit hooks on all files before finishing off with a change:
   `uv run prek run -v --show-diff-on-failure --all-files`.
 - Build documentation: `uv run mkdocs build -s -c`.
@@ -161,7 +162,10 @@ When the user requests a durable behavior change, record it here or in the relev
 ## Child DOX Index
 
 - `src/AGENTS.md` - Production source code root containing affidiff package
-    - `src/affidiff/AGENTS.md` - Core affine diffusion models, parameter classes, moments, and Cython simulation helpers
+    - `src/affidiff/AGENTS.md` - Core package: shared helpers, Cython simulation, randomness, and shared enums
+        - `src/affidiff/models/AGENTS.md` - SDE model classes
+        - `src/affidiff/parameters/AGENTS.md` - Parameter classes and validation
+        - `src/affidiff/data/AGENTS.md` - Market data loaders
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
 - `docs_src` - MkDocs documentation source files (legacy Sphinx sources kept under `source/` for reference only)

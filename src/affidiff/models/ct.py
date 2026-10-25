@@ -9,11 +9,11 @@ import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
 from affidiff.helper_functions import poly_coef
-from affidiff.model_generic import SDE
-from affidiff.param_ct import CentTendParam
+from affidiff.models.generic import SDE
+from affidiff.parameters.ct import CentTendParam
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 
 class CentTend(SDE):

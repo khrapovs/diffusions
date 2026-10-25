@@ -19,5 +19,5 @@ $W_{t}^{\sigma}=\rho W_{t}^{r}+\sqrt{1-\rho^{2}}W_{t}^{v}$.
 Also let $R\left(Y_{t}\right)=r$.
 
 See the API reference for
-[`CentTendParam`](../reference/affidiff/param_ct.md) and
-[`CentTend`](../reference/affidiff/model_ct.md).
+[`CentTendParam`](../reference/affidiff/parameters/ct.md) and
+[`CentTend`](../reference/affidiff/models/ct.md).

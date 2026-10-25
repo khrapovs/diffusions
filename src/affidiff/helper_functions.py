@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import contextlib
 import itertools as it
-import time
-from typing import TYPE_CHECKING, Any, Callable, Generator, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Sequence
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -192,24 +190,22 @@ def columnwise_prod(*, left: np.ndarray, right: np.ndarray) -> np.ndarray:
     (n, m*p) array
         [left * right[:, 0], ..., left * right[:, -1]]
 
-    Example
-    -------
-    .. doctest::
-
-        >>> left = np.arange(6).reshape((3,2))
-        >>> left
-        array([[0, 1],
-               [2, 3],
-               [4, 5]])
-        >>> right = np.arange(9).reshape((3,3))
-        >>> right
-        array([[0, 1, 2],
-               [3, 4, 5],
-               [6, 7, 8]])
-        >>> columnwise_prod(left, right)
-        array([[ 0,  0,  0,  1,  0,  2],
-               [ 6,  9,  8, 12, 10, 15],
-               [24, 30, 28, 35, 32, 40]])
+    Examples
+    --------
+    >>> left = np.arange(6).reshape((3, 2))
+    >>> left
+    array([[0, 1],
+           [2, 3],
+           [4, 5]])
+    >>> right = np.arange(9).reshape((3, 3))
+    >>> right
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> columnwise_prod(left=left, right=right)
+    array([[ 0,  0,  0,  1,  0,  2],
+           [ 6,  9,  8, 12, 10, 15],
+           [24, 30, 28, 35, 32, 40]])
 
     """
     prod = left[:, np.newaxis, :] * right[:, :, np.newaxis]
@@ -236,15 +232,13 @@ def rolling_window(*, fun: Callable[..., Any], mat: np.ndarray, window: int = 1)
 
     Examples
     --------
-    .. doctest::
-
-        >>> mat = np.arange(10).reshape((2,5))
-        >>> mat
-        array([[0, 1, 2, 3, 4],
-               [5, 6, 7, 8, 9]])
-        >>> rolling_window(np.mean, mat, window=2)
-        array([[ 0.5,  1.5,  2.5,  3.5],
-               [ 5.5,  6.5,  7.5,  8.5]])
+    >>> mat = np.arange(10).reshape((2, 5))
+    >>> mat
+    array([[0, 1, 2, 3, 4],
+           [5, 6, 7, 8, 9]])
+    >>> rolling_window(fun=np.mean, mat=mat, window=2)
+    array([[0.5, 1.5, 2.5, 3.5],
+           [5.5, 6.5, 7.5, 8.5]])
 
     """
     shape = mat.shape[:-1] + (mat.shape[-1] - window + 1, window)
@@ -269,13 +263,10 @@ def poly_coef(roots: Sequence[float] | np.ndarray) -> list[float]:
 
     Examples
     --------
-    .. doctest::
-
-        >>> poly_coef([2, 3])
-        [1, -5, 6]
-
-        >>> poly_coef([2, 3, 4])
-        [1, -9, 26, -24]
+    >>> poly_coef([2, 3])
+    [1.0, -5.0, 6.0]
+    >>> poly_coef([2, 3, 4])
+    [1.0, -9.0, 26.0, -24.0]
 
     """
     roots_arr = np.array(roots)
@@ -317,26 +308,23 @@ def instruments(
 
     Examples
     --------
-    .. doctest::
-
-        >>> instruments(nobs=3)
-        array([[ 1.],
-               [ 1.],
-               [ 1.]])
-
-        >>> data = np.arange(6).reshape((2,3))
-        >>> instruments(data=data)
-        array([[ 1.],
-               [ 1.],
-               [ 1.]])
-        >>> instruments(data=data, instr_choice='var')
-        array([[ 1.,  0.,  0.],
-               [ 1.,  0.,  3.],
-               [ 1.,  1.,  4.]])
-        >>> instruments(data=data, instr_choice='var', instrlag=2)
-        array([[ 1.,  0.,  0.,  0.,  0.],
-               [ 1.,  0.,  3.,  0.,  0.],
-               [ 1.,  1.,  4.,  0.,  3.]])
+    >>> instruments(nobs=3)
+    array([[1.],
+           [1.],
+           [1.]])
+    >>> data = np.arange(6).reshape((2, 3))
+    >>> instruments(data=data)
+    array([[1.],
+           [1.],
+           [1.]])
+    >>> instruments(data=data, instr_choice="var")
+    array([[1., 0., 0.],
+           [1., 0., 3.],
+           [1., 1., 4.]])
+    >>> instruments(data=data, instr_choice="var", instrlag=2)
+    array([[1., 0., 0., 0., 0.],
+           [1., 0., 3., 0., 0.],
+           [1., 1., 4., 0., 3.]])
 
     """
     if data is not None:
@@ -351,62 +339,3 @@ def instruments(
         instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
         width = ((0, 0), (1, 0))
         return np.pad(instr, width, mode="constant", constant_values=1)
-
-
-def format_time(t: float) -> str:
-    """Format time for nice printing.
-
-    Parameters
-    ----------
-    t : float
-        Time in seconds
-
-    Returns
-    -------
-    format template
-
-    """
-    if t > 60 or t == 0:
-        units = "min"
-        t /= 60
-    elif t > 1:
-        units = "s"
-    elif t > 1e-3:
-        units = "ms"
-        t *= 1e3
-    elif t > 1e-6:
-        units = "us"
-        t *= 1e6
-    else:
-        units = "ns"
-        t *= 1e9
-    return f"{t:.1f} {units}"
-
-
-@contextlib.contextmanager
-def take_time(desc: str) -> Generator[None, None, None]:
-    """Context manager for timing the code.
-
-    Parameters
-    ----------
-    desc : str
-        Description of the code
-
-    Example
-    -------
-    >>> with take_time('Estimation'):
-    >>>    estimate()
-
-    """
-    t0 = time.time()
-    yield
-    dt = time.time() - t0
-    print(f"{desc} took {format_time(dt)}")
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
-
-    doctest.testmod()

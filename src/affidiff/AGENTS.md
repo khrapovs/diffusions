@@ -1,33 +1,47 @@
 # Purpose
 
-`src/affidiff/` is the core package implementing affine jump-diffusion stochastic differential equation (SDE) models, parameter classes, moment computations, characteristic functions, and Cython simulation routines.
+`src/affidiff/` is the core package implementing affine jump-diffusion stochastic differential equation (SDE) models,
+parameter classes, moment computations, characteristic functions, market data loaders, and Cython simulation routines.
 
 # Ownership
 
-Owns all core stochastic modeling logic, including:
-- Generic affine SDE definition (`model_generic.py`, `param_generic.py`)
-- Specific diffusion models: CIR (`model_cir.py`, `param_cir.py`), Vasicek (`model_vasicek.py`, `param_vasicek.py`), GBM (`model_gbm.py`, `param_gbm.py`), Heston (`model_heston.py`, `param_heston.py`), and Central Tendency (`model_ct.py`, `param_ct.py`)
-- Mathematical helpers and moment functions (`helper_functions.py`)
-- C/Cython fast simulation routines (`simulate.pyx`)
-- Public exports (`__init__.py`)
+Owns the package-level glue and shared utilities; model, parameter, and data specifics belong to the child packages
+listed in the Child DOX Index.
+
+Root-owned modules:
+
+- `helper_functions.py` — shared mathematical helpers and moment functions (`ajd_drift`, `ajd_diff`, `poly_coef`,
+  `rolling_window`, `columnwise_prod`, `instruments`, `nice_errors`).
+- `simulate.pyx` / `simulate.c` — Cython fast simulation routines (see root `AGENTS.md` for the build workflow).
+- `_cython.py` — optional loading of the compiled `simulate` extension, falling back to the pure-Python path.
+- `random.py` — `get_random_generator`, the single entry point for seeded `numpy` generators.
+- `types.py` — shared enums (`Measure`, `Subset`).
+- `__init__.py` — package marker; it is intentionally empty, so consumers import from fully qualified submodules
+  (e.g. `from affidiff.models.heston import Heston`).
 
 # Local Contracts
 
-- Every model class inherits from or complies with `SDE` and uses its corresponding parameter class (`*param.py`).
+- Model modules and their parameter modules pair by matching file name across `models/` and `parameters/`.
 - Attributes and helper methods not accessed outside their owning class MUST be private (prefixed with `_`).
-- Any new model or parameter class introduced must be exported in `__init__.py`.
+- Cross-cutting mathematics belongs in `helper_functions.py`; do not duplicate it inside model modules.
+- Stochastic code draws randomness through `affidiff.random.get_random_generator`, never through global `numpy` state.
 
 # Work Guidance
 
-- Ensure parameter bounds and matrix dimensions (drift, diffusion, jump intensities) are validated upon instantiation in parameter classes.
-- Maintain mathematical accuracy in ODE solving, characteristic function evaluation, and numerical integration.
-- All public methods and functions use `*` after `self`/`cls` to enforce keyword-only arguments (PLR0917 compliance). When calling internal methods that are keyword-only from contexts where positional calls are unavoidable (e.g., `numdifftools`), add a local positional wrapper function.
+- All public methods and functions use `*` after `self`/`cls` to enforce keyword-only arguments (PLR0917 compliance).
+  When calling internal keyword-only methods from contexts where positional calls are unavoidable (e.g.
+  `numdifftools`), add a local positional wrapper function.
+- Follow strict typing and NumPy docstring conventions configured in `pyproject.toml`.
+- Docstring `Examples` sections are executed as tests (`--doctest-modules`), so every `>>>` line must run and match
+  its expected output exactly. Write plain numpydoc examples; do not wrap them in Sphinx `.. doctest::` directives.
 
 # Verification
 
-- Run model test suite: `uv run pytest tests/`
+- Run test suite: `uv run pytest`
 - Run pre-commit hooks: `uv run prek run -v --show-diff-on-failure --all-files`
 
 # Child DOX Index
 
-None (leaf boundary).
+- `src/affidiff/models/AGENTS.md` - SDE model classes (`SDE`, `CIR`, `Vasicek`, `GBM`, `Heston`, `CentTend`)
+- `src/affidiff/parameters/AGENTS.md` - Parameter classes, validation, bounds, and `theta` conversion
+- `src/affidiff/data/AGENTS.md` - Market data loaders returning `polars` lazy frames

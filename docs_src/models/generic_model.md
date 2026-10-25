@@ -45,5 +45,5 @@ A characteristic $\chi=\left(K,H,\rho\right)$ captures both the distribution
 of $Y$ as well as the effects of any discounting.
 
 See the API reference for
-[`GenericParam`](../reference/affidiff/param_generic.md) and
-[`SDE`](../reference/affidiff/model_generic.md).
+[`GenericParam`](../reference/affidiff/parameters/generic.md) and
+[`SDE`](../reference/affidiff/models/generic.md).

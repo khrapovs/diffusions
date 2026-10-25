@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from affidiff.model_generic import SDE
+from affidiff.models.generic import SDE
 
 if TYPE_CHECKING:
     import numpy as np
 
-    from affidiff.param_cir import CIRparam
+    from affidiff.parameters.cir import CIRparam
 
 
 class CIR(SDE):

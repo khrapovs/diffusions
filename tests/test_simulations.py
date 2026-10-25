@@ -18,8 +18,8 @@ from assertions import (
 from config import SimulationConfigForTests, get_model_fixtures
 
 if TYPE_CHECKING:
-    from affidiff.model_generic import SDE
-    from affidiff.param_generic import GenericParam
+    from affidiff.models.generic import SDE
+    from affidiff.parameters.generic import GenericParam
 
 
 @pytest.mark.parametrize("model_class,params", get_model_fixtures())

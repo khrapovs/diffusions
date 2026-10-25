@@ -5,8 +5,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from affidiff.model_heston import Heston
-from affidiff.param_heston import HestonParam
+from affidiff.models.heston import Heston
+from affidiff.parameters.heston import HestonParam
 from affidiff.types import Measure
 from assertions import (
     assert_finite_values,

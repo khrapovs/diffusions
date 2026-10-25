@@ -24,4 +24,7 @@ Owns all production Python source modules, Cython extension code, and package in
 
 # Child DOX Index
 
-- `src/affidiff/AGENTS.md` - Core affine diffusion models, parameter classes, moments estimation, and simulation utilities
+- `src/affidiff/AGENTS.md` - Core package: shared helpers, Cython simulation, randomness, and shared enums
+    - `src/affidiff/models/AGENTS.md` - SDE model classes
+    - `src/affidiff/parameters/AGENTS.md` - Parameter classes and validation
+    - `src/affidiff/data/AGENTS.md` - Market data loaders
