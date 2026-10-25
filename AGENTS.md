@@ -164,7 +164,6 @@ When the user requests a durable behavior change, record it here or in the relev
     - `src/affidiff/AGENTS.md` - Core affine diffusion models, parameter classes, moments, and Cython simulation helpers
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
-- `examples/AGENTS.md` - Runnable usage scripts for affine diffusions models and simulation/estimation workflows
 - `docs_src` - MkDocs documentation source files (legacy Sphinx sources kept under `source/` for reference only)
 
 **Root-owned files** (no child DOX needed):
