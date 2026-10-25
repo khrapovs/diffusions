@@ -17,48 +17,6 @@ from affidiff.param_ct import CentTendParam
 from affidiff.types import Measure, Subset
 
 
-def try_sim_realized_pq() -> None:
-    """Simulate realized data from Central Tendency model under P and Q measures."""
-    riskfree = 0.0
-    lmbd = 1.01
-    lmbd_s, lmbd_y = 0.5, 0.5
-    mean_v = 0.2
-    kappa_s = 0.1
-    kappa_y = 0.02
-    eta_s = 0.1
-    eta_y = 0.01
-    rho = -0.9
-
-    param_true = CentTendParam(
-        riskfree=riskfree,
-        lmbd=lmbd,
-        lmbd_s=lmbd_s,
-        lmbd_y=lmbd_y,
-        mean_v=mean_v,
-        kappa_s=kappa_s,
-        kappa_y=kappa_y,
-        eta_s=eta_s,
-        eta_y=eta_y,
-        rho=rho,
-    )
-    centtend = CentTend(param_true)
-    print(param_true)
-
-    nperiods, nsub, ndiscr, nsim = 500, 80, 10, 1
-    aggh = [1, 1]
-
-    data = centtend.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    print(param_true)
-    (ret_p, rvar_p), (ret_q, rvar_q) = data
-    nobs = np.min([ret_p.size, ret_q.size])
-
-    plot_realized(
-        returns=[ret_p[-nobs:], ret_q[-nobs:]],
-        rvar=[rvar_p[-nobs:], rvar_q[-nobs:] / param_true.scale],
-        suffix=["P", "Q"],
-    )
-
-
 def try_integrated_gmm_single() -> None:
     """Simulate realized data from Central Tendency model. Estimate parameters."""
     riskfree = 0.0
@@ -242,8 +200,6 @@ if __name__ == "__main__":
     #        try_marginal()
     #    with take_time('Simulation realized'):
     #        try_sim_realized()
-    #    with take_time('Simulation realized PQ'):
-    #        try_sim_realized_pq()
     #    with take_time('Integrated GMM'):
     #        try_integrated_gmm_single()
     #    with take_time('Integrated GMM with real data'):
