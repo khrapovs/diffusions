@@ -12,46 +12,10 @@ from load_real_data import load_data  # type: ignore
 from mygmm import Results
 from statsmodels.tsa.stattools import acf
 
-from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
+from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
 from affidiff.types import Measure, Subset
-
-
-def try_simulation_pq() -> None:
-    """Try simulating and plotting Heston model."""
-    riskfree = 0.0
-    lmbd = 0.0
-    lmbd_v = 0.5
-    mean_v = 0.5
-    kappa = 0.1
-    eta = 0.15
-    rho = -0.9
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(
-        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.P
-    )
-    heston = Heston(param_true)
-    print(param_true.is_valid())
-
-    nperiods, nsub, ndiscr, nsim = 100, 10, 10, 3
-    start = [1, mean_v]
-    nobs = nperiods * nsub
-    paths = heston.simulate(start=start, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0)
-
-    param_true = HestonParam(
-        riskfree=riskfree, lmbd=lmbd, lmbd_v=lmbd_v, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, measure=Measure.Q
-    )
-    heston.update_theta(param_true)
-    start_q = [1, param_true.mean_v]
-    paths_q = heston.simulate(start=start_q, nsub=nsub, ndiscr=ndiscr, nobs=nobs, nsim=nsim, diff=0, new_innov=False)
-
-    returns = paths[:, 0, 0]
-    volatility = paths[:, 0, 1]
-    returns_q = paths_q[:, 0, 0]
-    volatility_q = paths_q[:, 0, 1]
-    plot_trajectories(paths=[returns, returns_q], nsub=nsub, names=["returns", "returns_q"])
-    plot_trajectories(paths=[volatility, volatility_q], nsub=nsub, names=["volatility", "volatility_q"])
 
 
 def try_sim_realized_pq() -> None:
@@ -341,8 +305,6 @@ if __name__ == "__main__":
 
     #    with take_time('Simulation'):
     #        try_simulation()
-    #    with take_time('Simulation PQ'):
-    #        try_simulation_pq()
     #    with take_time('Marginal density'):
     #        try_marginal()
     #    with take_time('Simulate realized'):
