@@ -11,34 +11,13 @@ from affidiff.types import Measure
 from assertions import assert_realized_finite_variation, assert_realized_shape
 
 
-def build_centtend_param(
-    *,
-    measure: Measure = Measure.P,
-    riskfree: float = 0.01,
-    mean_v: float = 0.5,
-    kappa_s: float = 1.5,
-    kappa_y: float = 0.05,
-    eta_s: float = 0.02**0.5,
-    eta_y: float = 0.001**0.5,
-) -> CentTendParam:
+def build_centtend_param(*, measure: Measure = Measure.P) -> CentTendParam:
     """Build Central Tendency parameters satisfying the Feller conditions.
 
     Parameters
     ----------
     measure : Measure
         Measure under which the parameters are defined.
-    riskfree : float
-        Risk-free rate.
-    mean_v : float
-        Long-run mean of the central tendency.
-    kappa_s : float
-        Mean reversion speed of volatility.
-    kappa_y : float
-        Mean reversion speed of the central tendency.
-    eta_s : float
-        Volatility of volatility.
-    eta_y : float
-        Volatility of the central tendency.
 
     Returns
     -------
@@ -47,15 +26,15 @@ def build_centtend_param(
 
     """
     return CentTendParam(
-        riskfree=riskfree,
+        riskfree=0.0,
         lmbd=1.01,
         lmbd_s=0.5,
         lmbd_y=0.5,
-        mean_v=mean_v,
-        kappa_s=kappa_s,
-        kappa_y=kappa_y,
-        eta_s=eta_s,
-        eta_y=eta_y,
+        mean_v=0.2,
+        kappa_s=0.1,
+        kappa_y=0.02,
+        eta_s=0.1,
+        eta_y=0.01,
         rho=-0.9,
         measure=measure,
     )
@@ -72,7 +51,7 @@ def test_sim_realized_pq() -> None:
     nperiods, nsub, ndiscr, nsim = 500, 80, 10, 1
     aggh = [1, 1]
 
-    param_true = build_centtend_param(riskfree=0.0, mean_v=0.2, kappa_s=0.1, kappa_y=0.02, eta_s=0.1, eta_y=0.01)
+    param_true = build_centtend_param()
     centtend = CentTend(param_true)
 
     (ret_p, rvar_p), (ret_q, rvar_q) = centtend.sim_realized_pq(
