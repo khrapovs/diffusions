@@ -1,3 +1,9 @@
+## v0.5.2 (2026-10-25)
+
+### Refactor
+
+- Put parameters and models in dedicated modules (#20)
+
 ## v0.5.1 (2026-09-25)
 
 ### Fix
