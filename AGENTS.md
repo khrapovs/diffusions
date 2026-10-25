@@ -161,7 +161,10 @@ When the user requests a durable behavior change, record it here or in the relev
 ## Child DOX Index
 
 - `src/AGENTS.md` - Production source code root containing affidiff package
-    - `src/affidiff/AGENTS.md` - Core affine diffusion models, parameter classes, moments, and Cython simulation helpers
+    - `src/affidiff/AGENTS.md` - Core package: shared helpers, Cython simulation, randomness, and shared enums
+        - `src/affidiff/models/AGENTS.md` - SDE model classes
+        - `src/affidiff/parameters/AGENTS.md` - Parameter classes and validation
+        - `src/affidiff/data/AGENTS.md` - Market data loaders
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
 - `docs_src` - MkDocs documentation source files (legacy Sphinx sources kept under `source/` for reference only)
