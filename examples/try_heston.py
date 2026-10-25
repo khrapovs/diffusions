@@ -18,36 +18,6 @@ from affidiff.param_heston import HestonParam
 from affidiff.types import Measure, Subset
 
 
-def try_sim_realized_pq() -> None:
-    """Simulate realized data from Heston model under P and Q measures."""
-    riskfree = 0.0
-    mean_v = 0.5
-    kappa = 0.04
-    eta = 0.15
-    rho = -0.9
-    lmbd = 1.5
-    lmbd_v = 0.2
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
-    heston = Heston(param_true)
-
-    nperiods, nsub, ndiscr, nsim = 500, 100, 1, 1
-    aggh = [1, 2]
-
-    print(heston.param)
-
-    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    (ret_p, rvar_p), (ret_q, rvar_q) = data
-    print(heston.param)
-    nobs = np.min([ret_p.size, ret_q.size])
-
-    plot_realized(
-        returns=[ret_p[-nobs:], ret_q[-nobs:]],
-        rvar=[rvar_p[-nobs:], rvar_q[-nobs:]],
-        suffix=["P", "Q"],
-    )
-
-
 def try_integrated_gmm_single() -> None:
     """Simulate realized data from Heston model. Estimate parameters."""
     riskfree = 0.0
@@ -309,8 +279,6 @@ if __name__ == "__main__":
     #        try_marginal()
     #    with take_time('Simulate realized'):
     #        try_sim_realized()
-    #    with take_time('Simulate realized PQ'):
-    #        try_sim_realized_pq()
     #    with take_time('Integrated GMM'):
     #        try_integrated_gmm_single()
     #    with take_time('Integrated GMM under Q'):
