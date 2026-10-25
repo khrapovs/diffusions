@@ -5,62 +5,15 @@ from __future__ import annotations
 import itertools
 import time
 
-import matplotlib.pylab as plt
 import numpy as np
 import seaborn as sns
 from load_real_data import load_data  # type: ignore
 from mygmm import Results
-from statsmodels.tsa.stattools import acf
 
 from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
 from affidiff.types import Measure, Subset
-
-
-def try_integrated_gmm_single() -> None:
-    """Simulate realized data from Heston model. Estimate parameters."""
-    riskfree = 0.0
-
-    mean_v = 0.2
-    kappa = 0.06
-    eta = 0.15
-    lmbd = 0.5
-    rho = -0.5
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
-    heston = Heston(param_true)
-    print(param_true)
-
-    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
-    aggh = 1
-    data = heston.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    ret, rvar = data
-    plot_realized(returns=ret, rvar=rvar)
-    nlags, lw = 90, 2
-    grid = range(nlags + 1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
-    plt.show()
-
-    instr_data = np.vstack([rvar, rvar**2])
-
-    subset = Subset.vol
-    measure = Measure.P
-    time_start = time.time()
-    res = heston.integrated_gmm(
-        param_start=param_true,
-        data=data,
-        instrlag=3,
-        instr_data=instr_data,
-        aggh=aggh,
-        instr_choice="var",
-        method="SLSQP",
-        subset=subset,
-        measure=measure,
-        iter=3,
-    )
-    print(res)
-    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
 def try_integrated_gmm_single_rn() -> None:
@@ -279,8 +232,6 @@ if __name__ == "__main__":
     #        try_marginal()
     #    with take_time('Simulate realized'):
     #        try_sim_realized()
-    #    with take_time('Integrated GMM'):
-    #        try_integrated_gmm_single()
     #    with take_time('Integrated GMM under Q'):
     #        try_integrated_gmm_single_rn()
     #    with take_time('Integrated GMM under P and Q'):
