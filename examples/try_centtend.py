@@ -14,72 +14,7 @@ from statsmodels.tsa.stattools import acf
 from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
-from affidiff.types import Measure, Subset
-
-
-def try_integrated_gmm_single() -> None:
-    """Simulate realized data from Central Tendency model. Estimate parameters."""
-    riskfree = 0.0
-    mean_v = 0.2
-    kappa_s = 1.5
-    kappa_y = 0.008
-    eta_s = 0.5
-    eta_y = 0.05
-    rho = -0.9
-    lmbd = 0.5
-
-    param_true = CentTendParam(
-        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
-    )
-    centtend = CentTend(param_true)
-    print(param_true)
-
-    nperiods, nsub, ndiscr, nsim = 2000, 80, 10, 1
-    aggh = 1
-
-    data = centtend.sim_realized(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    ret, rvar = data
-    plot_realized(returns=ret, rvar=rvar)
-    nlags, lw = 90, 2
-    grid = range(nlags + 1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
-    plt.show()
-
-    instr_data = np.vstack([rvar])
-
-    subset = Subset.vol
-    measure = Measure.P
-
-    #    theta = param_true.get_theta(subset=subset, measure=measure)
-    #    mom, dmom = centtend.integrated_mom(theta/10, data=data,
-    #                                        instr_data=instr_data,
-    #                                        instr_choice='var', aggh=1,
-    #                                        subset=subset, instrlag=1,
-    #                                        measure=measure)
-    #
-    #    fig, axes = plt.subplots(nrows=mom.shape[1], ncols=1, sharex=True,
-    #                             figsize=(10, 2*mom.shape[1]))
-    #    for momf, ax in zip(mom.T, axes):
-    #        ax.plot(momf)
-    #        ax.axhline(momf.mean(), c='red')
-    #    plt.show()
-    #    print(mom.mean(0) / mom.std(0))
-
-    time_start = time.time()
-    res = centtend.integrated_gmm(
-        param_start=param_true,
-        data=data,
-        instrlag=3,
-        instr_data=instr_data,
-        aggh=aggh,
-        instr_choice="var",
-        method="SLSQP",
-        subset=subset,
-        measure=measure,
-        iter=3,
-    )
-    print(res)
-    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
+from affidiff.types import Subset
 
 
 def try_integrated_gmm_real() -> None:
@@ -200,8 +135,6 @@ if __name__ == "__main__":
     #        try_marginal()
     #    with take_time('Simulation realized'):
     #        try_sim_realized()
-    #    with take_time('Integrated GMM'):
-    #        try_integrated_gmm_single()
     #    with take_time('Integrated GMM with real data'):
     #        try_integrated_gmm_real()
     with take_time("Integrated GMM with real data"):
