@@ -437,6 +437,7 @@ class SDE(ABC):
         diff: int | Sequence[int] | slice | None = None,
         new_innov: bool = True,
         cython: bool = False,
+        seed: int | None = None,
     ) -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         """Simulate realized data from the model under both P and Q.
 
@@ -462,6 +463,8 @@ class SDE(ABC):
             Whether to generate new innovations (True), or use already stored (False)
         cython : bool
             Whether to use cython-optimized simulation (True) or not (False)
+        seed : int, optional
+            Random seed applied to both the P and Q simulations
 
         Returns
         -------
@@ -485,6 +488,7 @@ class SDE(ABC):
             nsim=nsim,
             diff=diff,
             cython=cython,
+            seed=seed,
         )
         self.param.convert_to_q()
         if start_q is None:
@@ -499,6 +503,7 @@ class SDE(ABC):
             nsim=nsim,
             diff=diff,
             cython=cython,
+            seed=seed,
         )
         return data_p, data_q
 
