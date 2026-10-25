@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import contextlib
 import itertools as it
-import time
-from typing import TYPE_CHECKING, Any, Callable, Generator, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Sequence
 
 if TYPE_CHECKING:
     from affidiff.parameters.generic import GenericParam
@@ -351,62 +349,3 @@ def instruments(
         instr = lagmat(np.atleast_2d(data).T, maxlag=instrlag)
         width = ((0, 0), (1, 0))
         return np.pad(instr, width, mode="constant", constant_values=1)
-
-
-def format_time(t: float) -> str:
-    """Format time for nice printing.
-
-    Parameters
-    ----------
-    t : float
-        Time in seconds
-
-    Returns
-    -------
-    format template
-
-    """
-    if t > 60 or t == 0:
-        units = "min"
-        t /= 60
-    elif t > 1:
-        units = "s"
-    elif t > 1e-3:
-        units = "ms"
-        t *= 1e3
-    elif t > 1e-6:
-        units = "us"
-        t *= 1e6
-    else:
-        units = "ns"
-        t *= 1e9
-    return f"{t:.1f} {units}"
-
-
-@contextlib.contextmanager
-def take_time(desc: str) -> Generator[None, None, None]:
-    """Context manager for timing the code.
-
-    Parameters
-    ----------
-    desc : str
-        Description of the code
-
-    Example
-    -------
-    >>> with take_time('Estimation'):
-    >>>    estimate()
-
-    """
-    t0 = time.time()
-    yield
-    dt = time.time() - t0
-    print(f"{desc} took {format_time(dt)}")
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
-
-    doctest.testmod()
