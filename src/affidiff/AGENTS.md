@@ -32,6 +32,8 @@ Root-owned modules:
   When calling internal keyword-only methods from contexts where positional calls are unavoidable (e.g.
   `numdifftools`), add a local positional wrapper function.
 - Follow strict typing and NumPy docstring conventions configured in `pyproject.toml`.
+- Docstring `Examples` sections are executed as tests (`--doctest-modules`), so every `>>>` line must run and match
+  its expected output exactly. Write plain numpydoc examples; do not wrap them in Sphinx `.. doctest::` directives.
 
 # Verification
 

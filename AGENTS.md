@@ -4,6 +4,7 @@
 
 - Run a single test: `uv run pytest tests/path/to/test.py::TestClass::test_method -xvs`.
 - Run all tests in package: `uv run pytest tests -xvs`.
+- Run docstring examples as tests: `uv run pytest src` (enabled repo-wide via `--doctest-modules`).
 - Run pre-commit hooks on all files before finishing off with a change:
   `uv run prek run -v --show-diff-on-failure --all-files`.
 - Build documentation: `uv run mkdocs build -s -c`.

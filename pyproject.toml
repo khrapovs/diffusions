@@ -47,8 +47,9 @@ update_changelog_on_bump = true
 tag_format = "v$version"
 
 [tool.pytest.ini_options]
-addopts = "--cov-config=.coveragerc"
+addopts = "--cov-config=.coveragerc --doctest-modules"
 testpaths = ["tests", "src"]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
 
 [tool.ruff]
 line-length = 120

@@ -23,6 +23,8 @@ Owns all pytest test modules under `tests/`:
   basenames stay collectible; this also keeps `tests/` on `sys.path` so shared helpers `assertions.py` and `config.py`
   remain importable from nested test modules.
 - Tests must pass cleanly when executed via `uv run pytest`.
+- `uv run pytest` also collects docstring `Examples` from `src/` via `--doctest-modules`; examples that cannot run
+  without side effects (network, plotting) must not be written as `>>>` blocks.
 - Coverage metrics are configured via `.coveragerc` and enforced during testing.
 
 # Work Guidance
