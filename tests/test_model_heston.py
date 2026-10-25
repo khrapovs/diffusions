@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
@@ -119,3 +120,39 @@ def test_integrated_gmm_joint() -> None:
     assert np.all(res.theta > 0)
     mean_v_est = res.theta[0]
     assert np.abs(mean_v_est - mean_v) / mean_v < 0.5
+
+
+@pytest.mark.parametrize("instrlag", [1, 2, 3])
+@pytest.mark.parametrize("method", ["L-BFGS-B", "TNC", "SLSQP"])
+def test_integrated_gmm_opt_methods(*, instrlag: int, method: str) -> None:
+    """Test integrated GMM converges for every optimization method and instrument lag."""
+    mean_v, kappa, eta = 0.5, 0.1, 0.15
+    param_true = HestonParam(riskfree=0.0, lmbd=0.3, mean_v=mean_v, kappa=kappa, eta=eta, rho=-0.5)
+    heston = Heston(param_true)
+
+    nperiods, nsub, ndiscr, nsim = 500, 80, 1, 1
+    aggh = 10
+    data = heston.sim_realized(
+        start=[1, mean_v], nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0, seed=42
+    )
+    _, rvar = data
+    instr_data = np.vstack([rvar, rvar**2])
+
+    param_start = HestonParam(riskfree=0.0, lmbd=0.3, mean_v=mean_v, kappa=kappa, eta=eta, rho=-0.5)
+    param_start.update(theta=param_true.get_theta() / 2)
+
+    res = heston.integrated_gmm(
+        param_start=param_start,
+        data=data,
+        instrlag=instrlag,
+        instr_data=instr_data,
+        aggh=aggh,
+        instr_choice="var",
+        method=method,
+        subset=Subset.vol,
+        iter=3,
+    )
+
+    assert len(res.theta) == 3
+    assert np.all(np.isfinite(res.theta))
+    assert np.all(res.theta >= 0)
