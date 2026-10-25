@@ -5,69 +5,13 @@ from __future__ import annotations
 import itertools
 import time
 
-import matplotlib.pylab as plt
 import numpy as np
 import seaborn as sns
-from load_real_data import load_data  # type: ignore
-from statsmodels.tsa.stattools import acf
 
 from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
 from affidiff.types import Subset
-
-
-def try_integrated_gmm_real() -> None:
-    """Estimate Central Tendency model parameters with real data."""
-    riskfree = 0.0
-
-    mean_v = 0.02
-    kappa_s = 0.22
-    kappa_y = 0.05
-    eta_s = 0.36
-    eta_y = 0.05
-
-    lmbd = 0.01
-    rho = -0.9
-
-    param_start = CentTendParam(
-        riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=rho
-    )
-    centtend = CentTend(param_start)
-    print(param_start)
-    print(param_start.is_valid())
-
-    aggh = 1
-
-    data = load_data()
-    ret, rvar = data
-
-    plot_realized(returns=ret, rvar=rvar)
-
-    nlags = 90
-    lw = 2
-    grid = range(nlags + 1)
-    plt.plot(grid, acf(rvar, nlags=nlags), lw=lw, label="RV")
-    plt.show()
-
-    instr_data = np.vstack([rvar, rvar**2])
-
-    subset = Subset.vol
-
-    time_start = time.time()
-    res = centtend.integrated_gmm(
-        param_start=param_start,
-        data=data,
-        instrlag=2,
-        instr_data=instr_data,
-        aggh=aggh,
-        instr_choice="var",
-        method="TNC",
-        subset=subset,
-        iter=2,
-    )
-    print(res)
-    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
 
 
 def try_integrated_gmm_opt_methods() -> None:
