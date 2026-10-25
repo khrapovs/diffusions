@@ -11,66 +11,10 @@ import seaborn as sns
 from load_real_data import load_data  # type: ignore
 from statsmodels.tsa.stattools import acf
 
-from affidiff.helper_functions import plot_realized, plot_trajectories, take_time
+from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_ct import CentTend
 from affidiff.param_ct import CentTendParam
 from affidiff.types import Measure, Subset
-
-
-def try_simulation_pq() -> None:
-    """Try simulating and plotting Central Tendency model under P and Q measures."""
-    riskfree = 0.01
-    lmbd = 1.01
-    lmbd_s = 0.5
-    lmbd_y = 0.5
-    mean_v = 0.5
-    kappa_s = 1.5
-    kappa_y = 0.05
-    eta_s = 0.02**0.5
-    eta_y = 0.001**0.5
-    rho = -0.9
-
-    param_true = CentTendParam(
-        riskfree=riskfree,
-        lmbd=lmbd,
-        lmbd_s=lmbd_s,
-        lmbd_y=lmbd_y,
-        mean_v=mean_v,
-        kappa_s=kappa_s,
-        kappa_y=kappa_y,
-        eta_s=eta_s,
-        eta_y=eta_y,
-        rho=rho,
-    )
-    _ = CentTend(param_true)
-    print(param_true)
-    print(param_true.is_valid())
-
-    start = [1, mean_v, mean_v]
-    nperiods, nsub, ndiscr, nsim = 500, 10, 100, 3
-
-    param_true_new = CentTendParam(
-        riskfree=riskfree,
-        lmbd=lmbd,
-        lmbd_s=lmbd_s,
-        lmbd_y=lmbd_y,
-        mean_v=mean_v,
-        kappa_s=kappa_s,
-        kappa_y=kappa_y,
-        eta_s=eta_s,
-        eta_y=eta_y,
-        rho=rho,
-    )
-    centtend_new = CentTend(param_true_new)
-    (paths_p, paths_q) = centtend_new.sim_realized_pq(
-        start_p=start, start_q=start, nsub=nsub, ndiscr=ndiscr, aggh=[1, 1], nperiods=nperiods, nsim=nsim
-    )
-
-    returns_p = paths_p[0]
-    returns_q = paths_q[0]
-
-    names = ["P", "Q"]
-    plot_trajectories(paths=[returns_p, returns_q], nsub=nsub, names=names)
 
 
 def try_sim_realized_pq() -> None:
@@ -294,8 +238,6 @@ if __name__ == "__main__":
 
     #    with take_time('Simulation'):
     #        try_simulation()
-    #    with take_time('Simulation PQ'):
-    #        try_simulation_pq()
     #    with take_time('Marginal density'):
     #        try_marginal()
     #    with take_time('Simulation realized'):

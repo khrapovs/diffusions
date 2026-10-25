@@ -7,7 +7,7 @@
 Owns all pytest test modules under `tests/`:
 - Model tests (`test_generic.py`, `test_ajd.py`, `test_model_gbm.py`, `test_model_heston.py`, `test_param_*.py`)
 - Moment estimation tests (`test_rmoms_ct.py`, `test_rmoms_gbm.py`, `test_rmoms_heston.py`)
-- Helper and simulation tests (`test_helpers.py`, `test_simulations.py`, `test_simulations_heston.py`)
+- Helper and simulation tests (`test_helpers.py`, `test_simulations.py`, `test_simulations_centtend.py`, `test_simulations_heston.py`)
 
 # Local Contracts
 
