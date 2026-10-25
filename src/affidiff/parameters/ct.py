@@ -7,7 +7,7 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from affidiff.param_generic import GenericParam
+from affidiff.parameters.generic import GenericParam
 from affidiff.types import Measure, Subset
 
 

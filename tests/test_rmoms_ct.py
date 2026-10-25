@@ -4,8 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff.model_ct import CentTend
-from affidiff.param_ct import CentTendParam
+from affidiff.models.ct import CentTend
+from affidiff.parameters.ct import CentTendParam
 from affidiff.types import Measure, Subset
 
 

@@ -23,5 +23,5 @@ Feller condition for positivity of the volatility process is
 $\kappa\mu>\frac{1}{2}\eta^{2}$.
 
 See the API reference for
-[`HestonParam`](../reference/affidiff/param_heston.md) and
-[`Heston`](../reference/affidiff/model_heston.md).
+[`HestonParam`](../reference/affidiff/parameters/heston.md) and
+[`Heston`](../reference/affidiff/models/heston.md).

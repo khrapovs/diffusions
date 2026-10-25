@@ -18,7 +18,7 @@ is not part of the live MkDocs build.
   `tool.ruff.lint.pydocstyle`).
 - `models/*.md` pages must not re-embed `mkdocstrings` (`:::`) blocks for classes already auto-documented under
   `reference/` — this causes duplicate-anchor build failures under `mkdocs build -s`. Link to the reference page
-  instead (e.g. `../reference/affidiff/param_vasicek.md`).
+  instead (e.g. `../reference/affidiff/parameters/vasicek.md`).
 - New model pages must be added to the `nav.Models` section in `mkdocs.yaml`.
 
 # Work Guidance

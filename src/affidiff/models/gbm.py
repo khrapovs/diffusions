@@ -9,12 +9,12 @@ import numpy as np
 from statsmodels.tsa.tsatools import lagmat
 
 from affidiff.helper_functions import columnwise_prod
-from affidiff.model_generic import SDE
-from affidiff.param_gbm import GBMparam
+from affidiff.models.generic import SDE
+from affidiff.parameters.gbm import GBMparam
 from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 
 class GBM(SDE):

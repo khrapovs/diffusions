@@ -6,7 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff.param_heston import HestonParam
+from affidiff.parameters.heston import HestonParam
 from affidiff.types import Measure, Subset
 
 

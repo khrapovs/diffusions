@@ -8,7 +8,7 @@ import time
 from typing import TYPE_CHECKING, Any, Callable, Generator, Sequence
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 import matplotlib.pylab as plt
 import numpy as np

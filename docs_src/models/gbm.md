@@ -23,5 +23,5 @@ $$
 where $\varepsilon_{t}\sim N\left(0,1\right)$.
 
 See the API reference for
-[`GBMparam`](../reference/affidiff/param_gbm.md) and
-[`GBM`](../reference/affidiff/model_gbm.md).
+[`GBMparam`](../reference/affidiff/parameters/gbm.md) and
+[`GBM`](../reference/affidiff/models/gbm.md).

@@ -49,6 +49,7 @@ tag_format = "v$version"
 [tool.pytest.ini_options]
 addopts = "--cov-config=.coveragerc"
 testpaths = ["tests", "src"]
+pythonpath = ["tests"]
 
 [tool.ruff]
 line-length = 120

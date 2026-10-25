@@ -1,4 +1,4 @@
-"""CIR parameter class."""
+"""GBM parameter class."""
 
 from __future__ import annotations
 
@@ -6,38 +6,32 @@ from typing import Sequence
 
 import numpy as np
 
-from affidiff.param_generic import GenericParam
+from affidiff.parameters.generic import GenericParam
 from affidiff.types import Measure, Subset
 
 
-class CIRparam(GenericParam):
-    """Parameter storage for CIR model.
+class GBMparam(GenericParam):
+    """Parameter storage for GBM model.
 
     Attributes
     ----------
     mean : float
         Mean of the process
-    kappa : float
-        Mean reversion speed
-    eta : float
+    sigma : float
         Instantaneous standard deviation
     measure : Measure
         Under which measure (P or Q)
 
     """
 
-    def __init__(
-        self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: Measure = Measure.P
-    ) -> None:
+    def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: Measure = Measure.P) -> None:
         """Initialize class.
 
         Parameters
         ----------
         mean : float
             Mean of the process
-        kappa : float
-            Mean reversion speed
-        eta : float
+        sigma : float
             Instantaneous standard deviation
         measure : Measure
 
@@ -45,8 +39,7 @@ class CIRparam(GenericParam):
         _ = measure
         super().__init__()
         self.mean = mean
-        self.kappa = kappa
-        self.eta = eta
+        self.sigma = sigma
         self.measure = Measure.P
         self.update_ajd()
 
@@ -59,20 +52,18 @@ class CIRparam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        posit = (self.kappa > 0) & (self.eta > 0)
-        feller = 2 * self.kappa * self.mean - self.eta**2 > 0
-        return bool(posit & feller)
+        return bool(self.sigma > 0)
 
     def update_ajd(self) -> None:
         """Update AJD representation."""
         # AJD parameters
-        self.mat_k0 = self.kappa * self.mean
-        self.mat_k1 = -self.kappa
-        self.mat_h0 = 0.0
-        self.mat_h1 = self.eta**2
+        self.mat_k0 = self.mean - self.sigma**2 / 2
+        self.mat_k1 = 0.0
+        self.mat_h0 = self.sigma**2
+        self.mat_h1 = 0.0
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> CIRparam:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> GBMparam:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -81,7 +72,7 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        param = cls(mean=float(theta[0]), kappa=float(theta[1]), eta=float(theta[2]))
+        param = cls(mean=float(theta[0]), sigma=float(theta[1]))
         param.update_ajd()
         return param
 
@@ -101,7 +92,7 @@ class CIRparam(GenericParam):
 
         """
         _ = (subset, measure)
-        self.mean, self.kappa, self.eta = float(theta[0]), float(theta[1]), float(theta[2])
+        self.mean, self.sigma = float(theta[0]), float(theta[1])
         self.update_ajd()
 
     @staticmethod
@@ -114,7 +105,7 @@ class CIRparam(GenericParam):
             Parameter vector
 
         """
-        return "CIR"
+        return "GBM"
 
     @staticmethod
     def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:
@@ -122,21 +113,21 @@ class CIRparam(GenericParam):
 
         Returns
         -------
-        (3, ) list of str
+        (2, ) list of str
             Parameter names
 
         """
         _ = (subset, measure)
-        return ["mean", "kappa", "eta"]
+        return ["mean", "sigma"]
 
     def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.
 
         Returns
         -------
-        (3, ) array
+        (2, ) array
             Parameter vector
 
         """
         _ = (subset, measure)
-        return np.array([self.mean, self.kappa, self.eta])
+        return np.array([self.mean, self.sigma])

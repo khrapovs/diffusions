@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from affidiff.model_gbm import GBM
-from affidiff.param_gbm import GBMparam
+from affidiff.models.gbm import GBM
+from affidiff.parameters.gbm import GBMparam
 
 
 class TestRealizedMomentsGBM:

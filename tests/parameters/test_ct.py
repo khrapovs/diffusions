@@ -6,7 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-from affidiff.param_ct import CentTendParam
+from affidiff.parameters.ct import CentTendParam
 from affidiff.types import Measure, Subset
 
 

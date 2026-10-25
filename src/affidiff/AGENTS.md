@@ -5,15 +5,15 @@
 # Ownership
 
 Owns all core stochastic modeling logic, including:
-- Generic affine SDE definition (`model_generic.py`, `param_generic.py`)
-- Specific diffusion models: CIR (`model_cir.py`, `param_cir.py`), Vasicek (`model_vasicek.py`, `param_vasicek.py`), GBM (`model_gbm.py`, `param_gbm.py`), Heston (`model_heston.py`, `param_heston.py`), and Central Tendency (`model_ct.py`, `param_ct.py`)
+- Generic affine SDE definition (`models/generic.py`, `parameters/generic.py`)
+- Specific diffusion models under `models/` and their parameter classes under `parameters/`: CIR (`cir.py`), Vasicek (`vasicek.py`), GBM (`gbm.py`), Heston (`heston.py`), and Central Tendency (`ct.py`)
 - Mathematical helpers and moment functions (`helper_functions.py`)
 - C/Cython fast simulation routines (`simulate.pyx`)
 - Public exports (`__init__.py`)
 
 # Local Contracts
 
-- Every model class inherits from or complies with `SDE` and uses its corresponding parameter class (`*param.py`).
+- Every model class inherits from or complies with `SDE` and uses its corresponding class in `affidiff.parameters`.
 - Attributes and helper methods not accessed outside their owning class MUST be private (prefixed with `_`).
 - Any new model or parameter class introduced must be exported in `__init__.py`.
 

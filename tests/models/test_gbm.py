@@ -5,8 +5,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from affidiff.model_gbm import GBM
-from affidiff.param_gbm import GBMparam
+from affidiff.models.gbm import GBM
+from affidiff.parameters.gbm import GBMparam
 
 
 class TestGBMSimulation:

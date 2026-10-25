@@ -15,7 +15,7 @@ from affidiff.random import get_random_generator
 from affidiff.types import Measure, Subset
 
 if TYPE_CHECKING:
-    from affidiff.param_generic import GenericParam
+    from affidiff.parameters.generic import GenericParam
 
 
 class SDE(ABC):

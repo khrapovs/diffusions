@@ -1,4 +1,4 @@
-"""Vasicek parameter class."""
+"""CIR parameter class."""
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ from typing import Sequence
 
 import numpy as np
 
-from affidiff.param_generic import GenericParam
+from affidiff.parameters.generic import GenericParam
 from affidiff.types import Measure, Subset
 
 
-class VasicekParam(GenericParam):
-    """Parameter storage for Vasicek model.
+class CIRparam(GenericParam):
+    """Parameter storage for CIR model.
 
     Attributes
     ----------
@@ -59,18 +59,20 @@ class VasicekParam(GenericParam):
             True for valid parameters, False for invalid
 
         """
-        return bool((self.kappa > 0) & (self.eta > 0))
+        posit = (self.kappa > 0) & (self.eta > 0)
+        feller = 2 * self.kappa * self.mean - self.eta**2 > 0
+        return bool(posit & feller)
 
     def update_ajd(self) -> None:
         """Update AJD representation."""
         # AJD parameters
         self.mat_k0 = self.kappa * self.mean
         self.mat_k1 = -self.kappa
-        self.mat_h0 = self.eta**2
-        self.mat_h1 = 0.0
+        self.mat_h0 = 0.0
+        self.mat_h1 = self.eta**2
 
     @classmethod
-    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> VasicekParam:
+    def from_theta(cls, *, theta: np.ndarray | Sequence[float]) -> CIRparam:
         """Initialize parameters from parameter vector.
 
         Parameters
@@ -112,7 +114,7 @@ class VasicekParam(GenericParam):
             Parameter vector
 
         """
-        return "Vasicek"
+        return "CIR"
 
     @staticmethod
     def get_names(*, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> list[str]:

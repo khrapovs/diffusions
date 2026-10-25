@@ -5,20 +5,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from affidiff.model_cir import CIR
-from affidiff.model_ct import CentTend
-from affidiff.model_gbm import GBM
-from affidiff.model_heston import Heston
-from affidiff.model_vasicek import Vasicek
-from affidiff.param_cir import CIRparam
-from affidiff.param_ct import CentTendParam
-from affidiff.param_gbm import GBMparam
-from affidiff.param_heston import HestonParam
-from affidiff.param_vasicek import VasicekParam
+from affidiff.models.cir import CIR
+from affidiff.models.ct import CentTend
+from affidiff.models.gbm import GBM
+from affidiff.models.heston import Heston
+from affidiff.models.vasicek import Vasicek
+from affidiff.parameters.cir import CIRparam
+from affidiff.parameters.ct import CentTendParam
+from affidiff.parameters.gbm import GBMparam
+from affidiff.parameters.heston import HestonParam
+from affidiff.parameters.vasicek import VasicekParam
 
 if TYPE_CHECKING:
-    from affidiff.model_generic import SDE
-    from affidiff.param_generic import GenericParam
+    from affidiff.models.generic import SDE
+    from affidiff.parameters.generic import GenericParam
 
 
 @dataclass(frozen=True)
