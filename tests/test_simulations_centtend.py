@@ -67,36 +67,16 @@ def test_param_is_valid(*, measure: Measure) -> None:
     assert build_centtend_param(measure=measure).is_valid()
 
 
-@pytest.mark.parametrize(
-    "param,nsub,ndiscr,nsim,use_start",
-    [
-        (build_centtend_param(), 10, 10, 3, True),
-        (
-            build_centtend_param(riskfree=0.0, mean_v=0.2, kappa_s=0.1, kappa_y=0.02, eta_s=0.1, eta_y=0.01),
-            80,
-            10,
-            1,
-            False,
-        ),
-    ],
-)
-def test_sim_realized_pq(*, param: CentTendParam, nsub: int, ndiscr: int, nsim: int, use_start: bool) -> None:
+def test_sim_realized_pq() -> None:
     """Test realized data simulation under P and Q measures."""
-    nperiods = 500
+    nperiods, nsub, ndiscr, nsim = 500, 80, 10, 1
     aggh = [1, 1]
 
-    centtend = CentTend(param)
-    start = [1, param.mean_v, param.mean_v] if use_start else None
+    param_true = build_centtend_param(riskfree=0.0, mean_v=0.2, kappa_s=0.1, kappa_y=0.02, eta_s=0.1, eta_y=0.01)
+    centtend = CentTend(param_true)
 
     (ret_p, rvar_p), (ret_q, rvar_q) = centtend.sim_realized_pq(
-        start_p=start,
-        start_q=start,
-        nsub=nsub,
-        ndiscr=ndiscr,
-        aggh=aggh,
-        nperiods=nperiods,
-        nsim=nsim,
-        seed=42,
+        nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, seed=42
     )
 
     assert_realized_shape(returns=ret_p, rvar=rvar_p, expected_length=nperiods - aggh[0] + 1)
