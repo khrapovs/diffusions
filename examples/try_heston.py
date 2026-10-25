@@ -8,65 +8,11 @@ import time
 import numpy as np
 import seaborn as sns
 from load_real_data import load_data  # type: ignore
-from mygmm import Results
 
 from affidiff.helper_functions import plot_realized, take_time
 from affidiff.model_heston import Heston
 from affidiff.param_heston import HestonParam
-from affidiff.types import Measure, Subset
-
-
-def try_integrated_gmm_joint() -> Results:
-    """Simulate realized data from risk-neutral Heston model.
-
-    Estimate parameters.
-
-    """
-    riskfree = 0.0
-    mean_v = 0.5
-    kappa = 0.04
-    eta = 0.15
-    rho = -0.9
-    lmbd = 1.5
-    lmbd_v = 0.1
-    # 2 * kappa * mean_v - eta**2 > 0
-    param_true = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho, lmbd_v=lmbd_v)
-    print("P parameters:\n", param_true)
-    heston = Heston(param_true)
-
-    aggh = [1, 1]
-    nperiods, nsub, ndiscr, nsim = 1000, 100, 1, 1
-
-    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0)
-    print("Q parameters:\n", param_true)
-    data_p, data_q = data
-    ret_p, rvar_p = data_p
-    ret_q, rvar_q = data_q
-    nobs = np.min([ret_p.size, ret_q.size])
-    plot_realized(returns=[ret_p[-nobs:], ret_q[-nobs:]], rvar=[rvar_p[-nobs:], rvar_q[-nobs:]], suffix=["P", "Q"])
-
-    instr_data = np.vstack([rvar_p, rvar_p**2])
-
-    subset = Subset.vol
-    measure = Measure.PQ
-
-    time_start = time.time()
-    res = heston.integrated_gmm(
-        param_start=param_true,
-        data=data,
-        instrlag=2,
-        instr_data=instr_data,
-        aggh=aggh,
-        instr_choice="var",
-        method="TNC",
-        subset=subset,
-        iter=3,
-        measure=measure,
-    )
-    print(res)
-    print("Elapsed time = %.2f min" % ((time.time() - time_start) / 60))
-
-    return res
+from affidiff.types import Subset
 
 
 def try_integrated_gmm_real() -> None:
@@ -166,8 +112,6 @@ if __name__ == "__main__":
     #        try_marginal()
     #    with take_time('Simulate realized'):
     #        try_sim_realized()
-    #    with take_time('Integrated GMM under P and Q'):
-    #        res = try_integrated_gmm_joint()
     #    with take_time('Integrated GMM with real data'):
     #        try_integrated_gmm_real()
     with take_time("Integrated GMM with real data"):

@@ -85,3 +85,37 @@ def test_integrated_gmm_single_rn() -> None:
 
     # Q data carries the volatility risk premium, so its estimates must differ from the P ones.
     assert not np.allclose(estimates[0], estimates[1])
+
+
+def test_integrated_gmm_joint() -> None:
+    """Test joint integrated GMM estimation under P and Q measures simultaneously."""
+    mean_v, kappa, eta, lmbd_v = 0.5, 0.04, 0.15, 0.1
+    param_true = HestonParam(riskfree=0.0, lmbd=1.5, mean_v=mean_v, kappa=kappa, eta=eta, rho=-0.9, lmbd_v=lmbd_v)
+    heston = Heston(param_true)
+
+    nperiods, nsub, ndiscr, nsim = 500, 100, 1, 1
+    aggh = [1, 1]
+
+    data = heston.sim_realized_pq(nsub=nsub, ndiscr=ndiscr, aggh=aggh, nperiods=nperiods, nsim=nsim, diff=0, seed=42)
+    rvar_p = data[0][1]
+    instr_data = np.vstack([rvar_p, rvar_p**2])
+
+    res = heston.integrated_gmm(
+        param_start=param_true,
+        data=data,
+        instrlag=2,
+        instr_data=instr_data,
+        aggh=aggh,
+        instr_choice="var",
+        method="TNC",
+        subset=Subset.vol,
+        measure=Measure.PQ,
+        iter=3,
+    )
+
+    # Joint estimation adds the volatility risk price on top of the three P parameters.
+    assert len(res.theta) == 4
+    assert np.all(np.isfinite(res.theta))
+    assert np.all(res.theta > 0)
+    mean_v_est = res.theta[0]
+    assert np.abs(mean_v_est - mean_v) / mean_v < 0.5
