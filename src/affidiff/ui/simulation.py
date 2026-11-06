@@ -63,7 +63,9 @@ def get_model_defaults(model_name: str) -> dict[str, Any]:
     return defaults
 
 
-def run_simulation(*, model_name: str, params: dict[str, Any], nobs: int, seed: int | None = None) -> NDArray:
+def run_simulation(
+    *, model_name: str, params: dict[str, Any], nobs: int, seed: int | None = None, new_innov: bool = True
+) -> NDArray:
     """Run a single simulation with given parameters.
 
     Parameters
@@ -76,6 +78,8 @@ def run_simulation(*, model_name: str, params: dict[str, Any], nobs: int, seed: 
         Number of observations to simulate
     seed : int | None
         Random seed for reproducibility. If None, random seed is used.
+    new_innov : bool
+        Whether to generate new innovations (True), or use already stored (False)
 
     Returns
     -------
@@ -100,7 +104,7 @@ def run_simulation(*, model_name: str, params: dict[str, Any], nobs: int, seed: 
         raise ValueError(msg) from e
 
     model = model_class(param_obj)
-    simulated = model.simulate(nobs=nobs, nsim=1, seed=seed, cython=False)
+    simulated = model.simulate(nobs=nobs, nsim=1, seed=seed, new_innov=new_innov, cython=False)
 
     return simulated
 

@@ -49,6 +49,20 @@ Follow all project standards from root `AGENTS.md`:
 - Mock streamlit components in tests; integration testing via manual UI interaction
 - Suppress exceptions and display errors via `st.error()`
 
+### Simulate Button Behavior
+
+The Simulate button implements smart innovation (random error) reuse:
+
+1. **First simulation or new seed provided**: Generate new innovations (`new_innov=True`)
+2. **Change parameters only**: Reuse stored innovations, recalculate paths with new params (`new_innov=False`)
+   - Allows direct visual comparison of parameter effects without noise interference
+3. **Reset Seed button**: Clears stored innovations and seed, next Simulate generates entirely new series
+
+This workflow enables:
+- **Same parameters → same series** (perfect reproducibility)
+- **New parameters → old errors, new responses** (see param effect in isolation)
+- **Total reset** via dedicated button when needed
+
 ### Adding New Models
 
 To support a new affine diffusion model:

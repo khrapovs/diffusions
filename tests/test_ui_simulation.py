@@ -76,6 +76,27 @@ class TestRunSimulation:
         with pytest.raises(ValueError, match="Invalid parameters"):
             run_simulation(model_name="GBM", params={"invalid_param": 1.0}, nobs=100)
 
+    def test_new_innov_parameter(self) -> None:
+        """Test that new_innov parameter is passed correctly."""
+        params = {"mean": 0.0, "sigma": 0.2}
+        result1 = run_simulation(model_name="GBM", params=params, nobs=100, seed=42, new_innov=True)
+        assert result1.shape == (100, 2, 1)
+
+    def test_new_innov_false_reuses_innovations(self) -> None:
+        """Test that new_innov=False reuses stored innovations."""
+        params = {"mean": 0.0, "sigma": 0.2}
+        result1 = run_simulation(model_name="GBM", params=params, nobs=100, seed=42, new_innov=True)
+        result2 = run_simulation(model_name="GBM", params=params, nobs=100, seed=42, new_innov=False)
+        np.testing.assert_array_equal(result1, result2)
+
+    def test_new_innov_true_different_params_produces_different_result(self) -> None:
+        """Test that new_innov=True with different params produces different result."""
+        params1 = {"mean": 0.0, "sigma": 0.2}
+        params2 = {"mean": 0.05, "sigma": 0.2}
+        result1 = run_simulation(model_name="GBM", params=params1, nobs=100, seed=42, new_innov=True)
+        result2 = run_simulation(model_name="GBM", params=params2, nobs=100, seed=42, new_innov=True)
+        assert not np.allclose(result1, result2)
+
     @pytest.mark.parametrize("model_name", ["GBM", "Vasicek", "CIR", "Heston", "CentTend"])
     def test_all_models_simulate(self, model_name: str) -> None:
         """Test that all models can simulate successfully."""
