@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import random
+from random import randint
 
 import streamlit as st
 
@@ -54,50 +54,21 @@ def _main() -> None:
         st.subheader("Simulation")
         nobs, seed = render_simulation_controls()
 
-        col_sim, col_rerun = st.columns(2)
-
-        with col_sim:
-            if st.button("Simulate", key="simulate_btn", width="stretch"):
-                try:
-                    simulated = run_simulation(
-                        model_name=st.session_state.model,
-                        params=params,
-                        nobs=nobs,
-                        seed=seed,
-                    )
-                    path = extract_simulation_data(simulated)
-                    st.session_state.last_simulation = path
-                    st.session_state.last_seed = seed
-                    st.success("Simulation complete!")
-                except ValueError as e:
-                    st.error(f"Simulation failed: {e}")
-
-        with col_rerun:
-            if st.session_state.last_simulation is not None:
-                if st.button("Rerun", key="rerun_btn", width="stretch"):
-                    new_seed = random.randint(0, 2**31 - 1)
-                    try:
-                        simulated = run_simulation(
-                            model_name=st.session_state.model,
-                            params=params,
-                            nobs=nobs,
-                            seed=new_seed,
-                        )
-                        path = extract_simulation_data(simulated)
-                        st.session_state.last_simulation = path
-                        st.session_state.last_seed = new_seed
-                        st.success(f"Rerun complete with seed {new_seed}!")
-                    except ValueError as e:
-                        st.error(f"Rerun failed: {e}")
+        if st.button("Simulate", key="simulate_btn", width="stretch"):
+            try:
+                seed = seed or randint(0, 2**31 - 1)
+                simulated = run_simulation(model_name=st.session_state.model, params=params, nobs=nobs, seed=seed)
+                path = extract_simulation_data(simulated)
+                st.session_state.last_simulation = path
+                st.session_state.last_seed = seed
+                st.success("Simulation complete!")
+            except ValueError as e:
+                st.error(f"Simulation failed: {e}")
 
     st.divider()
 
     if st.session_state.last_simulation is not None:
-        seed_info = (
-            f"(Seed: {st.session_state.last_seed})" if st.session_state.last_seed is not None else "(Random seed)"
-        )
-        st.subheader(f"Result {seed_info}")
-        render_chart(st.session_state.last_simulation)
+        render_chart(simulated_path=st.session_state.last_simulation, seed=st.session_state.last_seed)
     else:
         st.info("👈 Configure parameters and click **Simulate** to generate a path")
 

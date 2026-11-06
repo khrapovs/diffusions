@@ -105,13 +105,15 @@ def render_simulation_controls(default_nobs: int = 500) -> tuple[int, int | None
     return nobs, seed
 
 
-def render_chart(simulated_path: NDArray) -> None:
+def render_chart(simulated_path: NDArray, *, seed: int) -> None:
     """Render interactive Plotly line chart of simulated path.
 
     Parameters
     ----------
     simulated_path : NDArray
         1D array of simulated values
+    seed : int
+        Random seed used for simulation
     """
     fig = go.Figure()
 
@@ -127,7 +129,7 @@ def render_chart(simulated_path: NDArray) -> None:
     )
 
     fig.update_layout(
-        title="Simulated Path",
+        title=f"Simulated Path (seed = {seed})",
         xaxis_title="Time Index",
         yaxis_title="Value",
         template="plotly_white",
