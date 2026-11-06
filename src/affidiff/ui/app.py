@@ -27,16 +27,11 @@ def _init_session_state() -> None:
 
 def _main() -> None:
     """Run the main Streamlit application."""
-    st.set_page_config(
-        page_title="Affine Diffusion Simulator",
-        layout="wide",
-        initial_sidebar_state="auto",
-    )
+    st.set_page_config(page_title="Affine Diffusion Simulator", layout="wide", initial_sidebar_state="auto")
 
     _init_session_state()
 
     st.title("Affine Diffusion Model Simulator")
-    st.markdown("Simulate and visualize paths from affine diffusion models (GBM, Vasicek, CIR, Heston, CentTend)")
 
     col_input, col_controls = st.columns([2, 1])
 
@@ -64,8 +59,6 @@ def _main() -> None:
                 st.success("Simulation complete!")
             except ValueError as e:
                 st.error(f"Simulation failed: {e}")
-
-    st.divider()
 
     if st.session_state.last_simulation is not None:
         render_chart(simulated_path=st.session_state.last_simulation, seed=st.session_state.last_seed)
