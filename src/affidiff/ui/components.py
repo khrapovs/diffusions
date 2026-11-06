@@ -8,7 +8,7 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
-from affidiff.ui.simulation import get_model_defaults
+from affidiff.ui.simulation import MODEL_REGISTRY, get_model_defaults
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
@@ -27,14 +27,13 @@ def render_model_selector(default_model: str = "GBM") -> str:
     str
         Selected model name
     """
-    models = ["GBM", "Vasicek", "CIR", "Heston", "CentTend"]
-    selected = st.selectbox(
+    models = list(MODEL_REGISTRY.keys())
+    return st.selectbox(
         "Select Model",
         options=models,
         index=models.index(default_model),
         help="Choose an affine diffusion model to simulate",
     )
-    return selected
 
 
 def render_parameter_form(model_name: str) -> dict[str, Any]:
