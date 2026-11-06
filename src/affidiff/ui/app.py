@@ -103,11 +103,21 @@ def _main() -> None:
 
 
 def main() -> None:
-    """Entry point for CLI."""
+    """Entry point for CLI.
+
+    Launches the Streamlit app, forwarding any CLI arguments like
+    --logger.level=debug or --server.port=8502.
+    """
     import subprocess
     import sys
+    from pathlib import Path
 
-    subprocess.run([sys.executable, "-m", "streamlit", "run", __file__])  # type: ignore[call-overload]
+    app_path = str(Path(__file__).resolve())
+    result = subprocess.run(
+        [sys.executable, "-m", "streamlit", "run", app_path, *sys.argv[1:]],
+        check=False,
+    )
+    sys.exit(result.returncode)
 
 
 if __name__ == "__main__":
