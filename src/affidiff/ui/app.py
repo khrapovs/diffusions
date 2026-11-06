@@ -57,7 +57,7 @@ def _main() -> None:
         col_sim, col_rerun = st.columns(2)
 
         with col_sim:
-            if st.button("Simulate", key="simulate_btn", use_container_width=True):
+            if st.button("Simulate", key="simulate_btn", width="stretch"):
                 try:
                     simulated = run_simulation(
                         model_name=st.session_state.model,
@@ -74,7 +74,7 @@ def _main() -> None:
 
         with col_rerun:
             if st.session_state.last_simulation is not None:
-                if st.button("Rerun", key="rerun_btn", use_container_width=True):
+                if st.button("Rerun", key="rerun_btn", width="stretch"):
                     new_seed = random.randint(0, 2**31 - 1)
                     try:
                         simulated = run_simulation(
