@@ -37,9 +37,9 @@ def _main() -> None:
 
     st.title("Affine Diffusion Model Simulator")
 
-    col_input, col_controls = st.columns([2, 1])
+    col_controls, col_params = st.columns(2)
 
-    with col_input:
+    with col_controls:
         selected_model = render_model_selector(default_model=st.session_state.model)
 
         if selected_model != st.session_state.model:
@@ -47,45 +47,39 @@ def _main() -> None:
             st.session_state.last_simulation = None
             st.session_state.last_params = None
 
+        nobs, seed = render_simulation_controls()
+
+    with col_params:
         params = render_parameter_form(st.session_state.model)
 
     with col_controls:
-        nobs, seed = render_simulation_controls()
+        if st.button("Simulate", key="simulate_btn", width="stretch"):
+            try:
+                new_innov = st.session_state.last_simulation is None or seed is not None
 
-        col_simulate, col_reset = st.columns(2)
+                if seed is None:
+                    seed = st.session_state.last_seed or randint(0, 2**31 - 1)
 
-        with col_simulate:
-            if st.button("Simulate", key="simulate_btn", width="stretch"):
-                try:
-                    new_innov = st.session_state.last_simulation is None or seed is not None
+                simulated = run_simulation(
+                    model_name=st.session_state.model, params=params, nobs=nobs, seed=seed, new_innov=new_innov
+                )
+                path = extract_simulation_data(simulated)
+                st.session_state.last_simulation = path
+                st.session_state.last_seed = seed
+                st.session_state.last_params = params.copy()
+                st.session_state.last_nobs = nobs
+            except ValueError as e:
+                st.error(f"Simulation failed: {e}")
 
-                    if seed is None:
-                        seed = st.session_state.last_seed or randint(0, 2**31 - 1)
-
-                    simulated = run_simulation(
-                        model_name=st.session_state.model, params=params, nobs=nobs, seed=seed, new_innov=new_innov
-                    )
-                    path = extract_simulation_data(simulated)
-                    st.session_state.last_simulation = path
-                    st.session_state.last_seed = seed
-                    st.session_state.last_params = params.copy()
-                    st.session_state.last_nobs = nobs
-                    st.success("Simulation complete!")
-                except ValueError as e:
-                    st.error(f"Simulation failed: {e}")
-
-        with col_reset:
-            if st.button("🔄 Reset Seed", key="reset_btn", width="stretch"):
-                st.session_state.last_seed = None
-                st.session_state.last_simulation = None
-                st.session_state.last_params = None
-                st.session_state.last_nobs = None
-                st.info("Seed reset. Click Simulate for a new series.")
+        if st.button("🔄 Reset Seed", key="reset_btn", width="stretch"):
+            st.session_state.last_seed = None
+            st.session_state.last_simulation = None
+            st.session_state.last_params = None
+            st.session_state.last_nobs = None
+            st.info("Seed reset. Click Simulate for a new series.")
 
     if st.session_state.last_simulation is not None:
         render_chart(simulated_path=st.session_state.last_simulation, seed=st.session_state.last_seed)
-    else:
-        st.info("👈 Configure parameters and click **Simulate** to generate a path")
 
 
 def main() -> None:
