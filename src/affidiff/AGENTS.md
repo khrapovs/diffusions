@@ -45,3 +45,4 @@ Root-owned modules:
 - `src/affidiff/models/AGENTS.md` - SDE model classes (`SDE`, `CIR`, `Vasicek`, `GBM`, `Heston`, `CentTend`)
 - `src/affidiff/parameters/AGENTS.md` - Parameter classes, validation, bounds, and `theta` conversion
 - `src/affidiff/data/AGENTS.md` - Market data loaders returning `polars` lazy frames
+- `src/affidiff/ui/AGENTS.md` - Interactive web UI for simulation (Streamlit + Plotly)

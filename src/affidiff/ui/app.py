@@ -1,0 +1,114 @@
+"""Main Streamlit application for affine diffusion simulation."""
+
+from __future__ import annotations
+
+import random
+
+import streamlit as st
+
+from affidiff.ui.components import (
+    render_chart,
+    render_model_selector,
+    render_parameter_form,
+    render_simulation_controls,
+)
+from affidiff.ui.simulation import extract_simulation_data, run_simulation
+
+
+def _init_session_state() -> None:
+    """Initialize session state variables."""
+    if "model" not in st.session_state:
+        st.session_state.model = "GBM"
+    if "last_simulation" not in st.session_state:
+        st.session_state.last_simulation = None
+    if "last_seed" not in st.session_state:
+        st.session_state.last_seed = None
+
+
+def _main() -> None:
+    """Run the main Streamlit application."""
+    st.set_page_config(
+        page_title="Affine Diffusion Simulator",
+        layout="wide",
+        initial_sidebar_state="auto",
+    )
+
+    _init_session_state()
+
+    st.title("Affine Diffusion Model Simulator")
+    st.markdown("Simulate and visualize paths from affine diffusion models (GBM, Vasicek, CIR, Heston, CentTend)")
+
+    col_input, col_controls = st.columns([2, 1])
+
+    with col_input:
+        st.subheader("Configuration")
+        selected_model = render_model_selector(default_model=st.session_state.model)
+
+        if selected_model != st.session_state.model:
+            st.session_state.model = selected_model
+            st.session_state.last_simulation = None
+
+        params = render_parameter_form(st.session_state.model)
+
+    with col_controls:
+        st.subheader("Simulation")
+        nobs, seed = render_simulation_controls()
+
+        col_sim, col_rerun = st.columns(2)
+
+        with col_sim:
+            if st.button("Simulate", key="simulate_btn", use_container_width=True):
+                try:
+                    simulated = run_simulation(
+                        model_name=st.session_state.model,
+                        params=params,
+                        nobs=nobs,
+                        seed=seed,
+                    )
+                    path = extract_simulation_data(simulated)
+                    st.session_state.last_simulation = path
+                    st.session_state.last_seed = seed
+                    st.success("Simulation complete!")
+                except ValueError as e:
+                    st.error(f"Simulation failed: {e}")
+
+        with col_rerun:
+            if st.session_state.last_simulation is not None:
+                if st.button("Rerun", key="rerun_btn", use_container_width=True):
+                    new_seed = random.randint(0, 2**31 - 1)
+                    try:
+                        simulated = run_simulation(
+                            model_name=st.session_state.model,
+                            params=params,
+                            nobs=nobs,
+                            seed=new_seed,
+                        )
+                        path = extract_simulation_data(simulated)
+                        st.session_state.last_simulation = path
+                        st.session_state.last_seed = new_seed
+                        st.success(f"Rerun complete with seed {new_seed}!")
+                    except ValueError as e:
+                        st.error(f"Rerun failed: {e}")
+
+    st.divider()
+
+    if st.session_state.last_simulation is not None:
+        seed_info = (
+            f"(Seed: {st.session_state.last_seed})" if st.session_state.last_seed is not None else "(Random seed)"
+        )
+        st.subheader(f"Result {seed_info}")
+        render_chart(st.session_state.last_simulation)
+    else:
+        st.info("👈 Configure parameters and click **Simulate** to generate a path")
+
+
+def main() -> None:
+    """Entry point for CLI."""
+    import subprocess
+    import sys
+
+    subprocess.run([sys.executable, "-m", "streamlit", "run", __file__])  # type: ignore[call-overload]
+
+
+if __name__ == "__main__":
+    _main()

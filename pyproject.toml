@@ -19,6 +19,8 @@ dependencies = [
     "seaborn>=0.13.2",
     "statsmodels>=0.14.6",
     "yfinance>=1.7.0",
+    "streamlit>=1.50.0",
+    "plotly>=5.20.0",
 ]
 
 [dependency-groups]
@@ -39,6 +41,9 @@ dev = [
 [build-system]
 requires = ["scikit-build-core>=0.10", "numpy>=2.4.4", "scipy>=1.17.1", "Cython>=3.0"]
 build-backend = "scikit_build_core.build"
+
+[project.scripts]
+ui = "affidiff.ui.app:main"
 
 [tool.commitizen]
 version_scheme = "semver"
