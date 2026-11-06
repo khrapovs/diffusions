@@ -40,7 +40,6 @@ def _main() -> None:
     col_input, col_controls = st.columns([2, 1])
 
     with col_input:
-        st.subheader("Configuration")
         selected_model = render_model_selector(default_model=st.session_state.model)
 
         if selected_model != st.session_state.model:
@@ -51,7 +50,6 @@ def _main() -> None:
         params = render_parameter_form(st.session_state.model)
 
     with col_controls:
-        st.subheader("Simulation")
         nobs, seed = render_simulation_controls()
 
         col_simulate, col_reset = st.columns(2)
