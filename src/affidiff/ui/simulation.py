@@ -50,7 +50,7 @@ def get_model_defaults(model_name: str) -> dict[str, Any]:
         msg = f"Unknown model: {model_name}. Available: {list(MODEL_REGISTRY.keys())}"
         raise ValueError(msg)
 
-    _, param_class = MODEL_REGISTRY[model_name]
+    param_class = MODEL_REGISTRY[model_name][1]
     sig = inspect.signature(param_class.__init__)
     defaults = {}
 
