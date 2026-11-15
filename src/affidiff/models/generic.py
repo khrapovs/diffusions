@@ -77,10 +77,11 @@ class SDE(ABC):
         """Number of state variables."""
         return len(self.get_start())
 
+    @abstractmethod
     @property
     def series_names(self) -> tuple[str, ...]:
         """Names of the simulated series, one per state variable in simulation order."""
-        return ("Returns",)
+        raise NotImplementedError("Must be overridden")
 
     @staticmethod
     def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:

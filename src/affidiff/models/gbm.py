@@ -31,6 +31,11 @@ class GBM(SDE):
         """
         super().__init__(param)
 
+    @property
+    def series_names(self) -> tuple[str, ...]:
+        """Names of the simulated series, one per state variable in simulation order."""
+        return ("Returns",)
+
     def get_start(self) -> list[float]:
         """Return starting values for simulation."""
         return [1.0]
