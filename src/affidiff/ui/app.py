@@ -100,10 +100,7 @@ def main() -> None:
     from pathlib import Path
 
     app_path = str(Path(__file__).resolve())
-    result = subprocess.run(
-        [sys.executable, "-m", "streamlit", "run", app_path, *sys.argv[1:]],
-        check=False,
-    )
+    result = subprocess.run([sys.executable, "-m", "streamlit", "run", app_path, *sys.argv[1:]], check=False)
     sys.exit(result.returncode)
 
 
