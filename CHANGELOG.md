@@ -1,3 +1,9 @@
+## v0.6.0 (2026-11-15)
+
+### Feat
+
+- Lightweight simulation frontend (#21)
+
 ## v0.5.2 (2026-10-25)
 
 ### Refactor
