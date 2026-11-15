@@ -27,6 +27,14 @@ MODEL_REGISTRY: dict[str, tuple[type, type]] = {
     "CentTend": (CentTend, CentTendParam),
 }
 
+SERIES_NAMES: dict[str, tuple[str, ...]] = {
+    "GBM": ("Returns",),
+    "Vasicek": ("Returns",),
+    "CIR": ("Returns",),
+    "Heston": ("Returns", "Volatility"),
+    "CentTend": ("Returns", "Volatility", "Central tendency of volatility"),
+}
+
 
 def get_model_defaults(model_name: str) -> dict[str, Any]:
     """Extract default parameter values from a model's parameter class.

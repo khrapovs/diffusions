@@ -7,10 +7,13 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 from affidiff.ui.simulation import MODEL_REGISTRY, get_model_defaults
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from numpy.typing import NDArray
 
 
@@ -104,36 +107,45 @@ def render_simulation_controls(default_nobs: int = 500) -> tuple[int, int | None
     return nobs, seed
 
 
-def render_chart(simulated_path: NDArray, *, seed: int | None) -> None:
-    """Render interactive Plotly line chart of simulated path.
+def render_chart(simulated_path: NDArray, *, series_names: Sequence[str], seed: int | None) -> None:
+    """Render interactive Plotly charts of simulated series, one subplot per series.
 
     Parameters
     ----------
     simulated_path : NDArray
-        1D array of simulated values
+        Simulated values of shape (nobs,) for 1-variable models, or (nobs, nvars)
+    series_names : Sequence[str]
+        Name of each simulated series, one per column of `simulated_path`
     seed : int | None
         Random seed used for simulation
     """
-    fig = go.Figure()
+    paths = simulated_path.reshape(len(simulated_path), -1)
+    nvars = paths.shape[1]
+    time_index = np.arange(len(paths))
 
-    fig.add_trace(
-        go.Scatter(
-            y=simulated_path,
-            x=np.arange(len(simulated_path)),
-            mode="lines",
-            name="Simulated Path",
-            line=dict(color="rgb(31, 119, 180)", width=2),
-            hovertemplate="<b>Time: %{x}</b><br>Value: %{y:.4f}<extra></extra>",
+    fig = make_subplots(rows=nvars, cols=1, shared_xaxes=True, vertical_spacing=0.08, subplot_titles=series_names)
+
+    for row, (name, path) in enumerate(zip(series_names, paths.T, strict=True), start=1):
+        fig.add_trace(
+            go.Scatter(
+                y=path,
+                x=time_index,
+                mode="lines",
+                name=name,
+                line=dict(width=2),
+                hovertemplate="<b>Time: %{x}</b><br>Value: %{y:.4f}<extra></extra>",
+            ),
+            row=row,
+            col=1,
         )
-    )
 
+    fig.update_xaxes(title_text="Time Index", row=nvars, col=1)
     fig.update_layout(
-        title=f"Simulated Path (seed = {seed})",
-        xaxis_title="Time Index",
-        yaxis_title="Value",
+        title=f"Simulated Paths (seed = {seed})",
         template="plotly_white",
         hovermode="x unified",
-        height=500,
+        showlegend=False,
+        height=150 + 300 * nvars,
     )
 
     st.plotly_chart(fig, width="stretch")

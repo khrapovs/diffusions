@@ -13,7 +13,7 @@ from affidiff.ui.components import (
     render_simulation_controls,
 )
 from affidiff.ui.formulas import render_model_formula
-from affidiff.ui.simulation import extract_simulation_data, run_simulation
+from affidiff.ui.simulation import SERIES_NAMES, extract_simulation_data, run_simulation
 
 
 def _init_session_state() -> None:
@@ -86,7 +86,11 @@ def _main() -> None:
     render_model_formula(model_name=st.session_state.model)
 
     if st.session_state.last_simulation is not None:
-        render_chart(simulated_path=st.session_state.last_simulation, seed=st.session_state.last_seed)
+        render_chart(
+            simulated_path=st.session_state.last_simulation,
+            series_names=SERIES_NAMES[st.session_state.model],
+            seed=st.session_state.last_seed,
+        )
 
 
 def main() -> None:
