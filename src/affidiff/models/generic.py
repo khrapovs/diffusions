@@ -77,8 +77,8 @@ class SDE(ABC):
         """Number of state variables."""
         return len(self.get_start())
 
-    @abstractmethod
     @property
+    @abstractmethod
     def series_names(self) -> tuple[str, ...]:
         """Names of the simulated series, one per state variable in simulation order."""
         raise NotImplementedError("Must be overridden")

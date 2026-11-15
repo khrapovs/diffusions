@@ -72,7 +72,7 @@ This workflow enables:
 ### Adding New Models
 
 To support a new affine diffusion model:
-1. Update `MODEL_REGISTRY` in `simulation.py`
+1. Update `MODEL_REGISTRY` in `affidiff.models.registry`
 2. Add `docs_src/models/<model_name.lower()>.md` so the equations card renders
 3. Test with existing tests (parametrized for all models)
 4. Test UI form generation manually

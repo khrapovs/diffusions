@@ -5,27 +5,10 @@ from __future__ import annotations
 import inspect
 from typing import TYPE_CHECKING, Any
 
-from affidiff.models.cir import CIR
-from affidiff.models.ct import CentTend
-from affidiff.models.gbm import GBM
-from affidiff.models.heston import Heston
-from affidiff.models.vasicek import Vasicek
-from affidiff.parameters.cir import CIRparam
-from affidiff.parameters.ct import CentTendParam
-from affidiff.parameters.gbm import GBMparam
-from affidiff.parameters.heston import HestonParam
-from affidiff.parameters.vasicek import VasicekParam
+from affidiff.models.registry import MODEL_REGISTRY
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
-
-MODEL_REGISTRY: dict[str, tuple[type, type]] = {
-    "GBM": (GBM, GBMparam),
-    "Vasicek": (Vasicek, VasicekParam),
-    "CIR": (CIR, CIRparam),
-    "Heston": (Heston, HestonParam),
-    "CentTend": (CentTend, CentTendParam),
-}
 
 
 def get_series_names(model_name: str) -> tuple[str, ...]:

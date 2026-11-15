@@ -12,6 +12,7 @@ characteristic functions, moment conditions, GMM estimation, and simulation entr
 - `gbm.py` — `GBM`.
 - `heston.py` — `Heston`.
 - `ct.py` — `CentTend` (central tendency).
+- `registry.py` — `MODEL_REGISTRY`, mapping model names to model and parameter classes.
 
 # Local Contracts
 

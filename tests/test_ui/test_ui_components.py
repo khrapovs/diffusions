@@ -7,14 +7,9 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pytest
 
+from affidiff.models.registry import MODEL_REGISTRY
 from affidiff.ui import components
-from affidiff.ui.simulation import (
-    MODEL_REGISTRY,
-    extract_simulation_data,
-    get_model_defaults,
-    get_series_names,
-    run_simulation,
-)
+from affidiff.ui.simulation import extract_simulation_data, get_model_defaults, get_series_names, run_simulation
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go

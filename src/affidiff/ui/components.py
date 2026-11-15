@@ -9,7 +9,8 @@ import plotly.graph_objects as go
 import streamlit as st
 from plotly.subplots import make_subplots
 
-from affidiff.ui.simulation import MODEL_REGISTRY, get_model_defaults
+from affidiff.models.registry import MODEL_REGISTRY
+from affidiff.ui.simulation import get_model_defaults
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
