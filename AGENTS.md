@@ -24,6 +24,7 @@
 - Name functions and methods with action verbs: `get_`, `extract_`, `find_`, `compute_`, `build_`, etc. Avoid noun-only
   names like `_serialize_keys` or `_base_names` — they read as attributes, not callables. Predicates (`is_`, `has_`) are
   the one exception.
+  the one exception.
 
 ## Testing Standards
 
@@ -70,6 +71,11 @@
     2. Pre-compile to C: `uv run cython src/affidiff/simulate.pyx`
     3. Build with `uv build`
     4. Test with `uv run pytest`
+
+## Code Formatting
+
+- Fit as much code as possible in one line as long as `line-length` parameter of `ruff` allows. Remove trailing commas
+  in lists and function calls after the last argument and let ruff fix the format. Narrow column code is discouraged.
 
 # DOX framework
 
