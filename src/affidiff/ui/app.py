@@ -12,6 +12,7 @@ from affidiff.ui.components import (
     render_parameter_form,
     render_simulation_controls,
 )
+from affidiff.ui.formulas import render_model_formula
 from affidiff.ui.simulation import extract_simulation_data, run_simulation
 
 
@@ -81,6 +82,8 @@ def _main() -> None:
                 st.session_state.last_params = None
                 st.session_state.last_nobs = None
                 st.info("Seed reset. Click Simulate for a new series.")
+
+    render_model_formula(model_name=st.session_state.model)
 
     if st.session_state.last_simulation is not None:
         render_chart(simulated_path=st.session_state.last_simulation, seed=st.session_state.last_seed)

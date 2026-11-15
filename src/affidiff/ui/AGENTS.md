@@ -18,9 +18,13 @@ This module owns:
 - CLI entry point (`affidiff-ui` command)
 - All dependencies related to UI rendering (streamlit, plotly)
 
+- Model equations card (`formulas.py`): collapsed `st.expander` below the chart, rendered from
+  `docs_src/models/<model_name.lower()>.md` (card label is the UI model name; page heading and paragraphs with `](../` links dropped)
+
 This module does NOT own:
 - Core model simulation logic (owned by `src/affidiff/models`)
 - Parameter classes (owned by `src/affidiff/parameters`)
+- Model equations content (owned by `docs_src/models`; never duplicate formulas in UI code)
 
 ### Exports
 
@@ -67,8 +71,9 @@ This workflow enables:
 
 To support a new affine diffusion model:
 1. Update `MODEL_REGISTRY` in `simulation.py`
-2. Test with existing tests (parametrized for all models)
-3. Test UI form generation manually
+2. Add `docs_src/models/<model_name.lower()>.md` so the equations card renders
+3. Test with existing tests (parametrized for all models)
+4. Test UI form generation manually
 
 ## Verification
 
@@ -78,7 +83,8 @@ To support a new affine diffusion model:
   - Model registry and parameter extraction
   - Simulation wrapper with various parameters and seeds
   - Data extraction for visualization
-- Run: `uv run pytest tests/test_ui_simulation.py -xvs`
+- Unit tests in `tests/test_ui_formulas.py` cover formula extraction from `docs_src/models` and the equations card
+- Run: `uv run pytest tests/test_ui_simulation.py tests/test_ui_formulas.py -xvs`
 
 ### Manual Integration Testing
 
