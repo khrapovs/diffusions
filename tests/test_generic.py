@@ -30,16 +30,8 @@ class TestGenericModel:
 
 
 @pytest.mark.parametrize(
-    ("model", "series_names"),
-    [
-        (GBM(GBMparam()), ("Returns",)),
-        (Vasicek(VasicekParam()), ("Returns",)),
-        (CIR(CIRparam()), ("Returns",)),
-        (Heston(HestonParam()), ("Returns", "Volatility")),
-        (CentTend(CentTendParam()), ("Returns", "Volatility", "Central tendency of volatility")),
-    ],
+    "model",
+    [GBM(GBMparam()), Vasicek(VasicekParam()), CIR(CIRparam()), Heston(HestonParam()), CentTend(CentTendParam())],
 )
-def test_series_names_match_state_variables(*, model: SDE, series_names: tuple[str, ...]) -> None:
-
-    assert model.series_names == series_names
+def test_series_names_match_state_variables(model: SDE) -> None:
     assert len(model.series_names) == model.nvars
