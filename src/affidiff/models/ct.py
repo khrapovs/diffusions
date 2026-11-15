@@ -34,6 +34,11 @@ class CentTend(SDE):
             param = CentTendParam()
         super().__init__(param)
 
+    @property
+    def series_names(self) -> tuple[str, ...]:
+        """Names of the simulated series, one per state variable in simulation order."""
+        return ("Returns", "Volatility", "Central tendency of volatility")
+
     def get_start(self) -> list[float]:
         """Return starting values for simulation."""
         assert self.param is not None

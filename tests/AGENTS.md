@@ -15,11 +15,13 @@ Owns all pytest test modules under `tests/`:
 - Moment estimation tests (`test_rmoms_ct.py`, `test_rmoms_gbm.py`, `test_rmoms_heston.py`)
 - Helper and simulation tests (`test_helpers.py`, `test_simulations.py`, `test_simulations_centtend.py`,
   `test_simulations_heston.py`)
+- UI tests mirroring `affidiff.ui` (`test_ui/test_ui_simulation.py`, `test_ui/test_ui_formulas.py`,
+  `test_ui/test_ui_components.py`)
 
 # Local Contracts
 
 - Unit tests MUST NOT access private attributes or private methods (prefixed with `_`) of production classes.
-- Test subpackages (`test_models/`, `test_parameters/`, `test_data/`) carry an `__init__.py` so modules with identical
+- Test subpackages (`test_models/`, `test_parameters/`, `test_data/`, `test_ui/`) carry an `__init__.py` so modules with identical
   basenames stay collectible; this also keeps `tests/` on `sys.path` so shared helpers `assertions.py` and `config.py`
   remain importable from nested test modules.
 - Tests must pass cleanly when executed via `uv run pytest`.

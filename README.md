@@ -6,11 +6,30 @@
 
 Simulation and estimation of Affine Diffusion models.
 
-Install:
+## Installation
 
 ```shell
 pip install affidiff
 ```
+
+## Interactive UI
+
+A lightweight web-based interface for exploring affine diffusion model simulations.
+After installation, start the interactive simulator:
+
+```shell
+ui
+```
+
+This opens a Streamlit app in your browser at `http://localhost:8501`.
+
+Features:
+
+- Select from 5 affine diffusion models (GBM, Vasicek, CIR, Heston, CentTend)
+- Adjust model parameters and see live preview
+- Control simulation length and random seed for reproducibility
+- Smart innovation reuse: change parameters to see their isolated effect without noise interference
+- Interactive Plotly charts for visualization
 
 ## Documentation
 

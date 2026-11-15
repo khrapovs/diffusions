@@ -28,3 +28,4 @@ Owns all production Python source modules, Cython extension code, and package in
     - `src/affidiff/models/AGENTS.md` - SDE model classes
     - `src/affidiff/parameters/AGENTS.md` - Parameter classes and validation
     - `src/affidiff/data/AGENTS.md` - Market data loaders
+    - `src/affidiff/ui/AGENTS.md` - Interactive web UI for simulation

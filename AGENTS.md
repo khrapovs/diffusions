@@ -71,6 +71,11 @@
     3. Build with `uv build`
     4. Test with `uv run pytest`
 
+## Code Formatting
+
+- Fit as much code as possible in one line as long as `line-length` parameter of `ruff` allows. Remove trailing commas
+  in lists and function calls after the last argument and let ruff fix the format. Narrow column code is discouraged.
+
 # DOX framework
 
 - DOX is highly performant AGENTS.md hierarchy installed here
@@ -166,6 +171,7 @@ When the user requests a durable behavior change, record it here or in the relev
         - `src/affidiff/models/AGENTS.md` - SDE model classes
         - `src/affidiff/parameters/AGENTS.md` - Parameter classes and validation
         - `src/affidiff/data/AGENTS.md` - Market data loaders
+        - `src/affidiff/ui/AGENTS.md` - Interactive web UI for simulation
 - `tests/AGENTS.md` - Test suite covering affine diffusion models, parameter classes, moments estimation, and simulation
   utilities
 - `docs_src` - MkDocs documentation source files (legacy Sphinx sources kept under `source/` for reference only)

@@ -20,6 +20,9 @@ is not part of the live MkDocs build.
   `reference/` — this causes duplicate-anchor build failures under `mkdocs build -s`. Link to the reference page
   instead (e.g. `../reference/affidiff/parameters/vasicek.md`).
 - New model pages must be added to the `nav.Models` section in `mkdocs.yaml`.
+- `models/*.md` pages are the single source for the UI equations card (`src/affidiff/ui/formulas.py`): file name is
+  the lowercased UI model name, the first line is a `# Title` heading, and API-reference links stay in their own
+  paragraph (paragraphs containing `](../` are dropped in the UI). Use only KaTeX-compatible math.
 
 # Work Guidance
 
