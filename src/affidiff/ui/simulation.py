@@ -27,13 +27,30 @@ MODEL_REGISTRY: dict[str, tuple[type, type]] = {
     "CentTend": (CentTend, CentTendParam),
 }
 
-SERIES_NAMES: dict[str, tuple[str, ...]] = {
-    "GBM": ("Returns",),
-    "Vasicek": ("Returns",),
-    "CIR": ("Returns",),
-    "Heston": ("Returns", "Volatility"),
-    "CentTend": ("Returns", "Volatility", "Central tendency of volatility"),
-}
+
+def get_series_names(model_name: str) -> tuple[str, ...]:
+    """Get names of the series simulated by a model.
+
+    Parameters
+    ----------
+    model_name : str
+        Name of the model (key in MODEL_REGISTRY)
+
+    Returns
+    -------
+    tuple[str, ...]
+        Names of the simulated series in simulation column order
+
+    Raises
+    ------
+    ValueError
+        If model_name is not in MODEL_REGISTRY
+    """
+    if model_name not in MODEL_REGISTRY:
+        msg = f"Unknown model: {model_name}. Available: {list(MODEL_REGISTRY.keys())}"
+        raise ValueError(msg)
+
+    return MODEL_REGISTRY[model_name][0]().series_names
 
 
 def get_model_defaults(model_name: str) -> dict[str, Any]:

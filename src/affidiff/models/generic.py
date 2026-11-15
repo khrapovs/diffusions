@@ -77,6 +77,11 @@ class SDE(ABC):
         """Number of state variables."""
         return len(self.get_start())
 
+    @property
+    def series_names(self) -> tuple[str, ...]:
+        """Names of the simulated series, one per state variable in simulation order."""
+        return ("Returns",)
+
     @staticmethod
     def realized_depvar(*, data: np.ndarray | Sequence[np.ndarray], subset: slice | None = None) -> np.ndarray:
         """Realized dependent variables."""

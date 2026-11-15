@@ -15,7 +15,8 @@ Owns all pytest test modules under `tests/`:
 - Moment estimation tests (`test_rmoms_ct.py`, `test_rmoms_gbm.py`, `test_rmoms_heston.py`)
 - Helper and simulation tests (`test_helpers.py`, `test_simulations.py`, `test_simulations_centtend.py`,
   `test_simulations_heston.py`)
-- UI tests mirroring `affidiff.ui` (`test_ui/test_ui_simulation.py`, `test_ui/test_ui_formulas.py`)
+- UI tests mirroring `affidiff.ui` (`test_ui/test_ui_simulation.py`, `test_ui/test_ui_formulas.py`,
+  `test_ui/test_ui_components.py`)
 
 # Local Contracts
 

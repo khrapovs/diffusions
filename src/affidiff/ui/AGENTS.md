@@ -21,8 +21,7 @@ This module owns:
 - Model equations card (`formulas.py`): collapsed `st.expander` below the chart, rendered from
   `docs_src/models/<model_name.lower()>.md` (card label is the UI model name; page heading and paragraphs with `](../` links dropped)
 - Simulation chart (`components.render_chart`): one Plotly figure with a stacked subplot per simulated series (shared
-  x-axis), titled from `SERIES_NAMES` in `simulation.py` — GBM/Vasicek/CIR: returns; Heston: + volatility; CentTend:
-  + volatility and central tendency of volatility. Names must match the model's `nvars`, in simulation column order
+  x-axis), titled from the model's `series_names` property (via `simulation.get_series_names`)
 
 This module does NOT own:
 - Core model simulation logic (owned by `src/affidiff/models`)
@@ -73,7 +72,7 @@ This workflow enables:
 ### Adding New Models
 
 To support a new affine diffusion model:
-1. Update `MODEL_REGISTRY` and `SERIES_NAMES` in `simulation.py`
+1. Update `MODEL_REGISTRY` in `simulation.py`
 2. Add `docs_src/models/<model_name.lower()>.md` so the equations card renders
 3. Test with existing tests (parametrized for all models)
 4. Test UI form generation manually

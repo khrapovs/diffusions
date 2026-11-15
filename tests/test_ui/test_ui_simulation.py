@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from affidiff.ui.simulation import extract_simulation_data, get_model_defaults, run_simulation
+from affidiff.ui.simulation import extract_simulation_data, get_model_defaults, get_series_names, run_simulation
 
 
 class TestGetModelDefaults:
@@ -126,3 +126,8 @@ class TestExtractSimulationData:
         result = extract_simulation_data(simulated)
         assert result.ndim == 1
         assert result.shape == (100,)
+
+
+def test_get_series_names_invalid_model_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown model"):
+        get_series_names("InvalidModel")

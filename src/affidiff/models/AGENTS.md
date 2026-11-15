@@ -20,6 +20,8 @@ characteristic functions, moment conditions, GMM estimation, and simulation entr
 - Module names carry no `model_` prefix; the package name supplies the context.
 - Attributes and helper methods not accessed outside their owning class MUST be private (prefixed with `_`).
 - Shared mathematical helpers live in `affidiff.helper_functions`, not in individual model modules.
+- `SDE.series_names` names each simulated state variable in simulation column order and defaults to `("Returns",)`;
+  models with more state variables (`Heston`, `CentTend`) override it so its length equals `nvars`.
 
 # Work Guidance
 

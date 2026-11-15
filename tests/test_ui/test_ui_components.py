@@ -8,19 +8,25 @@ import numpy as np
 import pytest
 
 from affidiff.ui import components
-from affidiff.ui.simulation import SERIES_NAMES, extract_simulation_data, get_model_defaults, run_simulation
+from affidiff.ui.simulation import (
+    MODEL_REGISTRY,
+    extract_simulation_data,
+    get_model_defaults,
+    get_series_names,
+    run_simulation,
+)
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
 
 
-@pytest.mark.parametrize("model_name", list(SERIES_NAMES))
+@pytest.mark.parametrize("model_name", list(MODEL_REGISTRY))
 def test_render_chart_plots_series_on_separate_subplots(*, model_name: str, monkeypatch: pytest.MonkeyPatch) -> None:
     figures: list[go.Figure] = []
     monkeypatch.setattr(components.st, "plotly_chart", lambda fig, **_: figures.append(fig))
     params = {key: value for key, value in get_model_defaults(model_name).items() if key != "measure"}
     path = extract_simulation_data(run_simulation(model_name=model_name, params=params, nobs=20, seed=1))
-    series_names = SERIES_NAMES[model_name]
+    series_names = get_series_names(model_name)
 
     components.render_chart(simulated_path=path, series_names=series_names, seed=1)
 
