@@ -79,12 +79,12 @@ To support a new affine diffusion model:
 
 ### Testing
 
-- Unit tests in `tests/test_ui_simulation.py` cover:
+- Unit tests in `tests/test_ui/test_ui_simulation.py` cover:
   - Model registry and parameter extraction
   - Simulation wrapper with various parameters and seeds
   - Data extraction for visualization
-- Unit tests in `tests/test_ui_formulas.py` cover formula extraction from `docs_src/models` and the equations card
-- Run: `uv run pytest tests/test_ui_simulation.py tests/test_ui_formulas.py -xvs`
+- Unit tests in `tests/test_ui/test_ui_formulas.py` cover formula extraction from `docs_src/models` and the equations card
+- Run: `uv run pytest tests/test_ui -xvs`
 
 ### Manual Integration Testing
 

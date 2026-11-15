@@ -5,11 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from affidiff.ui.simulation import (
-    extract_simulation_data,
-    get_model_defaults,
-    run_simulation,
-)
+from affidiff.ui.simulation import extract_simulation_data, get_model_defaults, run_simulation
 
 
 class TestGetModelDefaults:
