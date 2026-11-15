@@ -24,7 +24,6 @@
 - Name functions and methods with action verbs: `get_`, `extract_`, `find_`, `compute_`, `build_`, etc. Avoid noun-only
   names like `_serialize_keys` or `_base_names` — they read as attributes, not callables. Predicates (`is_`, `has_`) are
   the one exception.
-  the one exception.
 
 ## Testing Standards
 
