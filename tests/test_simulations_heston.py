@@ -74,6 +74,27 @@ def test_simulate_pq_shares_innovations() -> None:
     assert not np.allclose(paths_p, paths_q)
 
 
+@pytest.mark.parametrize("use_cython", [False, True])
+def test_realized_variance_tracks_instantaneous_variance(*, use_cython: bool) -> None:
+    """Test that periods of high instantaneous variance show proportionally high realized variance of log returns."""
+    nperiods, nsub = 300, 100
+    param = HestonParam(mean_v=0.5, kappa=2.0, eta=0.6, rho=-0.5)
+    paths = Heston(param).simulate(nsub=nsub, nobs=nperiods * nsub, nsim=1, diff=0, cython=use_cython, seed=0)
+    returns, variance = paths[:, 0, 0], paths[:, 0, 1]
+    # Each Euler return is driven by the variance at the start of its step.
+    variance_start = np.concatenate(([param.mean_v], variance[:-1]))
+    realized = (returns**2).reshape(nperiods, nsub).sum(1)
+    integrated = variance_start.reshape(nperiods, nsub).mean(1)
+
+    high = integrated > np.median(integrated)
+    realized_ratio = realized[high].mean() / realized[~high].mean()
+    integrated_ratio = integrated[high].mean() / integrated[~high].mean()
+
+    assert realized_ratio > 1.5
+    assert realized_ratio == pytest.approx(integrated_ratio, rel=0.1)
+    assert realized.mean() == pytest.approx(integrated.mean(), rel=0.05)
+
+
 def test_sim_realized_pq() -> None:
     """Test realized data simulation under P and Q measures."""
     nperiods, nsub, ndiscr, nsim = 500, 100, 1, 1
