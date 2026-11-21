@@ -95,6 +95,17 @@ def test_realized_variance_tracks_instantaneous_variance(*, use_cython: bool) ->
     assert realized.mean() == pytest.approx(integrated.mean(), rel=0.05)
 
 
+def test_simulate_backends_agree_when_variance_turns_negative() -> None:
+    """Test that Euler excursions of variance below zero stay finite and agree across Python and Cython backends."""
+    nsub, nobs = 100, 30_000
+    heston = Heston(HestonParam(mean_v=0.5, kappa=1.0, eta=0.9, rho=-0.5))
+    paths_py = heston.simulate(nsub=nsub, nobs=nobs, nsim=1, diff=0, cython=False, seed=1)
+    paths_cy = heston.simulate(nsub=nsub, nobs=nobs, nsim=1, diff=0, cython=True, seed=1)
+
+    assert paths_cy[..., 1].min() < 0
+    np.testing.assert_allclose(paths_py, paths_cy, rtol=0, atol=1e-10)
+
+
 def test_sim_realized_pq() -> None:
     """Test realized data simulation under P and Q measures."""
     nperiods, nsub, ndiscr, nsim = 500, 100, 1, 1

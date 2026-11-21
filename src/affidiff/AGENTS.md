@@ -25,6 +25,9 @@ Root-owned modules:
 - Attributes and helper methods not accessed outside their owning class MUST be private (prefixed with `_`).
 - Cross-cutting mathematics belongs in `helper_functions.py`; do not duplicate it inside model modules.
 - Stochastic code draws randomness through `affidiff.random.get_random_generator`, never through global `numpy` state.
+- The Python Euler path (`ajd_diff`) and the Cython `simulate` kernel must stay numerically in sync: both truncate
+  states at zero inside the diffusion (only variance factors carry non-zero `mat_h1` slices) and factor the covariance
+  with a lower Cholesky that tolerates singular (zero-variance) matrices.
 
 # Work Guidance
 

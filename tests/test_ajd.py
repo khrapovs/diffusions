@@ -144,6 +144,16 @@ class TestDiffusion:
         assert ajd_diff(state=state, theta=param).shape == diff.shape
         npt.assert_array_equal(ajd_diff(state=state, theta=param), diff)
 
+    def test_ajd_diff_heston_truncates_non_positive_variance(self) -> None:
+        """Test that non-positive variance yields zero diffusion without affecting other simulations."""
+        eta, rho = 0.2, -0.5
+        param = HestonParam(eta=eta, rho=rho)
+        state = np.array([[0.0, 0.5], [0.0, 0.0], [0.0, -0.1]])
+        diff = np.zeros((3, 2, 2))
+        diff[0] = np.linalg.cholesky(0.5 * np.array([[1, eta * rho], [eta * rho, eta**2]]))
+
+        npt.assert_allclose(ajd_diff(state=state, theta=param), diff)
+
     def test_ajd_diff_ct(self) -> None:
         """Test AJD diffusion function for CT model."""
         riskfree, lmbd, mean_v = 0.0, 0.01, 0.2

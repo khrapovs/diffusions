@@ -49,15 +49,45 @@ def ajd_diff(*, state: np.ndarray | float | Sequence[float], theta: GenericParam
     (nsim, nvars, nvars) array_like
         Value of the diffusion
 
+    Notes
+    -----
+    Euler steps can push variance factors below zero, so states enter the diffusion truncated at zero. Only variance
+    factors have non-zero ``mat_h1`` slices, so other states are unaffected.
+
     """
     state_arr = np.atleast_2d(state)
     mat_h1 = np.atleast_3d(theta.mat_h1)
     # (nsim, nvars, nvars)
-    var = theta.mat_h0 + np.tensordot(state_arr, mat_h1, axes=(1, 0))
+    var = theta.mat_h0 + np.tensordot(np.maximum(state_arr, 0), mat_h1, axes=(1, 0))
     try:
         return np.linalg.cholesky(var)
     except np.linalg.LinAlgError:
-        return np.ones_like(var) * 1e10
+        return _compute_psd_cholesky(var)
+
+
+def _compute_psd_cholesky(mat: np.ndarray) -> np.ndarray:
+    """Compute lower Cholesky factors of positive semi-definite matrices.
+
+    Columns with a non-positive pivot are set to zero, so singular matrices (e.g. zero variance) are supported.
+
+    Parameters
+    ----------
+    mat : (..., nvars, nvars) array
+        Symmetric positive semi-definite matrices
+
+    Returns
+    -------
+    (..., nvars, nvars) array
+        Lower-triangular factors
+
+    """
+    chol = np.zeros_like(mat)
+    for j in range(mat.shape[-1]):
+        pivot = np.sqrt(np.maximum(mat[..., j, j] - (chol[..., j, :j] ** 2).sum(-1), 0))
+        chol[..., j, j] = pivot
+        below = mat[..., j + 1 :, j] - (chol[..., j + 1 :, :j] * chol[..., j, None, :j]).sum(-1)
+        chol[..., j + 1 :, j] = np.divide(below, pivot[..., None], out=np.zeros_like(below), where=pivot[..., None] > 0)
+    return chol
 
 
 def nice_errors(*, errors: np.ndarray, sdim: int) -> np.ndarray:
