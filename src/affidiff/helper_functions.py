@@ -242,6 +242,41 @@ def columnwise_prod(*, left: np.ndarray, right: np.ndarray) -> np.ndarray:
     return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))
 
 
+def compute_central_jacobian(
+    *, fun: Callable[[np.ndarray], np.ndarray], theta: np.ndarray | Sequence[float]
+) -> np.ndarray:
+    """Compute the Jacobian of a vector function by central finite differences.
+
+    Steps are relative to ``|theta|`` (floored at 0.01), so perturbations of small positive parameters stay positive.
+
+    Parameters
+    ----------
+    fun : callable
+        Maps a (nparams,) array to a (nout,) array
+    theta : (nparams,) array_like
+        Point of evaluation
+
+    Returns
+    -------
+    (nout, nparams) array
+        Jacobian of ``fun`` at ``theta``
+
+    Examples
+    --------
+    >>> compute_central_jacobian(fun=lambda x: np.array([x[0] ** 2, x[0] * x[1]]), theta=[1.0, 2.0]).round(6)
+    array([[2., 0.],
+           [2., 1.]])
+
+    """
+    theta_arr = np.asarray(theta, dtype=float)
+    steps = np.finfo(float).eps ** (1 / 3) * np.maximum(np.abs(theta_arr), 0.01)
+    columns = [
+        (np.asarray(fun(theta_arr + shift)) - np.asarray(fun(theta_arr - shift))) / (2 * step)
+        for step, shift in zip(steps, np.diag(steps), strict=True)
+    ]
+    return np.column_stack(columns)
+
+
 def rolling_window(*, fun: Callable[..., Any], mat: np.ndarray, window: int = 1) -> np.ndarray:
     """Apply function over rolling window.
 

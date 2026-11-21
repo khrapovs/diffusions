@@ -58,7 +58,7 @@ class TestRealizedMomentsHeston:
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
-        assert dmom is None
+        assert dmom.shape == (nmoms_all, theta.size)
 
     def test_const_instr(self) -> None:
         """Test constant instrument of Heston model."""

@@ -93,7 +93,7 @@ class TestRealizedMomentsCT:
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
-        assert dmom is None
+        assert dmom.shape == (nmoms_all, len(param.get_theta()))
 
     def test_const_instr(self) -> None:
         """Test constant instrument of Central Tendency model."""
@@ -149,7 +149,7 @@ class TestRealizedMomentsCT:
         npt.assert_array_almost_equal(error, np.zeros(mom_shape))
         # Test the shape of moment functions
         assert mom.shape == mom_shape
-        assert dmom is None
+        assert dmom.shape == (nmoms_all, len(param.get_theta()))
 
     def test_vol_p(self) -> None:
         """Test vol P realized moments of Central Tendency model."""

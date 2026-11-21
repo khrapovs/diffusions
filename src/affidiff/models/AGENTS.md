@@ -26,6 +26,8 @@ characteristic functions, moment conditions, GMM estimation, and simulation entr
 - `SDE.integrated_mom` derives the moment lag `L` from `mat_a` (number of `nmoms`-wide blocks minus one), returns
   `nobs - L` rows, and dates instruments before `t - L` so they stay exogenous. `mat_a` must therefore hold every lag
   block `A_0..A_L`.
+- `SDE.integrated_mom` always returns the Jacobian of the averaged moments (`compute_central_jacobian`, small
+  relative steps) so `mygmm` never falls back to `numdifftools`, whose large steps leave the parameter bounds.
 - Unconditional moment formulas (e.g. `mean_vol2`) must stay finite across the whole parameter bounds, including
   large `kappa` and coinciding roots (`kappa_s == kappa_y`), because optimizers probe those regions.
 

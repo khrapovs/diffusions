@@ -54,6 +54,31 @@ def test_integrated_gmm_single(param_true: CentTendParam) -> None:
     assert CentTend.mean_vol2(param=param_est, aggh=aggh) == pytest.approx(mean_vol2, rel=0.5)
 
 
+def test_integrated_gmm_moderate_kappa_s() -> None:
+    """Test integrated GMM keeps kappa_s positive while differentiating the moments at a moderate start value."""
+    param_true = CentTendParam(
+        riskfree=0.0, lmbd=0.5, mean_v=0.2, kappa_s=0.5, kappa_y=0.1, eta_s=0.3, eta_y=0.1, rho=-0.9
+    )
+    centtend = CentTend(param_true)
+    data = centtend.sim_realized(nsub=80, ndiscr=1, aggh=1, nperiods=500, nsim=1, diff=0, cython=True, seed=42)
+    _, rvar = data
+
+    res = centtend.integrated_gmm(
+        param_start=param_true,
+        data=data,
+        instrlag=3,
+        instr_data=np.vstack([rvar]),
+        aggh=1,
+        instr_choice="var",
+        method="SLSQP",
+        subset=Subset.vol,
+        measure=Measure.P,
+        iter=3,
+    )
+
+    assert np.all(np.isfinite(res.theta))
+
+
 def test_integrated_mom_zero_mean_at_true_parameters(param_true: CentTendParam) -> None:
     """Test instrumented volatility moment conditions average to zero at the true parameters."""
     centtend = CentTend(param_true)

@@ -4,13 +4,22 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from functools import partial
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
 import numpy as np
 from mygmm import GMM, Results
 
 from affidiff._cython import get_cython_simulate
-from affidiff.helper_functions import ajd_diff, ajd_drift, columnwise_prod, instruments, nice_errors, rolling_window
+from affidiff.helper_functions import (
+    ajd_diff,
+    ajd_drift,
+    columnwise_prod,
+    compute_central_jacobian,
+    instruments,
+    nice_errors,
+    rolling_window,
+)
 from affidiff.random import get_random_generator
 from affidiff.types import Measure, Subset
 
@@ -661,7 +670,7 @@ class SDE(ABC):
         subset: Subset = Subset.all,
         instrlag: int = 1,
         measure: Measure = Measure.P,
-    ) -> tuple[np.ndarray, np.ndarray | None]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Integrated moment function.
 
         Parameters
@@ -694,10 +703,36 @@ class SDE(ABC):
         -------
         moments : (nobs - lag, nmoms * ninstr) array
             Moment restrictions, where lag is the highest lag in ``mat_a``
-        dmoments : (nmoms, nparams) array
-            Average derivative of the moment restrictions
+        dmoments : (nmoms * ninstr, nparams) array
+            Jacobian of the average moment restrictions with respect to ``theta``
 
         """
+        compute_moments = partial(
+            self._compute_integrated_moments,
+            data=data,
+            instr_data=instr_data,
+            instr_choice=instr_choice,
+            aggh=aggh,
+            subset=subset,
+            instrlag=instrlag,
+            measure=measure,
+        )
+        dmoments = compute_central_jacobian(fun=lambda x: compute_moments(x).mean(0), theta=theta)
+        # Evaluated last so that ``self.param`` ends up holding ``theta``.
+        return compute_moments(theta), dmoments
+
+    def _compute_integrated_moments(
+        self,
+        theta: np.ndarray | Sequence[float],
+        *,
+        data: np.ndarray | Sequence[np.ndarray] | None,
+        instr_data: np.ndarray | None,
+        instr_choice: str,
+        aggh: float | Sequence[float],
+        subset: Subset,
+        instrlag: int,
+        measure: Measure,
+    ) -> np.ndarray:
         subset_sl = None
         if subset == Subset.vol:
             subset_sl = slice(2)
@@ -741,4 +776,4 @@ class SDE(ABC):
         # (nobs - instrlag - lag, 4 * (ninstr*instrlag + 1))
         moms = columnwise_prod(left=error, right=instr)
 
-        return moms, None
+        return moms

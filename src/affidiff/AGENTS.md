@@ -11,7 +11,7 @@ listed in the Child DOX Index.
 Root-owned modules:
 
 - `helper_functions.py` — shared mathematical helpers and moment functions (`ajd_drift`, `ajd_diff`, `poly_coef`,
-  `rolling_window`, `columnwise_prod`, `instruments`, `nice_errors`).
+  `rolling_window`, `columnwise_prod`, `compute_central_jacobian`, `instruments`, `nice_errors`).
 - `simulate.pyx` / `simulate.c` — Cython fast simulation routines (see root `AGENTS.md` for the build workflow).
 - `_cython.py` — optional loading of the compiled `simulate` extension, falling back to the pure-Python path.
 - `random.py` — `get_random_generator`, the single entry point for seeded `numpy` generators.
