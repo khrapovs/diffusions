@@ -1,3 +1,9 @@
+## v0.7.0 (2026-11-21)
+
+### Feat
+
+- Show prices and returns (#22)
+
 ## v0.6.0 (2026-11-15)
 
 ### Feat
