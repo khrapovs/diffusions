@@ -5,7 +5,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from affidiff.ui.simulation import extract_simulation_data, get_model_defaults, get_series_names, run_simulation
+from affidiff.ui.simulation import (
+    apply_display_transforms,
+    extract_simulation_data,
+    get_model_defaults,
+    get_series_names,
+    run_simulation,
+)
 
 
 class TestGetModelDefaults:
@@ -131,3 +137,53 @@ class TestExtractSimulationData:
 def test_get_series_names_invalid_model_raises() -> None:
     with pytest.raises(ValueError, match="Unknown model"):
         get_series_names("InvalidModel")
+
+
+class TestApplyDisplayTransforms:
+    """Tests for apply_display_transforms function."""
+
+    def test_log_price_exponentiated(self) -> None:
+        """log(Price) column is replaced by its exponential (Price)."""
+        log_prices = np.array([0.0, 0.5, 1.0])
+        path, names = apply_display_transforms(path=log_prices, raw_series_names=("log(Price)",))
+        np.testing.assert_allclose(path[:, 0], np.exp(log_prices))
+        assert names[0] == "Price"
+
+    def test_log_return_appended(self) -> None:
+        """diff(log(Price)) is appended as Log Return with 0 prepended."""
+        log_prices = np.array([0.0, 0.5, 1.5])
+        path, names = apply_display_transforms(path=log_prices, raw_series_names=("log(Price)",))
+        expected_returns = np.array([0.0, 0.5, 1.0])
+        np.testing.assert_allclose(path[:, 1], expected_returns)
+        assert names[1] == "Log Return"
+
+    def test_output_shape_univariate(self) -> None:
+        """Univariate log(Price) produces two display columns."""
+        log_prices = np.arange(10, dtype=float)
+        path, names = apply_display_transforms(path=log_prices, raw_series_names=("log(Price)",))
+        assert path.shape == (10, 2)
+        assert names == ("Price", "Log Return")
+
+    def test_non_log_price_passthrough(self) -> None:
+        """Series not named log(Price) are passed through unchanged."""
+        raw = np.ones((5, 2))
+        raw[:, 1] = 2.0
+        path, names = apply_display_transforms(path=raw, raw_series_names=("Volatility", "CentralTend"))
+        np.testing.assert_array_equal(path[:, 0], raw[:, 0])
+        np.testing.assert_array_equal(path[:, 1], raw[:, 1])
+        assert names == ("Volatility", "CentralTend")
+
+    @pytest.mark.parametrize("model_name", ["GBM", "Heston", "CentTend"])
+    def test_integration_with_real_simulation(self, model_name: str) -> None:
+        """Display names and shape are consistent for all log(Price) models."""
+        defaults = {k: v for k, v in get_model_defaults(model_name).items() if k != "measure"}
+        simulated = run_simulation(model_name=model_name, params=defaults, nobs=50, seed=7)
+        raw_path = extract_simulation_data(simulated)
+        raw_names = get_series_names(model_name)
+        display_path, display_names = apply_display_transforms(path=raw_path, raw_series_names=raw_names)
+        n_log_price = sum(1 for n in raw_names if n == "log(Price)")
+        expected_cols = len(raw_names) + n_log_price  # one extra Log Return per log(Price)
+        assert display_path.shape == (50, expected_cols)
+        assert "log(Price)" not in display_names
+        assert "Price" in display_names
+        assert "Log Return" in display_names

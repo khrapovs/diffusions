@@ -5,6 +5,8 @@ from __future__ import annotations
 import inspect
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
+
 from affidiff.models.registry import MODEL_REGISTRY
 
 if TYPE_CHECKING:
@@ -134,3 +136,46 @@ def extract_simulation_data(simulated: NDArray) -> NDArray:
     if path.shape[1] == 1:
         return path.squeeze(axis=1)
     return path
+
+
+def apply_display_transforms(*, path: NDArray, raw_series_names: tuple[str, ...]) -> tuple[NDArray, tuple[str, ...]]:
+    """Transform raw simulated path into display-ready series for the chart.
+
+    For every series named ``"log(Price)"``:
+    - Replace it with ``exp(log(Price))`` = Price.
+    - Append a new ``"Log Return"`` series = ``diff(log(Price))``, with 0
+      prepended so the length matches the other series.
+
+    All other series are passed through unchanged.
+
+    Parameters
+    ----------
+    path : NDArray
+        Raw simulated path of shape ``(nobs,)`` (univariate) or ``(nobs, nvars)``.
+    raw_series_names : tuple[str, ...]
+        Series names from the model, one per column of ``path``.
+
+    Returns
+    -------
+    tuple[NDArray, tuple[str, ...]]
+        ``(display_path, display_names)`` where ``display_path`` is 2-D of
+        shape ``(nobs, n_display_series)`` and ``display_names`` lists one
+        label per column.
+    """
+    cols = path.reshape(len(path), -1).T.tolist()
+    names: list[str] = []
+    display_cols: list[NDArray] = []
+
+    for name, col in zip(raw_series_names, cols, strict=True):
+        col_arr = np.asarray(col)
+        if name == "log(Price)":
+            display_cols.append(np.exp(col_arr))
+            names.append("Price")
+            log_return = np.concatenate(([0.0], np.diff(col_arr)))
+            display_cols.append(log_return)
+            names.append("Log Return")
+        else:
+            display_cols.append(col_arr)
+            names.append(name)
+
+    return np.column_stack(display_cols), tuple(names)

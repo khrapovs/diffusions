@@ -34,7 +34,7 @@ class GBM(SDE):
     @property
     def series_names(self) -> tuple[str, ...]:
         """Names of the simulated series, one per state variable in simulation order."""
-        return ("Returns",)
+        return ("log(Price)",)
 
     def get_start(self) -> list[float]:
         """Return starting values for simulation."""

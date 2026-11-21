@@ -13,7 +13,7 @@ from affidiff.ui.components import (
     render_simulation_controls,
 )
 from affidiff.ui.formulas import render_model_formula
-from affidiff.ui.simulation import extract_simulation_data, get_series_names, run_simulation
+from affidiff.ui.simulation import apply_display_transforms, extract_simulation_data, get_series_names, run_simulation
 
 
 def _init_session_state() -> None:
@@ -22,6 +22,8 @@ def _init_session_state() -> None:
         st.session_state.model = "GBM"
     if "last_simulation" not in st.session_state:
         st.session_state.last_simulation = None
+    if "last_series_names" not in st.session_state:
+        st.session_state.last_series_names = None
     if "last_seed" not in st.session_state:
         st.session_state.last_seed = None
     if "last_params" not in st.session_state:
@@ -46,6 +48,7 @@ def _main() -> None:
         if selected_model != st.session_state.model:
             st.session_state.model = selected_model
             st.session_state.last_simulation = None
+            st.session_state.last_series_names = None
             st.session_state.last_params = None
 
         nobs, seed = render_simulation_controls()
@@ -68,7 +71,11 @@ def _main() -> None:
                         model_name=st.session_state.model, params=params, nobs=nobs, seed=seed, new_innov=new_innov
                     )
                     path = extract_simulation_data(simulated)
-                    st.session_state.last_simulation = path
+                    display_path, display_names = apply_display_transforms(
+                        path=path, raw_series_names=get_series_names(st.session_state.model)
+                    )
+                    st.session_state.last_simulation = display_path
+                    st.session_state.last_series_names = display_names
                     st.session_state.last_seed = seed
                     st.session_state.last_params = params.copy()
                     st.session_state.last_nobs = nobs
@@ -79,6 +86,7 @@ def _main() -> None:
             if st.button("🔄 Reset Seed", key="reset_btn", width="stretch"):
                 st.session_state.last_seed = None
                 st.session_state.last_simulation = None
+                st.session_state.last_series_names = None
                 st.session_state.last_params = None
                 st.session_state.last_nobs = None
                 st.info("Seed reset. Click Simulate for a new series.")
@@ -88,7 +96,7 @@ def _main() -> None:
     if st.session_state.last_simulation is not None:
         render_chart(
             simulated_path=st.session_state.last_simulation,
-            series_names=get_series_names(st.session_state.model),
+            series_names=st.session_state.last_series_names,
             seed=st.session_state.last_seed,
         )
 
