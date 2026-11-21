@@ -692,8 +692,8 @@ class SDE(ABC):
 
         Returns
         -------
-        moments : (nobs - instrlag - 2, 3 * ninstr = nmoms) array
-            Moment restrictions
+        moments : (nobs - lag, nmoms * ninstr) array
+            Moment restrictions, where lag is the highest lag in ``mat_a``
         dmoments : (nmoms, nparams) array
             Average derivative of the moment restrictions
 
@@ -704,7 +704,9 @@ class SDE(ABC):
 
         assert self.param is not None
         self.param.update(theta=theta, subset=subset, measure=measure)
-        lag = 2
+        mat_a = self.mat_a(param=self.param)
+        # Highest lag in the moment conditions. Instruments must be dated before it to stay exogenous.
+        lag = mat_a.shape[1] // mat_a.shape[0] - 1
 
         if measure == Measure.PQ:
             error = []

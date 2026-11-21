@@ -23,6 +23,11 @@ characteristic functions, moment conditions, GMM estimation, and simulation entr
 - Shared mathematical helpers live in `affidiff.helper_functions`, not in individual model modules.
 - `SDE.series_names` names each simulated state variable in simulation column order and defaults to `("Returns",)`;
   models with more state variables (`Heston`, `CentTend`) override it so its length equals `nvars`.
+- `SDE.integrated_mom` derives the moment lag `L` from `mat_a` (number of `nmoms`-wide blocks minus one), returns
+  `nobs - L` rows, and dates instruments before `t - L` so they stay exogenous. `mat_a` must therefore hold every lag
+  block `A_0..A_L`.
+- Unconditional moment formulas (e.g. `mean_vol2`) must stay finite across the whole parameter bounds, including
+  large `kappa` and coinciding roots (`kappa_s == kappa_y`), because optimizers probe those regions.
 
 # Work Guidance
 

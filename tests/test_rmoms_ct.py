@@ -3,10 +3,14 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+from scipy.integrate import quad
+from scipy.linalg import expm, solve_continuous_lyapunov
 
 from affidiff.models.ct import CentTend
 from affidiff.parameters.ct import CentTendParam
 from affidiff.types import Measure, Subset
+
+MOMENT_LAG = 5
 
 
 class TestRealizedMomentsCT:
@@ -85,7 +89,7 @@ class TestRealizedMomentsCT:
             theta=param.get_theta(), instr_data=instr_data, instr_choice="var", data=data, instrlag=instrlag
         )
         nmoms_all = nmoms * (ninstr * instrlag + 1)
-        mom_shape = (nperiods - instrlag, nmoms_all)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms_all)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -126,7 +130,7 @@ class TestRealizedMomentsCT:
 
         mom, dmom = centtend.integrated_mom(theta=param.get_theta(), instr_choice="const", data=data, instrlag=instrlag)
         nmoms_all = nmoms
-        mom_shape = (nperiods - instrlag, nmoms_all)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms_all)
 
         aggh = 2
         means = [
@@ -136,7 +140,7 @@ class TestRealizedMomentsCT:
             centtend.mean_cross(param=param, aggh=aggh),
         ]
 
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error = depvar.dot(centtend.mat_a(param=param, subset=None).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=None
@@ -191,12 +195,12 @@ class TestRealizedMomentsCT:
             theta=param.get_theta(subset=subset), subset=subset, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
-        mom_shape = (nperiods - instrlag, nmoms)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
 
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         subset_sl = slice(2)
         error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
@@ -244,7 +248,7 @@ class TestRealizedMomentsCT:
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
-        mom_shape = (nperiods - instrlag, nmoms)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -257,7 +261,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -271,7 +275,7 @@ class TestRealizedMomentsCT:
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 2
-        mom_shape = (nperiods - instrlag, nmoms)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -284,7 +288,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -316,7 +320,7 @@ class TestRealizedMomentsCT:
             instrlag=instrlag,
         )
         nmoms = 2
-        mom_shape = (nperiods - instrlag, nmoms * 2)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms * 2)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -329,7 +333,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error_q = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -352,7 +356,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error_p = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -438,7 +442,7 @@ class TestRealizedMomentsCT:
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 4
-        mom_shape = (nperiods - instrlag, nmoms)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -451,7 +455,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -477,7 +481,7 @@ class TestRealizedMomentsCT:
             theta=theta, subset=subset, measure=measure, instr_choice="const", data=data, instrlag=instrlag
         )
         nmoms = 4
-        mom_shape = (nperiods - instrlag, nmoms)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -490,7 +494,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -522,7 +526,7 @@ class TestRealizedMomentsCT:
             instrlag=instrlag,
         )
         nmoms = 4
-        mom_shape = (nperiods - instrlag, nmoms * 2)
+        mom_shape = (nperiods - MOMENT_LAG, nmoms * 2)
 
         # Test the shape of moment functions
         assert mom.shape == mom_shape
@@ -535,7 +539,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error_q = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -557,7 +561,7 @@ class TestRealizedMomentsCT:
             centtend.mean_ret(param=param, aggh=aggh),
             centtend.mean_cross(param=param, aggh=aggh),
         ]
-        depvar = np.ones((nperiods - instrlag, 4)) * means
+        depvar = np.ones((nperiods - MOMENT_LAG, 4)) * means
         depvar = np.tile(depvar, 6)
         error_p = depvar.dot(centtend.mat_a(param=param, subset=subset_sl).T) - centtend.realized_const(
             param=param, aggh=aggh, subset=subset_sl
@@ -676,3 +680,22 @@ class TestRealizedMomentsCT:
         )
 
         assert centtend.realized_const(param=param, aggh=aggh)[3] == pytest.approx(res)
+
+
+@pytest.mark.parametrize(("kappa_s", "kappa_y", "aggh"), [(1.5, 0.1, 1), (0.3, 0.1, 5), (1.0, 1.0, 1), (500.0, 0.1, 1)])
+def test_mean_vol2_matches_integrated_autocovariance(*, kappa_s: float, kappa_y: float, aggh: float) -> None:
+    """Test E[RV^2] equals mu^2 plus the variance of integrated volatility from the stationary covariance."""
+    mean_v, eta_s, eta_y = 0.2, 0.5, 0.1
+    param = CentTendParam(
+        riskfree=0.0, lmbd=0.5, mean_v=mean_v, kappa_s=kappa_s, kappa_y=kappa_y, eta_s=eta_s, eta_y=eta_y, rho=-0.5
+    )
+    drift = np.array([[-kappa_s, kappa_s], [0.0, -kappa_y]], dtype=np.float64)
+    diffusion = np.array([[mean_v * eta_s**2, 0.0], [0.0, mean_v * eta_y**2]], dtype=np.float64)
+    stat_cov = solve_continuous_lyapunov(drift, -diffusion)
+
+    def compute_weighted_autocov(tau: float) -> float:
+        return (aggh - tau) * float((expm(drift * tau) @ stat_cov)[0, 0])
+
+    integral, _ = quad(compute_weighted_autocov, 0, aggh, epsabs=1e-14, limit=200)
+
+    assert CentTend.mean_vol2(param=param, aggh=aggh) == pytest.approx(mean_v**2 + 2 * integral / aggh**2, rel=1e-8)
