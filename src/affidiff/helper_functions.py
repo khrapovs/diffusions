@@ -49,15 +49,45 @@ def ajd_diff(*, state: np.ndarray | float | Sequence[float], theta: GenericParam
     (nsim, nvars, nvars) array_like
         Value of the diffusion
 
+    Notes
+    -----
+    Euler steps can push variance factors below zero, so states enter the diffusion truncated at zero. Only variance
+    factors have non-zero ``mat_h1`` slices, so other states are unaffected.
+
     """
     state_arr = np.atleast_2d(state)
     mat_h1 = np.atleast_3d(theta.mat_h1)
     # (nsim, nvars, nvars)
-    var = theta.mat_h0 + np.tensordot(state_arr, mat_h1, axes=(1, 0))
+    var = theta.mat_h0 + np.tensordot(np.maximum(state_arr, 0), mat_h1, axes=(1, 0))
     try:
         return np.linalg.cholesky(var)
     except np.linalg.LinAlgError:
-        return np.ones_like(var) * 1e10
+        return _compute_psd_cholesky(var)
+
+
+def _compute_psd_cholesky(mat: np.ndarray) -> np.ndarray:
+    """Compute lower Cholesky factors of positive semi-definite matrices.
+
+    Columns with a non-positive pivot are set to zero, so singular matrices (e.g. zero variance) are supported.
+
+    Parameters
+    ----------
+    mat : (..., nvars, nvars) array
+        Symmetric positive semi-definite matrices
+
+    Returns
+    -------
+    (..., nvars, nvars) array
+        Lower-triangular factors
+
+    """
+    chol = np.zeros_like(mat)
+    for j in range(mat.shape[-1]):
+        pivot = np.sqrt(np.maximum(mat[..., j, j] - (chol[..., j, :j] ** 2).sum(-1), 0))
+        chol[..., j, j] = pivot
+        below = mat[..., j + 1 :, j] - (chol[..., j + 1 :, :j] * chol[..., j, None, :j]).sum(-1)
+        chol[..., j + 1 :, j] = np.divide(below, pivot[..., None], out=np.zeros_like(below), where=pivot[..., None] > 0)
+    return chol
 
 
 def nice_errors(*, errors: np.ndarray, sdim: int) -> np.ndarray:
@@ -210,6 +240,41 @@ def columnwise_prod(*, left: np.ndarray, right: np.ndarray) -> np.ndarray:
     """
     prod = left[:, np.newaxis, :] * right[:, :, np.newaxis]
     return prod.reshape((left.shape[0], left.shape[1] * right.shape[1]))
+
+
+def compute_central_jacobian(
+    *, fun: Callable[[np.ndarray], np.ndarray], theta: np.ndarray | Sequence[float]
+) -> np.ndarray:
+    """Compute the Jacobian of a vector function by central finite differences.
+
+    Steps are relative to ``|theta|`` (floored at 0.01), so perturbations of small positive parameters stay positive.
+
+    Parameters
+    ----------
+    fun : callable
+        Maps a (nparams,) array to a (nout,) array
+    theta : (nparams,) array_like
+        Point of evaluation
+
+    Returns
+    -------
+    (nout, nparams) array
+        Jacobian of ``fun`` at ``theta``
+
+    Examples
+    --------
+    >>> compute_central_jacobian(fun=lambda x: np.array([x[0] ** 2, x[0] * x[1]]), theta=[1.0, 2.0]).round(6)
+    array([[2., 0.],
+           [2., 1.]])
+
+    """
+    theta_arr = np.asarray(theta, dtype=float)
+    steps = np.finfo(float).eps ** (1 / 3) * np.maximum(np.abs(theta_arr), 0.01)
+    columns = [
+        (np.asarray(fun(theta_arr + shift)) - np.asarray(fun(theta_arr - shift))) / (2 * step)
+        for step, shift in zip(steps, np.diag(steps), strict=True)
+    ]
+    return np.column_stack(columns)
 
 
 def rolling_window(*, fun: Callable[..., Any], mat: np.ndarray, window: int = 1) -> np.ndarray:

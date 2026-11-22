@@ -1,7 +1,7 @@
 cimport cython
 import numpy as np
 cimport numpy as cnp
-from scipy.linalg.cython_lapack cimport dpotrf
+from libc.math cimport fmax, sqrt
 
 
 
@@ -40,13 +40,14 @@ def simulate(double[:, :, :] errors, double[:] start,
     """
     cdef:
         Py_ssize_t i, j, s, t, k
-        int info = 0
+        double acc
         int npoints = errors.shape[0]
         int nsim = errors.shape[1]
         int nvars = errors.shape[2]
         double[:] drift = np.empty(nvars, float)
         double[:] diff = np.empty(nvars, float)
         double[:, :] var = np.empty((nvars, nvars), float)
+        double[:, :] chol = np.zeros((nvars, nvars), float)
         double[:, :, :] paths = np.empty((npoints + 1, nsim, nvars), float)
 
     for s in range(nsim):
@@ -56,14 +57,23 @@ def simulate(double[:, :, :] errors, double[:] start,
     for t in range(npoints):
         for s in range(nsim):
 
+            # Mirrors affidiff.helper_functions.ajd_diff: truncated states and PSD-tolerant Cholesky.
             for i in range(nvars):
                 for j in range(nvars):
                     var[i, j] = mat_h0[i, j]
                     for k in range(nvars):
-                        var[i, j] += mat_h1[k, i, j] * paths[t, s, k]
+                        var[i, j] += mat_h1[k, i, j] * fmax(paths[t, s, k], 0.0)
 
-            # http://www.math.utah.edu/software/lapack/lapack-d/dpotrf.html
-            dpotrf('U', &nvars, &var[0, 0], &nvars, &info)
+            for j in range(nvars):
+                acc = var[j, j]
+                for k in range(j):
+                    acc -= chol[j, k] * chol[j, k]
+                chol[j, j] = sqrt(acc) if acc > 0 else 0.0
+                for i in range(j + 1, nvars):
+                    acc = var[i, j]
+                    for k in range(j):
+                        acc -= chol[i, k] * chol[j, k]
+                    chol[i, j] = acc / chol[j, j] if chol[j, j] > 0 else 0.0
 
             for i in range(nvars):
                 drift[i] = mat_k0[i]
@@ -71,7 +81,7 @@ def simulate(double[:, :, :] errors, double[:] start,
                 for j in range(nvars):
                     drift[i] += mat_k1[i, j] * paths[t, s, j]
                 for j in range(i+1):
-                    diff[i] += var[i, j] * errors[t, s, j]
+                    diff[i] += chol[i, j] * errors[t, s, j]
                 paths[t+1, s, i] = paths[t, s, i]
                 paths[t+1, s, i] += drift[i] * dt + diff[i] * dt**.5
 

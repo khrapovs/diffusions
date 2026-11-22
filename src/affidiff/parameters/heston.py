@@ -48,7 +48,7 @@ class HestonParam(GenericParam):
         riskfree: float = 0.0,
         mean_v: float = 0.5,
         kappa: float = 1.5,
-        eta: float = 0.1,
+        eta: float = 0.9,
         rho: float = -0.5,
         lmbd: float = 0.1,
         lmbd_v: float = 0.0,

@@ -60,13 +60,13 @@ def render_parameter_form(model_name: str) -> dict[str, Any]:
         for param_name, default_value in defaults.items():
             if param_name == "measure":
                 continue
-            value = st.number_input(param_name, value=default_value, format="%.6f", help=f"Parameter {param_name}")
+            value = st.number_input(param_name, value=default_value, format="%.2f", help=f"Parameter {param_name}")
             params[param_name] = value
 
     return params
 
 
-def render_simulation_controls(default_nobs: int = 500) -> tuple[int, int | None]:
+def render_simulation_controls(default_nobs: int = 2000) -> tuple[int, int | None]:
     """Render simulation control widgets.
 
     Parameters

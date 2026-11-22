@@ -11,7 +11,7 @@ listed in the Child DOX Index.
 Root-owned modules:
 
 - `helper_functions.py` — shared mathematical helpers and moment functions (`ajd_drift`, `ajd_diff`, `poly_coef`,
-  `rolling_window`, `columnwise_prod`, `instruments`, `nice_errors`).
+  `rolling_window`, `columnwise_prod`, `compute_central_jacobian`, `instruments`, `nice_errors`).
 - `simulate.pyx` / `simulate.c` — Cython fast simulation routines (see root `AGENTS.md` for the build workflow).
 - `_cython.py` — optional loading of the compiled `simulate` extension, falling back to the pure-Python path.
 - `random.py` — `get_random_generator`, the single entry point for seeded `numpy` generators.
@@ -25,6 +25,9 @@ Root-owned modules:
 - Attributes and helper methods not accessed outside their owning class MUST be private (prefixed with `_`).
 - Cross-cutting mathematics belongs in `helper_functions.py`; do not duplicate it inside model modules.
 - Stochastic code draws randomness through `affidiff.random.get_random_generator`, never through global `numpy` state.
+- The Python Euler path (`ajd_diff`) and the Cython `simulate` kernel must stay numerically in sync: both truncate
+  states at zero inside the diffusion (only variance factors carry non-zero `mat_h1` slices) and factor the covariance
+  with a lower Cholesky that tolerates singular (zero-variance) matrices.
 
 # Work Guidance
 

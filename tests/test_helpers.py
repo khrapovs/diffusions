@@ -4,7 +4,14 @@ import numpy as np
 import numpy.testing as npt
 from statsmodels.tsa.tsatools import lagmat
 
-from affidiff.helper_functions import columnwise_prod, instruments, nice_errors, poly_coef, rolling_window
+from affidiff.helper_functions import (
+    columnwise_prod,
+    compute_central_jacobian,
+    instruments,
+    nice_errors,
+    poly_coef,
+    rolling_window,
+)
 
 
 class TestHelperFunction:
@@ -80,3 +87,9 @@ class TestHelperFunction:
         shape = (nperiods, ninstr * instrlag + 1)
         # Test the shape of instruments
         assert instrmnts.shape == shape
+
+    def test_compute_central_jacobian_near_zero(self) -> None:
+        """Test central Jacobian stays in the positive domain for parameters close to zero."""
+        theta = np.array([1e-5, 2.0])
+        jac = compute_central_jacobian(fun=np.log, theta=theta)
+        npt.assert_allclose(jac, np.diag(1 / theta), rtol=1e-4)

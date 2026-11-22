@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from math import exp
-from typing import TYPE_CHECKING, Sequence, cast
+from math import expm1
+from typing import TYPE_CHECKING, Callable, Sequence, cast
 
 import numpy as np
 from statsmodels.tsa.tsatools import lagmat
@@ -271,8 +271,15 @@ class CentTend(SDE):
         assert isinstance(param, CentTendParam)
         return float(param.mean_v)
 
-    def mean_vol2(self, *, param: GenericParam, aggh: float) -> float:
-        """Unconditional mean of squared realized volatiliy.
+    @staticmethod
+    def mean_vol2(*, param: GenericParam, aggh: float) -> float:
+        r"""Unconditional mean of squared realized volatiliy.
+
+        .. math::
+
+            E\left[IV_h^2\right] = \mu^2 + \frac{2}{h^2}\int_0^h (h - \tau) C(\tau) d\tau,
+
+        where :math:`C(\tau)` is the autocovariance of :math:`\sigma_t^2`.
 
         Parameters
         ----------
@@ -287,11 +294,13 @@ class CentTend(SDE):
 
         """
         assert isinstance(param, CentTendParam)
-        return float(
-            self.coef_small_as(param=param, aggh=aggh) ** 2 * unc_var_sigma(param)
-            + self.coef_small_bs(param=param, aggh=aggh) ** 2 * unc_var_ct(param)
-            + unc_var_error(param=param, aggh=aggh)
+        p = param
+        x_s, x_y = p.kappa_s * aggh, p.kappa_y * aggh
+        cov_sigma_ct = p.kappa_s / (p.kappa_s + p.kappa_y) * unc_mean_ct2(param)
+        var_iv = unc_mean_sigma2(param) * _compute_integrated_autocorr(x_s) - cov_sigma_ct * x_s * (
+            _compute_divided_difference(func=_compute_integrated_autocorr, x=x_s, y=x_y)
         )
+        return float(p.mean_v**2 + var_iv)
 
     @staticmethod
     def mean_ret(*, param: GenericParam, aggh: float) -> float:
@@ -561,7 +570,7 @@ class CentTend(SDE):
 
 
 def unc_mean_ct2(param: CentTendParam) -> float:
-    """Calculate unconditional second moment of CT, E[y_t**4].
+    """Calculate unconditional variance of CT, V[y_t].
 
     Parameters
     ----------
@@ -578,7 +587,7 @@ def unc_mean_ct2(param: CentTendParam) -> float:
 
 
 def unc_mean_sigma2(param: CentTendParam) -> float:
-    r"""Calculate unconditional second moment of volatility, E[\sigma_t**4].
+    r"""Calculate unconditional variance of volatility, V[\sigma_t^2].
 
     Parameters
     ----------
@@ -594,103 +603,13 @@ def unc_mean_sigma2(param: CentTendParam) -> float:
     return float(unc_mean_ct2(param) * p.kappa_s / (p.kappa_s + p.kappa_y) + p.mean_v * p.eta_s**2 / p.kappa_s / 2)
 
 
-def unc_var_ct(param: CentTendParam) -> float:
-    """Calculate unconditional variance of CT, V[y_t**2].
-
-    Parameters
-    ----------
-    param : parameter instance
-        Model parameters
-
-    Returns
-    -------
-    float
-
-    """
-    p = param
-    return float(p.mean_v**2 + unc_mean_ct2(param))
+def _compute_integrated_autocorr(x: float) -> float:
+    r"""Compute :math:`\frac{2}{h^2}\int_0^h (h - \tau) e^{-\kappa\tau} d\tau` with :math:`x = \kappa h`."""
+    return 2 * (x + expm1(-x)) / x**2
 
 
-def unc_var_sigma(param: CentTendParam) -> float:
-    r"""Calculate unconditional variance of volatility, V[\sigma_t**2].
-
-    Parameters
-    ----------
-    param : parameter instance
-        Model parameters
-
-    Returns
-    -------
-    float
-
-    """
-    p = param
-    return float(p.mean_v**2 + unc_mean_sigma2(param))
-
-
-def unc_var_error(*, param: CentTendParam, aggh: float) -> float:
-    r"""Calculate unconditional variance of aggregated volatility error.
-
-    :math:`V\left[\frac{1}{H}\int_{0}^{H}\epsilon_{t,s}^{\sigma}ds\right]`.
-
-    Derived symbolically in symbolic.py
-
-    Parameters
-    ----------
-    param : parameter instance
-        Model parameters
-    aggh : float
-        Interval length
-
-    Returns
-    -------
-    float
-
-    """
-    p = param
-    mu = p.mean_v
-    kappa_s = p.kappa_s
-    kappa_y = p.kappa_y
-    eta_s = p.eta_s
-    eta_y = p.eta_y
-
-    return float(
-        mu
-        * (
-            eta_s**2
-            * kappa_y**3
-            * (kappa_s - kappa_y) ** 2
-            * (kappa_s + kappa_y)
-            * (2 * aggh * kappa_s * exp(2 * aggh * kappa_s) - 3 * exp(2 * aggh * kappa_s) + 4 * exp(aggh * kappa_s) - 1)
-            * exp(2 * aggh * (kappa_s + 2 * kappa_y))
-            + eta_y**2
-            * kappa_s**2
-            * (
-                -(kappa_s**4) * exp(2 * aggh * kappa_s)
-                + 4 * kappa_s**4 * exp(aggh * (2 * kappa_s + kappa_y))
-                - kappa_s**3 * kappa_y * exp(2 * aggh * kappa_s)
-                + 4 * kappa_s**2 * kappa_y**2 * exp(aggh * (kappa_s + kappa_y))
-                - 4 * kappa_s**2 * kappa_y**2 * exp(aggh * (kappa_s + 2 * kappa_y))
-                - 4 * kappa_s**2 * kappa_y**2 * exp(aggh * (2 * kappa_s + kappa_y))
-                - kappa_s * kappa_y**3 * exp(2 * aggh * kappa_y)
-                - kappa_y**4 * exp(2 * aggh * kappa_y)
-                + 4 * kappa_y**4 * exp(aggh * (kappa_s + 2 * kappa_y))
-                + (
-                    2
-                    * aggh
-                    * kappa_s
-                    * kappa_y
-                    * (kappa_s**3 - kappa_s**2 * kappa_y - kappa_s * kappa_y**2 + kappa_y**3)
-                    + kappa_s**3 * (kappa_s + kappa_y)
-                    - 4 * kappa_s**2 * kappa_y**2
-                    + 4 * kappa_s**2 * (-(kappa_s**2) + kappa_y**2)
-                    + kappa_y**3 * (kappa_s + kappa_y)
-                    + 4 * kappa_y**2 * (kappa_s**2 - kappa_y**2)
-                )
-                * exp(2 * aggh * (kappa_s + kappa_y))
-            )
-            * exp(2 * aggh * (kappa_s + kappa_y))
-        )
-        * exp(aggh * (-4 * kappa_s - 4 * kappa_y))
-        / (2 * aggh**2 * kappa_s**3 * kappa_y**3 * (kappa_s - kappa_y) ** 2 * (kappa_s + kappa_y))
-    )
+def _compute_divided_difference(*, func: Callable[[float], float], x: float, y: float) -> float:
+    """Compute (func(x) - func(y)) / (x - y), falling back to a central derivative when x and y nearly coincide."""
+    half_step = max(abs(x - y), 1e-6 * max(abs(x), abs(y))) / 2
+    mid = (x + y) / 2
+    return (func(mid + half_step) - func(mid - half_step)) / (2 * half_step)
