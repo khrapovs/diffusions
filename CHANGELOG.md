@@ -1,3 +1,9 @@
+## v0.7.1 (2026-11-22)
+
+### Fix
+
+- Tweak parameters of multivariate model to stabilize simulations and GMM estimation (#23)
+
 ## v0.7.0 (2026-11-21)
 
 ### Feat
