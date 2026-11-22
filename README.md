@@ -2,7 +2,7 @@
 
 ![pytest](https://github.com/khrapovs/diffusions/actions/workflows/workflow.yaml/badge.svg)
 [![!pypi](https://img.shields.io/pypi/v/affidiff)](https://pypi.org/project/affidiff)
-[![!python-versions](https://img.shields.io/pypi/pyversions/diffusions)](https://pypi.org/project/affidiff)
+[![!python-versions](https://img.shields.io/pypi/pyversions/affidiff)](https://pypi.org/project/affidiff)
 
 Simulation and estimation of Affine Diffusion models.
 
