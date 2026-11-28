@@ -60,7 +60,11 @@ def render_parameter_form(model_name: str) -> dict[str, Any]:
         for param_name, default_value in defaults.items():
             if param_name == "measure":
                 continue
-            params[param_name] = st.number_input(param_name, value=default_value, format="%.2f")
+            label_col, input_col = st.columns([1, 2])
+            label_col.markdown(f"**{param_name}**")
+            params[param_name] = input_col.number_input(
+                param_name, value=default_value, format="%.2f", label_visibility="collapsed"
+            )
 
     return params
 
