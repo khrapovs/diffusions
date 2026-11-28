@@ -42,6 +42,16 @@ class HestonParam(GenericParam):
 
     """
 
+    _LABELS = {
+        "riskfree": r"$r_f$",
+        "mean_v": r"$\mu_v$",
+        "kappa": r"$\kappa$",
+        "eta": r"$\eta$",
+        "rho": r"$\rho$",
+        "lmbd": r"$\lambda$",
+        "lmbd_v": r"$\lambda_v$",
+    }
+
     def __init__(
         self,
         *,
@@ -122,7 +132,7 @@ class HestonParam(GenericParam):
             Parameter names
 
         """
-        names = ["mean_v", "kappa", "eta", "rho", "lmbd", "lmbd_v"]
+        names = [r"$\mu_v$", r"$\kappa$", r"$\eta$", r"$\rho$", r"$\lambda$", r"$\lambda_v$"]
 
         if subset == Subset.all and measure == Measure.PQ:
             return names

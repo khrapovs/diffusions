@@ -37,6 +37,19 @@ class CentTendParam(GenericParam):
 
     """
 
+    _LABELS = {
+        "riskfree": r"$r_f$",
+        "lmbd": r"$\lambda$",
+        "lmbd_s": r"$\lambda_s$",
+        "lmbd_y": r"$\lambda_y$",
+        "mean_v": r"$\mu_v$",
+        "kappa_s": r"$\kappa_s$",
+        "kappa_y": r"$\kappa_y$",
+        "eta_s": r"$\eta_s$",
+        "eta_y": r"$\eta_y$",
+        "rho": r"$\rho$",
+    }
+
     def __init__(
         self,
         *,
@@ -136,7 +149,17 @@ class CentTendParam(GenericParam):
             Parameter names
 
         """
-        names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
+        names = [
+            r"$\mu_v$",
+            r"$\kappa_s$",
+            r"$\kappa_y$",
+            r"$\eta_s$",
+            r"$\eta_y$",
+            r"$\rho$",
+            r"$\lambda$",
+            r"$\lambda_s$",
+            r"$\lambda_y$",
+        ]
 
         if subset == Subset.all and measure == Measure.PQ:
             return names

@@ -24,6 +24,8 @@ class GBMparam(GenericParam):
 
     """
 
+    _LABELS = {"mean": r"$\mu$", "sigma": r"$\sigma$"}
+
     def __init__(self, *, mean: float = 0.0, sigma: float = 0.2, measure: Measure = Measure.P) -> None:
         """Initialize class.
 
@@ -118,7 +120,7 @@ class GBMparam(GenericParam):
 
         """
         _ = (subset, measure)
-        return ["mean", "sigma"]
+        return [r"$\mu$", r"$\sigma$"]
 
     def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.

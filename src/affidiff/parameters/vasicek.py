@@ -26,6 +26,8 @@ class VasicekParam(GenericParam):
 
     """
 
+    _LABELS = {"mean": r"$\mu$", "kappa": r"$\kappa$", "eta": r"$\eta$"}
+
     def __init__(
         self, *, mean: float = 0.5, kappa: float = 1.5, eta: float = 0.1, measure: Measure = Measure.P
     ) -> None:
@@ -125,7 +127,7 @@ class VasicekParam(GenericParam):
 
         """
         _ = (subset, measure)
-        return ["mean", "kappa", "eta"]
+        return [r"$\mu$", r"$\kappa$", r"$\eta$"]
 
     def get_theta(self, *, subset: Subset = Subset.all, measure: Measure = Measure.PQ) -> np.ndarray:
         """Return vector of parameters.

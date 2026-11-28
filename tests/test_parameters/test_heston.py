@@ -23,7 +23,7 @@ class TestSDEParameter:
         rho = -0.5
 
         param = HestonParam(riskfree=riskfree, lmbd=lmbd, mean_v=mean_v, kappa=kappa, eta=eta, rho=rho)
-        names = ["mean_v", "kappa", "eta", "rho", "lmbd", "lmbd_v"]
+        names = [r"$\mu_v$", r"$\kappa$", r"$\eta$", r"$\rho$", r"$\lambda$", r"$\lambda_v$"]
 
         assert param.measure == Measure.P
         assert param.get_model_name() == "Heston"

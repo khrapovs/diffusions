@@ -35,7 +35,17 @@ class TestSDEParameter:
             rho=rho,
         )
 
-        names = ["mean_v", "kappa_s", "kappa_y", "eta_s", "eta_y", "rho", "lmbd", "lmbd_s", "lmbd_y"]
+        names = [
+            r"$\mu_v$",
+            r"$\kappa_s$",
+            r"$\kappa_y$",
+            r"$\eta_s$",
+            r"$\eta_y$",
+            r"$\rho$",
+            r"$\lambda$",
+            r"$\lambda_s$",
+            r"$\lambda_y$",
+        ]
 
         assert param.measure == Measure.P
         assert param.get_model_name() == "Central Tendency"

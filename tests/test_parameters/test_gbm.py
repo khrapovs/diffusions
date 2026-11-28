@@ -15,7 +15,7 @@ class TestSDEParameter:
         param = GBMparam(mean=mean, sigma=sigma)
 
         assert param.get_model_name() == "GBM"
-        assert param.get_names() == ["mean", "sigma"]
+        assert param.get_names() == [r"$\mu$", r"$\sigma$"]
 
         assert param.mean == mean
         assert param.sigma == sigma

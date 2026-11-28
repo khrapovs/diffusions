@@ -15,7 +15,7 @@ class TestSDEParameter:
         param = VasicekParam(mean=mean, kappa=kappa, eta=eta)
 
         assert param.get_model_name() == "Vasicek"
-        assert param.get_names() == ["mean", "kappa", "eta"]
+        assert param.get_names() == [r"$\mu$", r"$\kappa$", r"$\eta$"]
 
         assert param.mean == mean
         assert param.kappa == kappa
