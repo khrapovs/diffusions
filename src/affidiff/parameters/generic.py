@@ -27,6 +27,7 @@ class GenericParam(ABC):
     mat_k1: Any
     mat_h0: Any
     mat_h1: Any
+    _LABELS: dict[str, str] = {}
 
     def __init__(self) -> None:
         """Initialize class."""

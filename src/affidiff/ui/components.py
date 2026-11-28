@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import plotly.graph_objects as go
@@ -10,6 +10,7 @@ import streamlit as st
 from plotly.subplots import make_subplots
 
 from affidiff.models.registry import MODEL_REGISTRY
+from affidiff.parameters.generic import GenericParam
 from affidiff.ui.simulation import get_model_defaults
 
 if TYPE_CHECKING:
@@ -54,14 +55,19 @@ def render_parameter_form(model_name: str) -> dict[str, Any]:
         Dictionary of parameter values from form inputs
     """
     defaults = get_model_defaults(model_name)
+    param_class = cast(type[GenericParam], MODEL_REGISTRY[model_name][1])
+    labels = param_class._LABELS
     params = {}
 
     with st.expander(f"{model_name} Parameters", expanded=True):
-        for param_name, default_value in defaults.items():
-            if param_name == "measure":
+        for kwarg_name, default_value in defaults.items():
+            if kwarg_name == "measure":
                 continue
-            value = st.number_input(param_name, value=default_value, format="%.2f", help=f"Parameter {param_name}")
-            params[param_name] = value
+            label_col, input_col = st.columns([1, 2])
+            label_col.markdown(labels.get(kwarg_name, f"**{kwarg_name}**"))
+            params[kwarg_name] = input_col.number_input(
+                kwarg_name, value=default_value, format="%.2f", label_visibility="collapsed"
+            )
 
     return params
 
